@@ -41,7 +41,7 @@ def register():
   if data:
     return make_response(jsonify({'code': 10001, 'msg': u'用户名已存在!'}))
   hash_password, salt = encrypt_password(password)
-  data = users(username,hash_password,salt,email)
+  data = users(username,hash_password,salt,email,0)
   db.session.add(data)
   db.session.commit()
   return make_response(jsonify({'code': 0, 'msg': u'注册成功'}))
