@@ -19,12 +19,12 @@ def list():
     return make_response(jsonify({'code': 10002, 'msg': u'用户信息异常'}))
   user_data = {
     "name": data.username,
-    "avatar": 'https://testerhome.com/system/letter_avatars/2/T/163_163_163/96.png',
+    "avatar": 'https://gw.alipayobjects.com/zos/rmsportal/BiazfanxmamNRoxxVxka.png',
     "userid": data.id,
     "email": data.email,
     "signature": '海纳百川，有容乃大',
-    "title": '测试专家',
-    "group": '某某某事业群－某某平台部－某某技术部－测试部',
+    "title": '交互专家',
+    "group": '蚂蚁金服－某某某事业群－某某平台部－某某技术部－UED',
     "tags": [
       {
         "key": '0',
@@ -35,15 +35,15 @@ def list():
     "country": 'China',
     "geographic": {
       "province": {
-        "label": '江苏省',
-        "key": '210000',
+        "label": '浙江省',
+        "key": '330000',
       },
       "city": {
-        "label": '南京市',
-        "key": '210000',
+        "label": '杭州市',
+        "key": '330100',
       },
     },
-    "address": '浦口区',
+    "address": '西湖区工专路 77 号',
     "phone": data.phoneNumber,
   }
   return make_response(jsonify({'code': 0, 'msg': '', 'user_data':user_data}))
