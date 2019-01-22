@@ -27,177 +27,11 @@ import tim from '../../assets/tim.svg'
 import GridContent from '@/components/PageHeaderWrapper/GridContent';
 import styles from './index.less';
 
-const offlineChartData = [{
-  "x": 1547866715224,
-  "y1": 39,
-  "y2": 63
-}, {
-  "x": 1547868515224,
-  "y1": 46,
-  "y2": 37
-}, {
-  "x": 1547870315224,
-  "y1": 59,
-  "y2": 90
-}, {
-  "x": 1547872115224,
-  "y1": 99,
-  "y2": 23
-}, {
-  "x": 1547873915224,
-  "y1": 80,
-  "y2": 49
-}, {
-  "x": 1547875715224,
-  "y1": 49,
-  "y2": 18
-}, {
-  "x": 1547877515224,
-  "y1": 10,
-  "y2": 77
-}, {
-  "x": 1547879315224,
-  "y1": 73,
-  "y2": 19
-}, {
-  "x": 1547881115224,
-  "y1": 39,
-  "y2": 53
-}, {
-  "x": 1547882915224,
-  "y1": 96,
-  "y2": 83
-}, {
-  "x": 1547884715224,
-  "y1": 21,
-  "y2": 109
-}, {
-  "x": 1547886515224,
-  "y1": 99,
-  "y2": 44
-}]
-
-const searchData =  [{
-  "index": 1,
-  "keyword": "搜索关键词-0",
-  "count": 872,
-  "range": 2,
-  "status": 0
-}, {
-  "index": 2,
-  "keyword": "搜索关键词-1",
-  "count": 985,
-  "range": 78,
-  "status": 1
-}, {
-  "index": 3,
-  "keyword": "搜索关键词-2",
-  "count": 260,
-  "range": 57,
-  "status": 0
-}, {
-  "index": 4,
-  "keyword": "搜索关键词-3",
-  "count": 938,
-  "range": 71,
-  "status": 0
-}, {
-  "index": 5,
-  "keyword": "搜索关键词-4",
-  "count": 155,
-  "range": 45,
-  "status": 0
-}, {
-  "index": 6,
-  "keyword": "搜索关键词-5",
-  "count": 423,
-  "range": 60,
-  "status": 1
-}, {
-  "index": 7,
-  "keyword": "搜索关键词-6",
-  "count": 184,
-  "range": 61,
-  "status": 1
-}, {
-  "index": 8,
-  "keyword": "搜索关键词-7",
-  "count": 261,
-  "range": 42,
-  "status": 1
-}, {
-  "index": 9,
-  "keyword": "搜索关键词-8",
-  "count": 884,
-  "range": 73,
-  "status": 1
-}, {
-  "index": 10,
-  "keyword": "搜索关键词-9",
-  "count": 600,
-  "range": 26,
-  "status": 0
-}, {
-  "index": 11,
-  "keyword": "搜索关键词-10",
-  "count": 226,
-  "range": 78,
-  "status": 0
-}, {
-  "index": 12,
-  "keyword": "搜索关键词-11",
-  "count": 637,
-  "range": 85,
-  "status": 1
-}, {
-  "index": 13,
-  "keyword": "搜索关键词-12",
-  "count": 754,
-  "range": 31,
-  "status": 1
-}, {
-  "index": 14,
-  "keyword": "搜索关键词-13",
-  "count": 110,
-  "range": 51,
-  "status": 0
-}, {
-  "index": 15,
-  "keyword": "搜索关键词-14",
-  "count": 288,
-  "range": 58,
-  "status": 0
-}, {
-  "index": 16,
-  "keyword": "搜索关键词-15",
-  "count": 794,
-  "range": 5,
-  "status": 0
-}, {
-  "index": 17,
-  "keyword": "搜索关键词-16",
-  "count": 409,
-  "range": 48,
-  "status": 1
-}, {
-  "index": 18,
-  "keyword": "搜索关键词-17",
-  "count": 359,
-  "range": 7,
-  "status": 1
-}, {
-  "index": 19,
-  "keyword": "搜索关键词-18",
-  "count": 663,
-  "range": 32,
-  "status": 1
-}]
-
 @connect(({ home,loading}) => ({
   home,
   loading:loading.effects["home/queryHomeData"]
 }))
-export default class Devtest extends PureComponent {
+export default class Home extends PureComponent {
   state={
     caseCount:0,
     immTaskCount:0,
@@ -386,7 +220,7 @@ export default class Devtest extends PureComponent {
         <Row gutter={24}>
           <Col xl={16} lg={24} md={24} sm={24} xs={24}>
             <Card
-              title="总体执行概览"
+              title="本月执行概览"
             >
               <div style={{ padding: '0 24px' }}>
                 <TimelineChart
@@ -402,7 +236,7 @@ export default class Devtest extends PureComponent {
           </Col>
           <Col xl={8} lg={24} md={24} sm={24} xs={24}>
             <Card
-              title="最近任务"
+              title="最近20条任务"
             >
               <Table
                 loading={loading}

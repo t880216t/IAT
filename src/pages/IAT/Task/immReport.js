@@ -16,9 +16,10 @@ import task from "./models/task";
 
 const Panel = Collapse.Panel;
 
-@connect(({ system,task }) => ({
+@connect(({ system,task,loading }) => ({
   system,
   task,
+  loading:loading.effects["task/queryTaskResult"]
 }))
 
 class immReport extends PureComponent {
@@ -74,6 +75,7 @@ class immReport extends PureComponent {
 
   render() {
     const {taskResult,result,charData} = this.state
+    const {loading} = this.props;
     const content = (
       <div className={styles.pageHeaderContent}>
         <p>
@@ -103,6 +105,7 @@ class immReport extends PureComponent {
         <Row gutter={24}>
           <Col xl={12} lg={24} md={24} sm={24} xs={24}>
             <Card
+              loading={loading}
               title="任务结果"
               bordered={false}
             >
@@ -123,6 +126,7 @@ class immReport extends PureComponent {
           </Col>
           <Col xl={12} lg={24} md={24} sm={24} xs={24}>
             <Card
+              loading={loading}
               title="请求耗时分析"
               bordered={false}
             >

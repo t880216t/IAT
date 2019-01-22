@@ -18,9 +18,10 @@ import task from "./models/task";
 
 const Panel = Collapse.Panel;
 
-@connect(({ system,task }) => ({
+@connect(({ system,task,loading }) => ({
   system,
   task,
+  loading:loading.effects["task/queryTaskResult"]
 }))
 class timReport extends PureComponent {
   state={
@@ -83,6 +84,7 @@ class timReport extends PureComponent {
 
   render() {
     const {taskResult,result,dailyResult} = this.state
+    const {loading} = this.props;
     const content = (
       <div className={styles.pageHeaderContent}>
         <p>
@@ -114,6 +116,7 @@ class timReport extends PureComponent {
             <Card
               title="本次任务结果"
               bordered={false}
+              loading={loading}
             >
               <Collapse className={styles.resultCollapse}>
                 {taskResult.result&&taskResult.result.map((item,index)=>{
@@ -134,6 +137,7 @@ class timReport extends PureComponent {
             <Card
               title="每日耗时数据对比"
               bordered={false}
+              loading={loading}
             >
               <div style={{ padding: '0 24px' }}>
                 <Curved data={dailyResult} />
@@ -143,6 +147,7 @@ class timReport extends PureComponent {
               style={{marginTop:10}}
               title="每日用例执行情况"
               bordered={false}
+              loading={loading}
             >
               <div style={{ padding: '0 24px' }}>
                 <CurvedTwo data={dailyResult} />
