@@ -33,6 +33,7 @@ class Interface extends Component {
         projectList:[],
         project:null,
         clickId:null,
+        caseId:null,
         treeList:[],
         extractList:[],
         rightClickItem:null,
@@ -71,7 +72,16 @@ class Interface extends Component {
     }
 
   componentWillMount(){
-    this.queryProjectList()
+    const params = this.props.location.search;
+    if (params.indexOf('?') !== -1) {
+      const caseId = params.substr(1);
+      if (caseId){
+        this.setState({caseId})
+      }
+      this.queryProjectList(caseId)
+    }else {
+      this.queryProjectList()
+    }
   }
 
   getNodeTreeMenu() {
@@ -283,7 +293,7 @@ class Interface extends Component {
       })
   }
 
-  queryProjectList=()=>{
+  queryProjectList=(caseId=null)=>{
     const {dispatch} = this.props
     dispatch({
       type:'system/queryProjectList',
@@ -295,6 +305,10 @@ class Interface extends Component {
         const {system} = this.props
         this.setState({
           projectList:system.projectList,
+        },()=>{
+          if(caseId){
+            this.querySampleInfo(caseId,true)
+          }
         })
       })
   };
@@ -311,11 +325,11 @@ class Interface extends Component {
         const {interfaceCase} = this.props
         this.setState({
           extractList:interfaceCase.extractList,
-        },()=>{console.log(this.state.extractList)})
+        })
       })
   };
 
-  queryTreeList=(id)=>{
+  queryTreeList=(id,isRef=false)=>{
     const {dispatch} = this.props;
     dispatch({
       type:'interfaceCase/queryTreeList',
@@ -325,11 +339,18 @@ class Interface extends Component {
     })
       .then(()=>{
         const {interfaceCase} = this.props;
-        this.setState({treeList:interfaceCase.treeList})
+        this.setState({treeList:interfaceCase.treeList},()=>{
+          if(isRef){
+            this.setState({
+              selectedKeys:[this.state.caseId],
+              expandedKeys:[this.state.caseId]
+            })
+          }
+        })
       })
   };
 
-  querySampleInfo=(id)=>{
+  querySampleInfo=(id,isRef=false)=>{
     const {dispatch} = this.props;
     dispatch({
       type:'interfaceCase/querySampleInfo',
@@ -342,6 +363,9 @@ class Interface extends Component {
         if (interfaceCase.sampleInfo){
           this.setState({
             info:interfaceCase.sampleInfo,
+            selectNoteType:2,
+            infoName:interfaceCase.sampleInfo.name,
+            project:interfaceCase.sampleInfo.projectId,
             infoPath:interfaceCase.sampleInfo.path,
             infoMethod:interfaceCase.sampleInfo.method,
             infoParams:interfaceCase.sampleInfo.params,
@@ -350,6 +374,11 @@ class Interface extends Component {
             infoExtractType:interfaceCase.sampleInfo.extract.extractType,
             infoAssertData:interfaceCase.sampleInfo.asserts.assertData,
             infoExtractData:interfaceCase.sampleInfo.extract.extractData,
+          },()=>{
+            if(isRef){
+              this.queryTreeList(this.state.project,true)
+              this.queryExtractList(this.state.project)
+            }
           })
         }else {
           this.setState({

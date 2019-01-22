@@ -555,6 +555,7 @@ def getSampleInfo():
   content = {
     "name": treeData.name,
     "path": sampleData.path,
+    "projectId": sampleData.project_id,
     "method": sampleData.method,
     "paramType": sampleData.param_type,
     "params": json.loads(sampleData.params),

@@ -112,7 +112,7 @@ class immReport extends PureComponent {
                 {taskResult.result&&taskResult.result.map((item,index)=>{
                   return(
                     <Panel
-                      header={item.label}
+                      header={<a href={`#/interface/index?${item.id}`}>{item.label}</a>}
                       key={index}
                       className={item.success==="True"?styles.caseSucess:styles.caseFail}
                     >
