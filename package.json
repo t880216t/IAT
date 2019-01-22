@@ -29,7 +29,6 @@
   "dependencies": {
     "@antv/data-set": "^0.10.0",
     "@babel/runtime": "^7.1.2",
-    "@tinymce/tinymce-react": "^2.4.0",
     "antd": "^3.10.4",
     "bizcharts": "^3.2.2",
     "bizcharts-plugin-slider": "^2.0.3",
