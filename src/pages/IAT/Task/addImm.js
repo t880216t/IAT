@@ -288,7 +288,7 @@ class AddImm extends PureComponent {
                     message: "测试域名不可为空",
                   },
                 ],
-              })(<Input placeholder="请输入测试域名 .eg: app.xxx.com" />)}
+              })(<Input placeholder="请输入测试域名 .eg: https://app.xxx.com:8080" />)}
             </FormItem>
             <FormItem {...formItemLayout} label="代理设置">
               {getFieldDecorator('proxy', {

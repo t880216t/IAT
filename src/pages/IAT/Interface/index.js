@@ -2,7 +2,7 @@
 /* eslint-disable no-useless-escape */
 import React, { Component } from 'react';
 import {
-  Layout, Tree ,Select,Icon,Menu,message,Input,Card,Divider,Col,Button,Radio,Spin,Switch
+  Layout, Tree ,Select,Icon,Menu,message,Input,Card,Divider,Col,Button,Radio,Spin,Switch,Tooltip
 } from 'antd';
 import {connect} from 'dva';
 import JSONPretty from 'react-json-pretty';
@@ -38,6 +38,7 @@ class Interface extends Component {
         rightClickItem:null,
         debugDomain:null,
         selectNoteType:null,
+        infoParamsFormatType:null,
         infoName:'',
         infoPath:'',
         infoMethod:'GET',
@@ -51,6 +52,7 @@ class Interface extends Component {
           "name": "",
           "path": "",
           "method": "GET",
+          "paramType": 1,
           "params": [],
           "asserts": {
             "assertsType": 1,
@@ -343,6 +345,7 @@ class Interface extends Component {
             infoPath:interfaceCase.sampleInfo.path,
             infoMethod:interfaceCase.sampleInfo.method,
             infoParams:interfaceCase.sampleInfo.params,
+            infoParamsFormatType:interfaceCase.sampleInfo.paramType,
             infoAssertType:interfaceCase.sampleInfo.asserts.assertsType,
             infoExtractType:interfaceCase.sampleInfo.extract.extractType,
             infoAssertData:interfaceCase.sampleInfo.asserts.assertData,
@@ -354,6 +357,7 @@ class Interface extends Component {
               "name": "",
               "path": "",
               "method": "GET",
+              "paramType": 1,
               "params": [],
               "asserts": {
                 "assertsType": 1,
@@ -563,6 +567,32 @@ class Interface extends Component {
         }
       ];
     }
+    const {dispatch} = this.props;
+    dispatch({
+      type:'interfaceCase/queryUpdateSample',
+      payload:{
+        id:this.state.selectedKeys[0],
+        info,
+      }
+    })
+      .then(()=>{
+        this.querySampleInfo(this.state.selectedKeys[0])
+      })
+  };
+
+  handleParamsFormatTypeChange=(e)=>{
+    let {info} = this.state;
+    info.paramType = e.target.value;
+
+    // if(e.target.value ===2){
+    //   info.asserts.assertData = [
+    //     {
+    //       id:new Date().getTime(),
+    //       key:'',
+    //       value:'',
+    //     }
+    //   ];
+    // }
     const {dispatch} = this.props;
     dispatch({
       type:'interfaceCase/queryUpdateSample',
@@ -839,7 +869,7 @@ class Interface extends Component {
   handleDebug=()=>{
     const {dispatch} = this.props;
     let headers = {}
-    if (this.state.debugHeader.length>0){
+    if (this.state.debugHeader&&this.state.debugHeader.length>0){
       this.state.debugHeader.forEach((item)=>{
         headers[item.key] = item.value
       })
@@ -869,7 +899,8 @@ class Interface extends Component {
     const {
       projectList,project,treeList,rightClickItem,expandedKeys,
       selectedKeys,autoExpandParent,selectNoteType,infoName,infoPath,
-      infoMethod,infoParams,infoAssertType,infoExtractType,infoAssertData,infoExtractData,debugDomain,debugData,showAddHeader,debugHeader,debugResult,extractList
+      infoMethod,infoParams,infoAssertType,infoExtractType,infoAssertData,infoParamsFormatType,
+      infoExtractData,debugDomain,debugData,showAddHeader,debugHeader,debugResult,extractList
     } = this.state;
     const {loading,debugLoading} = this.props;
     const loop = data => data.map((item) => {
@@ -986,6 +1017,28 @@ class Interface extends Component {
 
           </div>
         </div>
+        {infoMethod==='POST'&&(
+          <div className={styles.item_container}>
+            <div className={styles.item_label_container}>
+              <span>参数类型：</span>
+            </div>
+            <div className={styles.item_content_container}>
+              <Radio.Group value={infoParamsFormatType} onChange={(e)=>this.handleParamsFormatTypeChange(e)}>
+                <Radio value={1}>
+                  x-www-form-urlencoded
+                </Radio>
+                <Radio value={2}>
+                  <Tooltip title="设置该类型参数后，将不支持任务中的全局默认参数设置">
+                    <a>json</a>
+                  </Tooltip>
+                </Radio>
+                <Radio value={3}>
+                  form-data
+                </Radio>
+              </Radio.Group>
+            </div>
+          </div>
+        )}
         <div className={styles.item_container}>
           <div className={styles.item_label_container}>
             <span>请求参数：</span>

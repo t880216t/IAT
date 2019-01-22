@@ -31,6 +31,17 @@ def read_demo(demo_path):
   return tree
 
 def configTestElement(test_domain,params=None,proxy=None):
+  domain = test_domain
+  protocol = ""
+  port = ""
+  if "://" in test_domain:
+    protocol = test_domain.split("://")[0]
+    domain = test_domain.split("://")[1]
+    if ":" in domain:
+      domain = domain.split(":")[0]
+  formatTestDomain = test_domain.replace("://","")
+  if ":" in formatTestDomain:
+    port = formatTestDomain.split(":")[1]
   ConfigTestElement = ET.Element("ConfigTestElement",{
     "guiclass":"HttpDefaultsGui",
     "testclass":"ConfigTestElement",
@@ -51,9 +62,10 @@ def configTestElement(test_domain,params=None,proxy=None):
         ET.SubElement(paramElementProp,'boolProp',{"name":"HTTPArgument.use_equals"}).text = 'true'
         ET.SubElement(paramElementProp,'stringProp',{"name":"Argument.name"}).text = item["key"]
         collectionProp.append(paramElementProp)
-  ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.domain"}).text = test_domain
-  ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.port"})
-  ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.protocol"})
+
+  ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.domain"}).text = domain
+  ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.port"}).text = port
+  ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.protocol"}).text = protocol
   ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.contentEncoding"})
   ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.path"})
   ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.concurrentPool"}).text = "6"
@@ -107,25 +119,40 @@ def HTTPSamplerProxy(sample):
                                            "testname": "用户定义的变量", "enabled": "true"})
   collectionProp = ET.SubElement(elementProp, 'collectionProp', {"name": "Arguments.arguments"})
   if sample['params']:
-    for item in sample['params']:
-      if item:
-        paramElementProp = ET.Element('elementProp',{"name":item["key"], "elementType":"HTTPArgument"})
-        ET.SubElement(paramElementProp,'boolProp',{"name":"HTTPArgument.always_encode"}).text = 'false'
-        ET.SubElement(paramElementProp,'stringProp',{"name":"Argument.value"}).text = item["value"]
-        ET.SubElement(paramElementProp,'stringProp',{"name":"Argument.metadata"}).text = '='
-        ET.SubElement(paramElementProp,'boolProp',{"name":"HTTPArgument.use_equals"}).text = 'true'
-        ET.SubElement(paramElementProp,'stringProp',{"name":"Argument.name"}).text = item["key"]
-        collectionProp.append(paramElementProp)
+    if sample['paramType'] ==2:
+      formParams = {}
+      for item in sample['params']:
+        if item:
+          formParams[item["key"]] = item["value"]
+      paramElementProp = ET.Element('elementProp', {"name": "", "elementType": "HTTPArgument"})
+      ET.SubElement(paramElementProp, 'boolProp', {"name": "HTTPArgument.always_encode"}).text = 'false'
+      ET.SubElement(paramElementProp, 'stringProp', {"name": "Argument.value"}).text = json.dumps(formParams)
+      ET.SubElement(paramElementProp, 'stringProp', {"name": "Argument.metadata"}).text = '='
+      collectionProp.append(paramElementProp)
+    else:
+      for item in sample['params']:
+        if item:
+          paramElementProp = ET.Element('elementProp', {"name": item["key"], "elementType": "HTTPArgument"})
+          ET.SubElement(paramElementProp, 'boolProp', {"name": "HTTPArgument.always_encode"}).text = 'false'
+          ET.SubElement(paramElementProp, 'stringProp', {"name": "Argument.value"}).text = item["value"]
+          ET.SubElement(paramElementProp, 'stringProp', {"name": "Argument.metadata"}).text = '='
+          ET.SubElement(paramElementProp, 'boolProp', {"name": "HTTPArgument.use_equals"}).text = 'true'
+          ET.SubElement(paramElementProp, 'stringProp', {"name": "Argument.name"}).text = item["key"]
+          collectionProp.append(paramElementProp)
+
+  DO_MULTIPART_POST = "false"
+  if sample['paramType'] ==3:
+    DO_MULTIPART_POST = "true"
   ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name": "HTTPSampler.domain"})
   ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name": "HTTPSampler.port"})
   ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name": "HTTPSampler.protocol"})
   ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name": "HTTPSampler.contentEncoding"})
   ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.path"}).text = sample['path']
   ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.method"}).text = sample['method']
-  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.follow_redirects"}).text = "true"
+  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.follow_redirects"}).text = "false"
   ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.auto_redirects"}).text = "false"
   ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.use_keepalive"}).text = "true"
-  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.DO_MULTIPART_POST"}).text = "false"
+  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.DO_MULTIPART_POST"}).text = DO_MULTIPART_POST
   ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.embedded_url_re"})
   ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.connect_timeout"})
   ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.response_timeout"})
@@ -188,6 +215,10 @@ def set_data(tree,data):
         responseAssertion = JSONPathAssertion(sample['asserts'])
       sampleSetDown.append(responseAssertion)
       ET.SubElement(sampleSetDown,'hashTree')
+      if sample['paramType'] ==2:
+        spamleHeaderManager = headerManager([{"key":"content-type","value":"application/json;"}])
+        sampleSetDown.append(spamleHeaderManager)
+        ET.SubElement(sampleSetDown, 'hashTree')
       if sample['extract']['extractType'] == 1:
         JSONPostProcessor = jSONPostProcessor(sample['extract'])
         sampleSetDown.append(JSONPostProcessor)
@@ -224,6 +255,7 @@ def readResult(path):
 
 if '__main__' == __name__:
   taskId = sys.argv[1]
+  # taskId = 35
   url = 'http://127.0.0.1:5000/api/IAT/taskInfo'
   params = {"id":taskId}
   res = requests.get(url,params=params)

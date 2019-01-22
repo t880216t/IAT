@@ -150,6 +150,13 @@ class immDetail extends PureComponent {
     const keys = form.getFieldValue('headerkeys');
     const nextKeys = keys.concat(++headerId);
     // important! notify form to detect changes
+    const {headers} = this.state
+    headers.push({
+      id:new Date().getTime(),
+      key:"",
+      value:"",
+    })
+    this.setState({headers})
     form.setFieldsValue({
       headerkeys: nextKeys,
     });
@@ -161,6 +168,13 @@ class immDetail extends PureComponent {
     const keys = form.getFieldValue('paramkeys');
     const nextKeys = keys.concat(++paramId);
     // important! notify form to detect changes
+    const {params} = this.state
+    params.push({
+      id:new Date().getTime(),
+      key:"",
+      value:"",
+    })
+    this.setState({params})
     form.setFieldsValue({
       paramkeys: nextKeys,
     });
@@ -211,6 +225,8 @@ class immDetail extends PureComponent {
     getFieldDecorator('headerkeys', { initialValue: headerKeys });
     const headerkeys = getFieldValue('headerkeys');
     const headerItems = headerkeys.map((k, index) => {
+        console.log(headers[k])
+
         if(headers[k]){
           return(
             <Form.Item
@@ -355,7 +371,7 @@ class immDetail extends PureComponent {
                   },
                 ],
                 initialValue:taskInfo.domain
-              })(<Input placeholder="请输入测试域名 .eg: app.xxx.com" />)}
+              })(<Input placeholder="请输入测试域名 .eg: https://app.xxx.com:8080" />)}
             </FormItem>
             <FormItem {...formItemLayout} label="代理设置">
               {getFieldDecorator('proxy', {

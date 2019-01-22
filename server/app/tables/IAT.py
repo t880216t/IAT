@@ -56,6 +56,7 @@ class Sample(db.Model):
   path = db.Column(db.String(500))
   method = db.Column(db.String(255))
   params = db.Column(db.TEXT)
+  param_type = db.Column(db.SMALLINT)
   asserts_type = db.Column(db.SMALLINT)
   extract_type = db.Column(db.SMALLINT)
   extract_key_name = db.Column(db.String(500))
@@ -66,10 +67,11 @@ class Sample(db.Model):
   project_id = db.Column(db.Integer)
 
 
-  def __init__(self,pid,path,method,params,asserts_type,asserts_data,extract_type,extract_key_name,extract_data,user_id,project_id):
+  def __init__(self,pid,path,method,param_type,params,asserts_type,asserts_data,extract_type,extract_key_name,extract_data,user_id,project_id):
     self.pid = pid
     self.path = path
     self.method = method
+    self.param_type = param_type
     self.params = params
     self.asserts_type = asserts_type
     self.extract_type = extract_type

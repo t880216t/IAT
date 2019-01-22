@@ -263,11 +263,9 @@ def addTask():
     case = json.dumps(info["case"])
   except:
     case = json.dumps([])
-  domain = info["domain"].replace('http://', '')
-  domain = domain.replace('https://', '')
   try:
     addData = Task(info["name"], task_desc, info["project"], info["taskType"], info["runTime"],
-                   domain, headers, params,proxy, case, user_id, 0)
+                   info["domain"], headers, params,proxy, case, user_id, 0)
     db.session.add(addData)
     db.session.commit()
     return make_response(jsonify({'code': 0, 'content': None, 'msg': u'添加成功!'}))
@@ -390,6 +388,7 @@ def taskInfo():
         "name": sampleName,
         "path": sampleData.path,
         "method": sampleData.method,
+        "paramType": sampleData.param_type,
         "params": json.loads(sampleData.params),
         "asserts": {
           "assertType": sampleData.asserts_type,
@@ -557,6 +556,7 @@ def getSampleInfo():
     "name": treeData.name,
     "path": sampleData.path,
     "method": sampleData.method,
+    "paramType": sampleData.param_type,
     "params": json.loads(sampleData.params),
     "asserts": {
       "assertsType": sampleData.asserts_type,
@@ -761,6 +761,7 @@ def updateSample():
     "method": info["method"],
     "params": json.dumps(info["params"]),
     "asserts_type": info["asserts"]["assertsType"],
+    "param_type": info["paramType"],
     "asserts_data": json.dumps(info["asserts"]["assertData"]),
     "extract_type": info["extract"]["extractType"],
     "extract_key_name": extract_key_name,
@@ -774,7 +775,7 @@ def updateSample():
     return make_response(jsonify({'code': 0, 'msg': u'修改成功', 'content': []}))
   else:
     project_id = Tree.query.filter_by(id=id).first().project_id
-    addData = Sample(id, info["path"], info["method"], json.dumps(info["params"]), 1,
+    addData = Sample(id, info["path"], info["method"],info["paramType"], json.dumps(info["params"]), 1,
                      json.dumps(info["asserts"]["assertData"]), info["extract"]["extractType"], '',
                      json.dumps(info["extract"]["extractData"]), user_id, project_id)
     db.session.add(addData)
@@ -795,11 +796,25 @@ def debugSample():
     url = domain + rowData.path
     if rowData.params:
       paramsStr = json.loads(rowData.params)
+      formParams = {}
       for item in paramsStr:
         req_params[item["key"]] = item["value"]
+        formParams[item["key"]] = (None,item["value"])
     try:
       if rowData.method == 'POST':
-        res = requests.post(url, headers=headers, data=req_params, verify=False)
+        if rowData.param_type == 3:
+          formartHeaders = headers
+          formatParams = formParams
+          res = requests.post(url, headers=formartHeaders, files=formatParams, verify=False)
+        elif rowData.param_type == 2:
+          headers["content-type"] = "application/json;"
+          formartHeaders = headers
+          formatParams = json.dumps(req_params)
+          res = requests.post(url, headers=formartHeaders, data=formatParams, verify=False)
+        else:
+          formartHeaders = headers
+          formatParams = req_params
+          res = requests.post(url, headers=formartHeaders, data=formatParams, verify=False)
       elif rowData.method == 'GET':
         res = requests.get(url, headers=headers, data=req_params, verify=False)
       else:
