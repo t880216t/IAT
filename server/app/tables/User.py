@@ -32,8 +32,9 @@ class users(db.Model):
     szwego_url = db.Column(db.String(255))
     szwego_token = db.Column(db.String(500))
 
-    def __init__(self, username,hash_password,salt,email):
+    def __init__(self, username,hash_password,salt,email,account_type):
         self.username = username
         self.hash_password = hash_password
         self.salt = salt
         self.email = email
+        self.account_type = account_type

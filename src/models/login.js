@@ -87,7 +87,7 @@ export default {
             setAuthority('guest');
         }
       }else {
-        message.warning("你没有使用权限，请联系管理员：13814509042",10)
+        message.warning("你没有使用权限，请联系管理员",10)
       }
       return {
         ...state,
