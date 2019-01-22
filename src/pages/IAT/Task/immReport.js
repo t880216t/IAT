@@ -12,7 +12,6 @@ import {connect} from 'dva';
 
 import PageHeaderWrapper from '@/components/PageHeaderWrapper'
 import styles from './index.less'
-import task from "./models/task";
 
 const Panel = Collapse.Panel;
 
