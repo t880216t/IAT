@@ -8,7 +8,7 @@ import {connect} from 'dva';
 import JSONPretty from 'react-json-pretty';
 import styles from './index.less'
 import empty from '../../../assets/empty.svg'
-import {length} from "../../../components/Ellipsis";
+import {setTage,getTage} from '@/services/tags';
 
 const {
   Content, Sider,
@@ -308,6 +308,14 @@ class Interface extends Component {
         },()=>{
           if(caseId){
             this.querySampleInfo(caseId,true)
+          }else {
+            const localStorage = getTage()
+            if (localStorage){
+              const project = localStorage.projectId
+              this.setState({project},()=>{
+                this.handleProjectChange(this.state.project)
+              })
+            }
           }
         })
       })
@@ -376,6 +384,7 @@ class Interface extends Component {
             infoExtractData:interfaceCase.sampleInfo.extract.extractData,
           },()=>{
             if(isRef){
+              setTage({projectId:this.state.project})
               this.queryTreeList(this.state.project,true)
               this.queryExtractList(this.state.project)
             }
@@ -421,6 +430,7 @@ class Interface extends Component {
   handleProjectChange=(value)=>{
     this.setState({project:value},
       ()=>{
+        setTage({projectId:this.state.project})
         this.queryTreeList(value)
         this.queryExtractList(value)
       }

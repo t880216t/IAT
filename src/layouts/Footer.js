@@ -7,24 +7,18 @@ const FooterView = () => (
   <Footer style={{ padding: 0 }}>
     <GlobalFooter
       links={[
-        // {
-        //   key: 'Pro 首页',
-        //   title: 'Pro 首页',
-        //   href: 'https://pro.ant.design',
-        //   blankTarget: true,
-        // },
+        {
+          key: '作者博客',
+          title: '作者博客',
+          href: 'https://orion-c.top',
+          blankTarget: true,
+        },
         {
           key: 'github',
           title: <Icon type="github" />,
-          href: 'https://github.com/ant-design/ant-design-pro',
+          href: 'https://github.com/t880216t/IAT.git',
           blankTarget: true,
         },
-        // {
-        //   key: 'Ant Design',
-        //   title: 'Ant Design',
-        //   href: 'https://ant.design',
-        //   blankTarget: true,
-        // },
       ]}
       copyright={
         <Fragment>
