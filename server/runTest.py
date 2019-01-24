@@ -16,7 +16,7 @@ def setTaskStatus(taskId,status,msg):
   url = 'http://127.0.0.1:5000/api/IAT/updateTaskStatus'
   res = requests.post(url,headers = headers,data=json.dumps(data))
   response = res.json()
-  print response["msg"],":",msg
+  print response["msg"]
 
 def updateTaskResult(taskId,result,msg):
   data = {'id':taskId,'result':json.dumps(result)}
@@ -24,7 +24,7 @@ def updateTaskResult(taskId,result,msg):
   url = 'http://127.0.0.1:5000/api/IAT/updateTaskResult'
   res = requests.post(url,headers = headers,data=json.dumps(data))
   response = res.json()
-  print response["msg"],":",msg
+  print response["msg"]
 
 def read_demo(demo_path):
   tree = ET.parse(demo_path)
