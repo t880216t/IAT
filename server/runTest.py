@@ -16,7 +16,7 @@ def setTaskStatus(taskId,status,msg):
   url = 'http://127.0.0.1:5000/api/IAT/updateTaskStatus'
   res = requests.post(url,headers = headers,data=json.dumps(data))
   response = res.json()
-  print response["msg"]
+  print response["msg"],":",msg
 
 def updateTaskResult(taskId,result,msg):
   data = {'id':taskId,'result':json.dumps(result)}
@@ -45,12 +45,12 @@ def configTestElement(test_domain,params=None,proxy=None):
   ConfigTestElement = ET.Element("ConfigTestElement",{
     "guiclass":"HttpDefaultsGui",
     "testclass":"ConfigTestElement",
-    "testname":"HTTP请求默认值",
+    "testname":u"HTTP请求默认值",
     "enabled":"true",
   })
   elementProp = ET.SubElement(ConfigTestElement,"elementProp", {"name": "HTTPsampler.Arguments", "elementType": "Arguments",
                                            "guiclass": "HTTPArgumentsPanel", "testclass": "Arguments",
-                                           "testname": "用户定义的变量", "enabled": "true"})
+                                           "testname": u"用户定义的变量", "enabled": "true"})
   collectionProp = ET.SubElement(elementProp,'collectionProp',{"name":"Arguments.arguments"})
   if params:
     for item in params:
@@ -90,7 +90,7 @@ def configTestElement(test_domain,params=None,proxy=None):
       ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.proxyUser"}).text = userName
       ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.proxyPass"}).text = password
     except Exception,e:
-      print(u"代理设置错误：",e)
+      print("proxy error",e)
   ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.connect_timeout"})
   ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.response_timeout"})
   return ConfigTestElement
@@ -99,7 +99,7 @@ def headerManager(headers=None):
   HeaderManager = ET.Element("HeaderManager",{
     "guiclass":"HeaderPanel",
     "testclass":"HeaderManager",
-    "testname":"HTTP信息头管理器",
+    "testname":u"HTTP信息头管理器",
     "enabled":"true",
   })
   collectionProp = ET.SubElement(HeaderManager,'collectionProp',{"name":"HeaderManager.headers"})
@@ -261,23 +261,23 @@ if '__main__' == __name__:
   res = requests.get(url,params=params)
   response = res.json()
   if response["code"] == 0:
-    setTaskStatus(taskId, 1, u"获取任务信息")
+    setTaskStatus(taskId, 1, "get task info")
     now = datetime.now().strftime('%Y-%m-%d_%H_%M_%S')
     reulstPath = makeResultPath(now)
     tree = read_demo('templete.jmx')
     tree = set_data(tree,data=response["content"])
     try:
       tree.write(reulstPath+'/testData.jmx')
-      setTaskStatus(taskId, 2, u"生成测试脚本")
+      setTaskStatus(taskId, 2, "build task script")
       runJmeterTest(reulstPath)
-      setTaskStatus(taskId, 3, u"脚本执行完成")
+      setTaskStatus(taskId, 3, "excute script sucess")
       try:
         resultContent = readResult(reulstPath+'/result.csv')
-        updateTaskResult(taskId,resultContent,u"上传测试结果")
+        updateTaskResult(taskId,resultContent,"upload result")
       except Exception,e:
         print(e)
-        setTaskStatus(taskId, 5, u"执行任务失败，请检查jmeter配置环境")
+        setTaskStatus(taskId, 5, "task fail,please check jmeter env")
     except:
-      setTaskStatus(taskId, 5, u"任务脚本生成失败")
+      setTaskStatus(taskId, 5, "build task script fail")
   else:
-    setTaskStatus(taskId,4,u"获取任务信息失败")
+    setTaskStatus(taskId,4,"get task info fail")
