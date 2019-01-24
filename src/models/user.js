@@ -31,13 +31,17 @@ export default {
             break;
           case 10001:
             message.warning(response.msg);
+            reloadAuthorized();
+            yield put(routerRedux.push('/user/login'));
             break;
           case 10002:
             message.warning(response.msg);
+            reloadAuthorized();
+            yield put(routerRedux.push('/user/login'));
             break;
           case 99999:
-            reloadAuthorized();
             message.error(response.msg);
+            reloadAuthorized();
             yield put(routerRedux.push('/user/login'));
             break;
           default:
