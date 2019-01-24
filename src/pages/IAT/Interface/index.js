@@ -2,13 +2,14 @@
 /* eslint-disable no-useless-escape */
 import React, { Component } from 'react';
 import {
-  Layout, Tree ,Select,Icon,Menu,message,Input,Card,Divider,Col,Button,Radio,Spin,Switch,Tooltip
+  Layout, Tree ,Select,Icon,Menu,message,Input,Card,Divider,Col,Button,Radio,Spin,Switch,Tooltip,Empty
 } from 'antd';
 import {connect} from 'dva';
 import JSONPretty from 'react-json-pretty';
 import styles from './index.less'
 import empty from '../../../assets/empty.svg'
 import {setTage,getTage} from '@/services/tags';
+import Resizable from 're-resizable';
 
 const {
   Content, Sider,
@@ -989,13 +990,13 @@ class Interface extends Component {
         />
       );
     });
-    const Empty = (
-      <div>
-        <Card bordered={false} className={styles.right_empty_container}>
-          <img src={empty} alt="empty" className={styles.empty_image} />
-        </Card>
-      </div>
-    );
+    // const Empty = (
+    //   <div>
+    //     <Card bordered={false} className={styles.right_empty_container}>
+    //       <img src={empty} alt="empty" className={styles.empty_image} />
+    //     </Card>
+    //   </div>
+    // );
     const Folder = (
       <Card loading={loading} bordered={false}>
         <div className={styles.item_container}>
@@ -1316,39 +1317,40 @@ class Interface extends Component {
     return (
       <Content>
         <Layout style={{ background: '#fff' ,borderRadius:'5px'}} onClick={()=>this.clearMenu()}>
-          <Sider width={220} style={{background:'#fff',borderRight:'1px solid #e8e8e8',padding:10, height: '80vh'}}>
-            <Select placeholder="请选择项目" value={project||undefined} style={{ width: '100%' }} size='small' onChange={this.handleProjectChange}>
-              {projectList&&projectList.map((item)=>(
-                <Option value={item.id} key={item.id}>{item.name}</Option>
-              ))}
-            </Select>
-            <div
-              className={styles.left_container}
-              ref={this.setDomTreeBoxRef}
-            >
-              <Tree
-                showIcon
-                draggable
-                // expandAction="doubleClick"
-                autoExpandParent={autoExpandParent}
-                defaultExpandAll
-                selectedKeys={selectedKeys}
-                expandedKeys={expandedKeys}
-                onSelect={this.onSelect}
-                onDrop={this.onDrop}
-                onCheck={this.onCheck}
-                onExpand={this.onExpandTree}
-                onRightClick={(e)=>this.handleOnRightClick(e)}
+          <Sider style={{background:'#fff',height: '80vh',zIndex:2}}>
+            <Resizable className={styles.left_res_container} enable={{ right: true }} defaultSize={{height:'80vh'}} size={{height:'80vh'}}>
+              <Select placeholder="请选择项目" value={project||undefined} style={{ width: '100%' }} size='small' onChange={this.handleProjectChange}>
+                {projectList&&projectList.map((item)=>(
+                  <Option value={item.id} key={item.id}>{item.name}</Option>
+                ))}
+              </Select>
+              <div
+                className={styles.left_container}
+                ref={this.setDomTreeBoxRef}
               >
-                {treeList&&loop(treeList)}
-              </Tree>
-            </div>
-
+                <Tree
+                  showIcon
+                  draggable
+                  // expandAction="doubleClick"
+                  autoExpandParent={autoExpandParent}
+                  defaultExpandAll
+                  selectedKeys={selectedKeys}
+                  expandedKeys={expandedKeys}
+                  onSelect={this.onSelect}
+                  onDrop={this.onDrop}
+                  onCheck={this.onCheck}
+                  onExpand={this.onExpandTree}
+                  onRightClick={(e)=>this.handleOnRightClick(e)}
+                >
+                  {treeList&&loop(treeList)}
+                </Tree>
+              </div>
+            </Resizable>
           </Sider>
           <div style={{display:'flex',flexDirection:'row',width:'100%'}}>
             <Content style={{background:'#fff',padding:10, height: '80vh',width:'70%',borderRight:'1px solid #e8e8e8'}}>
               <div className={styles.right_container}>
-                {!(selectedKeys&&selectedKeys.length>0)&&Empty}
+                {!(selectedKeys&&selectedKeys.length>0)&&<Empty />}
                 {(selectedKeys&&selectNoteType===1)&&Folder}
                 {(selectedKeys&&selectNoteType===2)&& Case}
               </div>
