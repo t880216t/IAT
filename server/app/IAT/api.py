@@ -604,9 +604,9 @@ def updateFolderName():
   if folderData.first():
     folderData.update(data)
     db.session.commit()
-    return make_response(jsonify({'code': 0, 'msg': '修改成功', 'content': []}))
+    return make_response(jsonify({'code': 0, 'msg': 'sucess', 'content': []}))
   else:
-    return make_response(jsonify({'code': 10001, 'msg': '修改失败', 'content': []}))
+    return make_response(jsonify({'code': 10001, 'msg': 'fail', 'content': []}))
 
 
 @api.route('/updateTaskStatus', methods=['POST'])
@@ -618,9 +618,9 @@ def updateTaskStatus():
   if taskData.first():
     taskData.update(data)
     db.session.commit()
-    return make_response(jsonify({'code': 0, 'msg': '修改成功', 'content': []}))
+    return make_response(jsonify({'code': 0, 'msg': 'sucess', 'content': []}))
   else:
-    return make_response(jsonify({'code': 10001, 'msg': '修改失败', 'content': []}))
+    return make_response(jsonify({'code': 10001, 'msg': 'fail', 'content': []}))
 
 def formatUnixDay(day):
   thisYear = datetime.datetime.now().year
@@ -773,7 +773,7 @@ def updateSample():
   if sampleData.first():
     sampleData.update(data)
     db.session.commit()
-    return make_response(jsonify({'code': 0, 'msg': u'修改成功', 'content': []}))
+    return make_response(jsonify({'code': 0, 'msg': u'sucess', 'content': []}))
   else:
     project_id = Tree.query.filter_by(id=id).first().project_id
     addData = Sample(id, info["path"], info["method"],info["paramType"], json.dumps(info["params"]), 1,
