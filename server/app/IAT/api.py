@@ -210,7 +210,7 @@ def copyCase():
     db.session.commit()
     if sampleData:
       # pid,path,method,params,asserts_type,asserts_data,extract_type,extract_key_name,extract_data,user_id,project_id
-      addData = Sample(data.id, sampleData.path, sampleData.method, sampleData.params, sampleData.asserts_type,
+      addData = Sample(data.id, sampleData.path, sampleData.method,sampleData.param_type, sampleData.params, sampleData.asserts_type,
                        sampleData.asserts_data, sampleData.extract_type, sampleData.extract_key_name,
                        sampleData.extract_data, user_id, sampleData.project_id)
       db.session.add(addData)
