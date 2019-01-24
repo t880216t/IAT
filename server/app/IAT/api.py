@@ -743,9 +743,9 @@ def updateTaskResult():
   if taskData.first():
     taskData.update(data)
     db.session.commit()
-    return make_response(jsonify({'code': 0, 'msg': '更新成功', 'content': []}))
+    return make_response(jsonify({'code': 0, 'msg': 'update sucess', 'content': []}))
   else:
-    return make_response(jsonify({'code': 10001, 'msg': '更新失败', 'content': []}))
+    return make_response(jsonify({'code': 10001, 'msg': 'update fail', 'content': []}))
 
 @api.route('/updateSample', methods=['POST'])
 def updateSample():
@@ -819,7 +819,7 @@ def debugSample():
       elif rowData.method == 'GET':
         res = requests.get(url, headers=headers, params=req_params, verify=False)
       else:
-        return make_response(jsonify({'code': 10001, 'content': None, 'msg': u'请求异常!'}))
+        return make_response(jsonify({'code': 10001, 'content': None, 'msg': 'server error!'}))
       response = res.json()
       debugResult = 3
       asserts_data = json.loads(rowData.asserts_data)
@@ -848,11 +848,11 @@ def debugSample():
         "debugData": response,
         "debugResult": debugResult,
       }
-      return make_response(jsonify({'code': 0, 'content': content, 'msg': u''}))
+      return make_response(jsonify({'code': 0, 'content': content, 'msg': ''}))
 
     except Exception, e:
       print e
-      return make_response(jsonify({'code': 10001, 'content': None, 'msg': u'请求异常!'}))
+      return make_response(jsonify({'code': 10001, 'content': None, 'msg': 'server error!'}))
 
 def encrypt_name(name, salt=None, encryptlop=30):
   if not salt:
@@ -874,6 +874,6 @@ def uploadFile():
     projectRootId = Tree.query.filter_by(project_id=id,pid=0).first().id
     subprocess.call('python runAutoBuild.py %s %s'%(projectRootId,filePath),shell=True)
     os.remove(filePath)
-    return make_response(jsonify({'code': 0, 'content':None, 'msg': u'上传成功!'}))
+    return make_response(jsonify({'code': 0, 'content':None, 'msg': 'upload sucess'}))
   else:
-    return make_response(jsonify({'code': 10002, 'content':None, 'msg': u'上传失败!'}))
+    return make_response(jsonify({'code': 10002, 'content':None, 'msg': 'upload fail!'}))

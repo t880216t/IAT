@@ -9,7 +9,7 @@ def before_user():
   if 'username' in session:
     pass
   else:
-    return make_response(jsonify({'code': 99999, 'msg': '未登录'}))
+    return make_response(jsonify({'code': 99999, 'msg': 'session error'}))
 
 @user.route('/currentUser')
 def list():
