@@ -90,7 +90,7 @@ def configTestElement(test_domain,params=None,proxy=None):
       ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.proxyUser"}).text = userName
       ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.proxyPass"}).text = password
     except Exception,e:
-      print("代理设置错误：",e)
+      print(u"代理设置错误：",e)
   ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.connect_timeout"})
   ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.response_timeout"})
   return ConfigTestElement
@@ -261,23 +261,23 @@ if '__main__' == __name__:
   res = requests.get(url,params=params)
   response = res.json()
   if response["code"] == 0:
-    setTaskStatus(taskId, 1, "获取任务信息")
+    setTaskStatus(taskId, 1, u"获取任务信息")
     now = datetime.now().strftime('%Y-%m-%d_%H_%M_%S')
     reulstPath = makeResultPath(now)
     tree = read_demo('templete.jmx')
     tree = set_data(tree,data=response["content"])
     try:
       tree.write(reulstPath+'/testData.jmx')
-      setTaskStatus(taskId, 2, "生成测试脚本")
+      setTaskStatus(taskId, 2, u"生成测试脚本")
       runJmeterTest(reulstPath)
-      setTaskStatus(taskId, 3, "脚本执行完成")
+      setTaskStatus(taskId, 3, u"脚本执行完成")
       try:
         resultContent = readResult(reulstPath+'/result.csv')
-        updateTaskResult(taskId,resultContent,"上传测试结果")
+        updateTaskResult(taskId,resultContent,u"上传测试结果")
       except Exception,e:
         print(e)
-        setTaskStatus(taskId, 5, "执行任务失败，请检查jmeter配置环境")
+        setTaskStatus(taskId, 5, u"执行任务失败，请检查jmeter配置环境")
     except:
-      setTaskStatus(taskId, 5, "任务脚本生成失败")
+      setTaskStatus(taskId, 5, u"任务脚本生成失败")
   else:
-    setTaskStatus(taskId,4,"获取任务信息失败")
+    setTaskStatus(taskId,4,u"获取任务信息失败")
