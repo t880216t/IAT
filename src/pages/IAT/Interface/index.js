@@ -503,8 +503,9 @@ class Interface extends Component {
     const y = xy.y;
     this.setState({
       rightClickItem: {
-        pageX: x + e.event.currentTarget.clientWidth,
-        pageY: y + 2,
+        // pageX: x + e.event.currentTarget.clientWidth,
+        pageX: x + 50,
+        pageY: y + 12,
         id: e.node.props.eventKey,
         noteType: e.node.props.noteType,
         dataRef:e.node.props.dataRef,

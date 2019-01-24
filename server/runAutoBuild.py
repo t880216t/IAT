@@ -54,6 +54,7 @@ def runBuild(projectId,request_data):
       params = item['request']['queryString']
     name = path.replace("/","_")
     new_params = []
+    paramType = 1
     for param in params:
       new_params.append({
         "id":int(round(time.time() * 1000)),
@@ -61,6 +62,11 @@ def runBuild(projectId,request_data):
         "value":param["value"],
         "type": False,
       })
+    for header in item['request']['headers']:
+      if "application/json" in header["value"]:
+        paramType = 2
+      elif "multipart/form-data" in header["value"]:
+        paramType = 3
     info = {
       "asserts": {
         "assertData": [{
@@ -76,6 +82,7 @@ def runBuild(projectId,request_data):
       "method": method,
       "name": name,
       "params": new_params,
+      "paramType": paramType,
       "path": path,
       "user_id": 44
     }
