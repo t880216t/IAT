@@ -23,9 +23,9 @@ def hello_world():
 from flask_sqlalchemy import SQLAlchemy
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:root@127.0.0.1:3306/IAT?charset=utf8mb4"
-app.config["SQLALCHEMY_POOL_RECYCLE"] = 1200
+app.config["SQLALCHEMY_POOL_RECYCLE"] = 15
 # 动态追踪数据库的修改. 性能不好. 且未来版本中会移除. 目前只是为了解决控制台的提示才写的
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 db = SQLAlchemy(app)
 
 '''
