@@ -817,7 +817,7 @@ def debugSample():
           formatParams = req_params
           res = requests.post(url, headers=formartHeaders, data=formatParams, verify=False)
       elif rowData.method == 'GET':
-        res = requests.get(url, headers=headers, data=req_params, verify=False)
+        res = requests.get(url, headers=headers, params=req_params, verify=False)
       else:
         return make_response(jsonify({'code': 10001, 'content': None, 'msg': u'请求异常!'}))
       response = res.json()
