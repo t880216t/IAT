@@ -44,6 +44,9 @@ export default {
             message.warning('出现了什么鬼');
         }
       } else {
+        reloadAuthorized();
+        message.error(response.msg);
+        yield put(routerRedux.push('/user/login'));
         message.error('服务器异常！');
       }
     },
