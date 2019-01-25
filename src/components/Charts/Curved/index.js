@@ -30,10 +30,11 @@ class Curved extends React.Component {
       value: "avrageElapsed" // value字段
     });
     const cols = {
-      x: {
-        range: [0, 1]
+      day:{
+        tickCount: 10, // 定义坐标轴刻度线的条数，默认为 5
       }
     };
+
     return (
       <div>
         <Chart height={400} data={dv} scale={cols} forceFit>
