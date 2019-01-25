@@ -25,9 +25,12 @@ if "__main__" == __name__:
   # taskId = 23
   stop = 0
   status, runTime = getTaskStatus(taskId)
-  print "定时时任务开始：taskId-",taskId,  "runTime -",runTime
-  schedule.every().day.at(runTime).do(start_job, taskId)
-  schedule.every(10).seconds.do(stop_job,taskId)
+  if runTime and status:
+    print "定时时任务开始：taskId-",taskId,  "runTime -",runTime
+    schedule.every().day.at(str(runTime)).do(start_job, taskId)
+    schedule.every(10).seconds.do(stop_job,taskId)
+  else:
+    print "run timing task [%s] error"%taskId
 
   while True:
       schedule.run_pending()
