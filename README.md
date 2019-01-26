@@ -3,6 +3,8 @@
 
 详情见：[基于 Jmeter 的 web 端接口自动化测试平台](https://testerhome.com/topics/17963)
 
+## 安装
+
 ### 前提：
 - 一个已经在跑的MySQL数据库
 - 有个IAT库已经导入项目sql
