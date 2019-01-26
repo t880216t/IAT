@@ -30,8 +30,8 @@ class Curved extends React.Component {
       value: "temperature" // value字段
     });
     const cols = {
-      month: {
-        range: [0, 1]
+      day: {
+        tickCount: 10,
       }
     };
     return (
