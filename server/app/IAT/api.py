@@ -53,14 +53,14 @@ def projectList():
   content = []
   if projectList:
     for item in projectList:
-      # goodCount = Goods.query.filter(db.and_(Goods.user_id == user_id, Goods.good_class == item.id)).count()
+      caseCount = Sample.query.filter(db.and_(Sample.project_id == item.id)).count()
       row_data = users.query.filter(db.and_(users.id == user_id)).first()
       content.append({
         "id": item.id,
         "name": item.name,
         "add_time": item.add_time.strftime('%Y-%m-%d %H:%M:%S'),
         "add_user": row_data.username,
-        "count": 0,
+        "count": caseCount,
         "status": item.status,
       })
   return make_response(jsonify({'code': 0, 'msg': '', 'content': content}))
