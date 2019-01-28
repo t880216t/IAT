@@ -1,7 +1,7 @@
 # IAT
 这是一个web版的接口测试平台，旨在“简单配置、系统运行”的去做互联网接口测试。
 
-详情见：[基于 Jmeter 的 web 端接口自动化测试平台](https://testerhome.com/topics/17963)
+详情见：[基于 Jmeter 的 web 端接口自动化测试平台](https://testerhome.com/topics/17986)
 
 ## 安装
 
