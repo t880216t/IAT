@@ -261,12 +261,12 @@ if '__main__' == __name__:
   res = requests.get(url,params=params)
   response = res.json()
   if response["code"] == 0:
-    setTaskStatus(taskId, 1, "get task info")
-    now = datetime.now().strftime('%Y-%m-%d_%H_%M_%S')
-    reulstPath = makeResultPath(now)
-    tree = read_demo('templete.jmx')
-    tree = set_data(tree,data=response["content"])
     try:
+      setTaskStatus(taskId, 1, "get task info")
+      now = datetime.now().strftime('%Y-%m-%d_%H_%M_%S')
+      reulstPath = makeResultPath(now)
+      tree = read_demo('templete.jmx')
+      tree = set_data(tree,data=response["content"])
       tree.write(reulstPath+'/testData.jmx')
       setTaskStatus(taskId, 2, "build task script")
       runJmeterTest(reulstPath)
