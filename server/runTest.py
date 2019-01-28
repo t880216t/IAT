@@ -277,7 +277,8 @@ if '__main__' == __name__:
       except Exception,e:
         print(e)
         setTaskStatus(taskId, 5, "task fail,please check jmeter env")
-    except:
+    except Exception,e:
+      print (e)
       setTaskStatus(taskId, 5, "build task script fail")
   else:
     setTaskStatus(taskId,4,"get task info fail")
