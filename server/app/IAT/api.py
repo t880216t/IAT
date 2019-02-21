@@ -55,11 +55,14 @@ def projectList():
     for item in projectList:
       caseCount = Sample.query.filter(db.and_(Sample.project_id == item.id)).count()
       row_data = users.query.filter(db.and_(users.id == user_id)).first()
+      username = ""
+      if row_data:
+        username = row_data.username
       content.append({
         "id": item.id,
         "name": item.name,
         "add_time": item.add_time.strftime('%Y-%m-%d %H:%M:%S'),
-        "add_user": row_data.username,
+        "add_user": username,
         "count": caseCount,
         "status": item.status,
       })
@@ -354,6 +357,9 @@ def taskList():
   content = []
   for task in listData:
     row_data = users.query.filter(db.and_(users.id == task.user_id)).first()
+    username = ""
+    if row_data:
+      username = row_data.username
     update_time = ""
     if task.update_time:
       update_time = task.update_time.strftime('%Y-%m-%d %H:%M:%S')
@@ -363,7 +369,7 @@ def taskList():
       "runTime": task.run_time,
       "taskDesc": task.task_desc,
       "add_time": task.add_time.strftime('%Y-%m-%d %H:%M:%S'),
-      "add_user": row_data.username,
+      "add_user": username,
       "update_time": update_time,
       "status": task.status,
     })
