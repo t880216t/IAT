@@ -457,6 +457,7 @@ def taskResult():
     results[index]["id"] = caseIds[index]
     if results[index]["success"] == "True":
       sucess.append(caseIds[index])
+      results[index]["failureMessage"] = "success"
     if results[index]["success"] == "False":
       fail.append(caseIds[index])
   if len(results) > 0:
