@@ -5,11 +5,14 @@ import time,requests,json,sys
 def getTaskStatus(taskId):
   data = {'id': taskId}
   url = 'http://127.0.0.1:5000/api/IAT/getTaskStatus'
-  res = requests.get(url, data=data)
-  response = res.json()
-  if response["code"] == 0:
-    return response["content"]["status"],response["content"]["runTime"]
-  return None,None
+  try:
+    res = requests.get(url, data=data)
+    response = res.json()
+    if response["code"] == 0:
+      return response["content"]["status"],response["content"]["runTime"]
+    return None, None
+  except:
+    return None,None
 
 def start_job(taskId):
     subprocess.call("python runTest.py %s "%taskId,shell=True)
