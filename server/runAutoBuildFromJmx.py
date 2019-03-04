@@ -1,12 +1,13 @@
 #-*-coding:utf-8-*-
 __author__="orion-c"
 
+from xml.etree import ElementTree as et;
 import json,os,requests,time,sys
 
 def loadFileData(fileName):
-    data = open(fileName).read()
-    data = json.loads(data)
-    return data
+    file = open(fileName).read()
+    data = json.loads(file)
+    return data,file
 
 def addCase(projectId,name):
   data = {"id":projectId,"name":name}
@@ -95,6 +96,7 @@ if "__main__"==__name__:
   # projectId = 66
   projectId = sys.argv[1]
   fileName = sys.argv[2]
-  all_data = loadFileData(fileName)
+  all_data,file = loadFileData(fileName)
   request_data = all_data['log']['entries']
   runBuild(projectId,request_data)
+  file.close()
