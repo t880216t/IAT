@@ -870,6 +870,7 @@ def encrypt_name(name, salt=None, encryptlop=30):
 
 @api.route('/uploadFile',methods=['POST'])
 def uploadFile():
+  user_id = session.get('user_id')
   upload_file = request.files["file"]
   id = request.form["id"]
   if upload_file:
@@ -879,8 +880,14 @@ def uploadFile():
     upload_file.save(os.path.join(app.root_path, app.config['UPLOAD_FOLDER'], fileName))
     filePath = 'app/'+app.config['UPLOAD_FOLDER']+fileName
     projectRootId = Tree.query.filter_by(project_id=id,pid=0).first().id
-    subprocess.call('python runAutoBuild.py %s %s'%(projectRootId,filePath),shell=True)
-    os.remove(filePath)
+    if fileType == 'har':
+      print '开始导入har'
+      subprocess.call('python runAutoBuild.py %s %s %s'%(user_id,projectRootId,filePath),shell=True)
+      os.remove(filePath)
+    if fileType == 'jmx':
+      print '开始导入jmx'
+      subprocess.call('python runAutoBuildFromJmx.py %s %s %s' % (user_id,projectRootId, filePath), shell=True)
+      os.remove(filePath)
     return make_response(jsonify({'code': 0, 'content':None, 'msg': 'upload sucess'}))
   else:
     return make_response(jsonify({'code': 10002, 'content':None, 'msg': 'upload fail!'}))

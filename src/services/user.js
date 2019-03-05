@@ -5,5 +5,5 @@ export async function query() {
 }
 
 export async function queryCurrent() {
-  return request('/api/currentUser');
+  return request(`/api/currentUser?_t=${new Date().getTime().toString()}`);
 }
