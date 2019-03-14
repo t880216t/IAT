@@ -49,7 +49,10 @@ def runBuild(userId,projectId,request_data):
     url = item['request']['url']
     path = getPath(url)
     if method == 'POST':
-      params = item['request']['postData']['params']
+      try:
+        params = item['request']['postData']['params']
+      except:
+        params = item['request']['queryString']
     if method == 'GET':
       params = item['request']['queryString']
     name = path.replace("/","_")
