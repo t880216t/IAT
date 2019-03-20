@@ -4,12 +4,15 @@ import React, { Component } from 'react';
 import {
   Layout, Tree ,Select,Icon,Menu,message,Input,Card,Divider,Col,Button,Radio,Spin,Switch,Tooltip,Empty
 } from 'antd';
+import AceEditor from 'react-ace';
 import {connect} from 'dva';
 import JSONPretty from 'react-json-pretty';
-import styles from './index.less'
-import empty from '../../../assets/empty.svg'
 import {setTage,getTage} from '@/services/tags';
 import Resizable from 're-resizable';
+import styles from './index.less'
+
+import 'brace/mode/java';
+import 'brace/theme/dracula';
 
 const {
   Content, Sider,
@@ -49,6 +52,8 @@ class Interface extends Component {
         infoExtractData:null,
         autoExpandParent:true,
         showAddHeader:false,
+        hasPreShell:false,
+        hasPostShell:false,
         debugHeader:[],
         info:{
           "name": "",
@@ -63,7 +68,11 @@ class Interface extends Component {
           "extract": {
             "extractType": 0,
             "extractData": [],
-          }
+          },
+          "preShellType":0,
+          "preShellData":'',
+          "postShellType":0,
+          "postShellData":''
         },
         debugData:{},
         debugResult:0,
@@ -173,6 +182,14 @@ class Interface extends Component {
     loop(tree[0],tree[0].id)
     return listData
   };
+
+  onChangeTest=(newValue)=>{
+    this.setState({preShellData:newValue},()=>{
+      console.log("xxxxxxxxx",newValue);
+    })
+    // const editor = this.ace.editor; // The editor object is from Ace's API
+    // console.log(editor.getValue()); // Outputs the value of the editor
+  }
 
   handleAddCase=()=>{
     const clickId = this.state.rightClickItem.dataRef.id;
@@ -383,6 +400,10 @@ class Interface extends Component {
             infoExtractType:interfaceCase.sampleInfo.extract.extractType,
             infoAssertData:interfaceCase.sampleInfo.asserts.assertData,
             infoExtractData:interfaceCase.sampleInfo.extract.extractData,
+            hasPreShell:interfaceCase.sampleInfo.preShellType === 1||false,
+            preShellData:interfaceCase.sampleInfo.preShellData,
+            hasPostShell:interfaceCase.sampleInfo.postShellType === 1 || false,
+            postShellData:interfaceCase.sampleInfo.postShellData,
           },()=>{
             if(isRef){
               setTage({projectId:this.state.project})
@@ -405,7 +426,11 @@ class Interface extends Component {
               "extract": {
                 "extractType": 0,
                 "extractData": [],
-              }
+              },
+              "preShellType":0,
+              "preShellData":'',
+              "postShellType":0,
+              "postShellData":''
             }
           })
         }
@@ -467,6 +492,10 @@ class Interface extends Component {
         infoExtractType:0,
         infoAssertData:null,
         infoExtractData:null,
+        hasPreShell:false,
+        preShellData:'',
+        hasPostShell:false,
+        postShellData:'',
       },()=>{
         this.queryTreeInfo(this.state.selectedKeys[0])
         if(this.state.selectNoteType === 2){
@@ -826,6 +855,16 @@ class Interface extends Component {
     this.setState({infoParams},()=>this.queryUpdateSample('params',this.state.infoParams))
   }
 
+  handleSetPreShellChange=()=>{
+    const {hasPreShell} = this.state;
+    this.setState({hasPreShell:!hasPreShell},()=>this.queryUpdateSample('preShellType',this.state.hasPreShell?1:0))
+  }
+
+  handleSetPostShellChange=()=>{
+    const {hasPostShell} = this.state;
+    this.setState({hasPostShell:!hasPostShell},()=>this.queryUpdateSample('postShellType',this.state.hasPostShell?1:0))
+  }
+
   handleParamsTypeChange=(e,index)=>{
     const {infoParams} = this.state;
     infoParams[index].type = e
@@ -903,6 +942,18 @@ class Interface extends Component {
     }
   };
 
+  handlePreShellChange=(e)=>{
+    if (e){
+      this.queryUpdateSample('preShellData',this.state.preShellData)
+    }
+  };
+
+  handlePostShellChange=(e)=>{
+    if (e){
+      this.queryUpdateSample('postShellData',this.state.postShellData)
+    }
+  };
+
   onExpandTree=(expandedKeys)=>{
     this.setState({expandedKeys,autoExpandParent:false})
   };
@@ -938,8 +989,8 @@ class Interface extends Component {
 
   render() {
     const {
-      projectList,project,treeList,rightClickItem,expandedKeys,
-      selectedKeys,autoExpandParent,selectNoteType,infoName,infoPath,
+      projectList,project,treeList,rightClickItem,expandedKeys,hasPreShell,hasPostShell,
+      selectedKeys,autoExpandParent,selectNoteType,infoName,infoPath,preShellData,postShellData,
       infoMethod,infoParams,infoAssertType,infoExtractType,infoAssertData,infoParamsFormatType,
       infoExtractData,debugDomain,debugData,showAddHeader,debugHeader,debugResult,extractList
     } = this.state;
@@ -1038,6 +1089,34 @@ class Interface extends Component {
         <Divider orientation="left">请求设置</Divider>
         <div className={styles.item_container}>
           <div className={styles.item_label_container}>
+            <span>前置shell：</span>
+          </div>
+          <div className={styles.item_content_container}>
+            <Switch size="small" checked={hasPreShell} onChange={()=>this.handleSetPreShellChange()} />
+          </div>
+        </div>
+        {hasPreShell&&(
+          <div className={styles.item_container}>
+            <div className={styles.item_label_container}>
+              <span />
+            </div>
+            <div className={styles.item_content_container}>
+              <AceEditor
+                mode="java"
+                theme="dracula"
+                name="preShellInput"
+                editorProps={{ $blockScrolling: true }}
+                defaultValue={preShellData}
+                value={preShellData||undefined}
+                height="300px"
+                onChange={(newValue)=>this.setState({preShellData:newValue})}
+                onBlur={(newValue)=>this.handlePreShellChange(newValue)}
+              />
+            </div>
+          </div>
+        )}
+        <div className={styles.item_container}>
+          <div className={styles.item_label_container}>
             <span>请求路径：</span>
           </div>
           <div className={styles.item_content_container}>
@@ -1085,56 +1164,84 @@ class Interface extends Component {
             <span>请求参数：</span>
           </div>
           <div className={styles.item_content_container}>
-            {infoParams&&infoParams.map((item,index)=>{
-              return(
-                <InputGroup size='small' key={item.id} className={styles.item_attrs_container}>
-                  <Col span={6}>
-                    <Input placeholder="属性名" value={item.key} onChange={(e)=>this.handleParamsKeyChange(e,index)} onBlur={()=>this.queryUpdateSample('params',this.state.infoParams)} />
-                  </Col>
-                  <Col span={10}>
-                    {item.type&&(
-                      <Select
-                        placeholder="选择自定义参数"
-                        value={item.value}
-                        style={{width:'100%'}}
-                        size='small'
-                        onChange={(e)=>this.handleParamsSelectValueChange(e,index)}
-                      >
-                        {
-                          extractList&&extractList.map((extractItem)=>{
-                            const extractKey = extractItem.extractKey.replace("${","").replace("}","")
-                            return(
-                              <Option
-                                key={extractItem.id}
-                                value={`$\{${extractItem.extractKey}\}`}
-                                title={extractItem.caseName}
-                                disabled={infoExtractData.length>0 && extractKey===infoExtractData[0].key}
-                              >
-                                <span style={(infoExtractData.length>0 && extractKey===infoExtractData[0].key)?{}:{color:'blue'}}>{extractKey}</span>
-                              </Option>
-                            )
-                          })
-                        }
-                      </Select>
-                    )}
-                    {!item.type&&(
-                      <Input placeholder="属性值" value={item.value} onChange={(e)=>this.handleParamsValueChange(e,index)} onBlur={()=>this.queryUpdateSample('params',this.state.infoParams)} />
-                    )}
-                  </Col>
-                  <Col span={2}>
+            {infoParams&&infoParams.map((item,index)=>(
+              <InputGroup size='small' key={item.key} className={styles.item_attrs_container}>
+                <Col span={6}>
+                  <Input placeholder="属性名" value={item.key} onChange={(e)=>this.handleParamsKeyChange(e,index)} onBlur={()=>this.queryUpdateSample('params',this.state.infoParams)} />
+                </Col>
+                <Col span={10}>
+                  {item.type&&(
+                    <Select
+                      placeholder="选择自定义参数"
+                      value={item.value}
+                      style={{width:'100%'}}
+                      size='small'
+                      onChange={(e)=>this.handleParamsSelectValueChange(e,index)}
+                    >
+                      {
+                        extractList&&extractList.map((extractItem)=>{
+                          const extractKey = extractItem.extractKey.replace("${","").replace("}","")
+                          return(
+                            <Option
+                              key={extractItem.id}
+                              value={`$\{${extractItem.extractKey}\}`}
+                              title={extractItem.caseName}
+                              disabled={infoExtractData.length>0 && extractKey===infoExtractData[0].key}
+                            >
+                              <span style={(infoExtractData.length>0 && extractKey===infoExtractData[0].key)?{}:{color:'blue'}}>{extractKey}</span>
+                            </Option>
+                          )
+                        })
+                      }
+                    </Select>
+                  )}
+                  {!item.type&&(
+                    <Input placeholder="属性值" value={item.value} onChange={(e)=>this.handleParamsValueChange(e,index)} onBlur={()=>this.queryUpdateSample('params',this.state.infoParams)} />
+                  )}
+                </Col>
+                <Col span={2}>
+                  <Tooltip title={`开启后，可下拉选择已定义的参数。(shell中定义的参数无需开启，直接输入： \${xxx} 获取)`}>
                     <Switch size="small" checked={item.type} onChange={(e)=>this.handleParamsTypeChange(e,index)} />
-                  </Col>
-                  <Col span={1}>
-                    <Icon type="minus-circle" onClick={()=>this.handleDeleteParams(index)} />
-                  </Col>
-                </InputGroup>
-              )
-            })}
+                  </Tooltip>
+                </Col>
+                <Col span={1}>
+                  <Icon type="minus-circle" onClick={()=>this.handleDeleteParams(index)} />
+                </Col>
+              </InputGroup>
+            ))}
             <Button type="dashed" size="small" onClick={()=>this.handleAddParams()} className={styles.item_item}>
               <Icon type="plus" /> Add field
             </Button>
           </div>
         </div>
+        <div className={styles.item_container}>
+          <div className={styles.item_label_container}>
+            <span>后置shell：</span>
+          </div>
+          <div className={styles.item_content_container}>
+            <Switch size="small" checked={hasPostShell} onChange={()=>this.handleSetPostShellChange()} />
+          </div>
+        </div>
+        {hasPostShell&&(
+          <div className={styles.item_container}>
+            <div className={styles.item_label_container}>
+              <span />
+            </div>
+            <div className={styles.item_content_container}>
+              <AceEditor
+                mode="java"
+                theme="dracula"
+                name="postShellInput"
+                editorProps={{ $blockScrolling: true }}
+                defaultValue={postShellData}
+                value={postShellData||undefined}
+                height="300px"
+                onChange={(newValue)=>this.setState({postShellData:newValue})}
+                onBlur={(newValue)=>this.handlePostShellChange(newValue)}
+              />
+            </div>
+          </div>
+        )}
         <Divider orientation="left">返回校验</Divider>
         <div className={styles.item_container}>
           <div className={styles.item_label_container}>
@@ -1159,22 +1266,20 @@ class Interface extends Component {
             {infoAssertType===1&&(
               <div>
                 <div className={styles.item_item}>
-                  {infoAssertData&&infoAssertData.map((item,index)=>{
-                    return(
-                      <div style={{marginBottom:10,display:'flex',flexDirection:'row'}} key={item.id}>
-                        <TextArea
-                          placeholder={`需要校验的返回值.eg: "code":0 `}
-                          value={item.value}
-                          autosize={{ minRows: 2, maxRows: 6 }}
-                          onChange={(e)=>this.onAssertDataChange(e,index)}
-                          onBlur={()=>this.handleAssertDataChange()}
-                        />
-                        <div className={styles.section_delete}>
-                          <Icon type="minus-circle" onClick={()=>this.handleDeleteSection(index)} />
-                        </div>
+                  {infoAssertData&&infoAssertData.map((item,index)=>(
+                    <div style={{marginBottom:10,display:'flex',flexDirection:'row'}} key={item.id}>
+                      <TextArea
+                        placeholder={`需要校验的返回值.eg: "code":0 `}
+                        value={item.value}
+                        autosize={{ minRows: 2, maxRows: 6 }}
+                        onChange={(e)=>this.onAssertDataChange(e,index)}
+                        onBlur={()=>this.handleAssertDataChange()}
+                      />
+                      <div className={styles.section_delete}>
+                        <Icon type="minus-circle" onClick={()=>this.handleDeleteSection(index)} />
                       </div>
-                    )
-                  })}
+                    </div>
+                  ))}
                 </div>
                 <Button type="dashed" onClick={()=>this.handeAssertData()} className={styles.item_item} style={{height:60 }}>
                   <Icon type="plus" /> Add field
@@ -1183,18 +1288,16 @@ class Interface extends Component {
             )}
             {infoAssertType ===2&&(
               <div>
-                {infoAssertData&&infoAssertData.map((item,index)=>{
-                  return(
-                    <InputGroup size='small' className={styles.item_attrs_container} key={item.id}>
-                      <Col span={10}>
-                        <Input placeholder="json路径.eg: content.testdata.xxx " value={item.key} onChange={(e)=>this.handleAssertJsonKeyChange(e,index)} onBlur={()=>this.handleAssertDataChange()} />
-                      </Col>
-                      <Col span={10}>
-                        <Input placeholder="字段值" value={item.value} onChange={(e)=>this.handleAssertJsonValueChange(e,index)} onBlur={()=>this.handleAssertDataChange()} />
-                      </Col>
-                    </InputGroup>
-                  )
-                })}
+                {infoAssertData&&infoAssertData.map((item,index)=>(
+                  <InputGroup size='small' className={styles.item_attrs_container} key={item.id}>
+                    <Col span={10}>
+                      <Input placeholder="json路径.eg: content.testdata.xxx " value={item.key} onChange={(e)=>this.handleAssertJsonKeyChange(e,index)} onBlur={()=>this.handleAssertDataChange()} />
+                    </Col>
+                    <Col span={10}>
+                      <Input placeholder="字段值" value={item.value} onChange={(e)=>this.handleAssertJsonValueChange(e,index)} onBlur={()=>this.handleAssertDataChange()} />
+                    </Col>
+                  </InputGroup>
+                ))}
               </div>
             )}
           </div>
@@ -1222,18 +1325,16 @@ class Interface extends Component {
           <div className={styles.item_content_container}>
             {infoExtractType ===1&&(
               <div>
-                {infoExtractData&&infoExtractData.map((item,index)=>{
-                  return(
-                    <InputGroup size='small' className={styles.item_attrs_container} key={item.id}>
-                      <Col span={10}>
-                        <Input placeholder="参数名称" style={{color:'blue'}} value={item.key} onChange={(e)=>this.handleExtractJsonKeyChange(e,index)} onBlur={()=>this.handleExtractDataChange()} />
-                      </Col>
-                      <Col span={10}>
-                        <Input placeholder="json路径.eg: content.testdata.xxx " value={item.value} onChange={(e)=>this.handleExtractJsonValueChange(e,index)} onBlur={()=>this.handleExtractDataChange()} />
-                      </Col>
-                    </InputGroup>
-                  )
-                })}
+                {infoExtractData&&infoExtractData.map((item,index)=>(
+                  <InputGroup size='small' className={styles.item_attrs_container} key={item.id}>
+                    <Col span={10}>
+                      <Input placeholder="参数名称" style={{color:'blue'}} value={item.key} onChange={(e)=>this.handleExtractJsonKeyChange(e,index)} onBlur={()=>this.handleExtractDataChange()} />
+                    </Col>
+                    <Col span={10}>
+                      <Input placeholder="json路径.eg: content.testdata.xxx " value={item.value} onChange={(e)=>this.handleExtractJsonValueChange(e,index)} onBlur={()=>this.handleExtractDataChange()} />
+                    </Col>
+                  </InputGroup>
+                ))}
               </div>
             )}
           </div>
@@ -1264,21 +1365,19 @@ class Interface extends Component {
           </div>
           {showAddHeader&&(
             <div className={styles.debug_header_content}>
-              {debugHeader&&debugHeader.map((item,index)=>{
-                return (
-                  <InputGroup size='small' key={item.id} className={styles.item_attrs_container}>
-                    <Col span={8}>
-                      <Input placeholder="属性名" value={item.key} onChange={(e)=>this.handleHeaderKeyChange(e,index)} />
-                    </Col>
-                    <Col span={10}>
-                      <Input placeholder="属性值" value={item.value} onChange={(e)=>this.handleHeaderValueChange(e,index)} />
-                    </Col>
-                    <div className={styles.action_icon}>
-                      <Icon type="minus-circle" onClick={()=>this.handleDeleteHeader(index)} />
-                    </div>
-                  </InputGroup>
-                )
-              })}
+              {debugHeader&&debugHeader.map((item,index)=>(
+                <InputGroup size='small' key={item.id} className={styles.item_attrs_container}>
+                  <Col span={8}>
+                    <Input placeholder="属性名" value={item.key} onChange={(e)=>this.handleHeaderKeyChange(e,index)} />
+                  </Col>
+                  <Col span={10}>
+                    <Input placeholder="属性值" value={item.value} onChange={(e)=>this.handleHeaderValueChange(e,index)} />
+                  </Col>
+                  <div className={styles.action_icon}>
+                    <Icon type="minus-circle" onClick={()=>this.handleDeleteHeader(index)} />
+                  </div>
+                </InputGroup>
+              ))}
               <Button type="dashed" size="small" onClick={()=>this.handleAddHeader()} className={styles.item_item}>
                 <Icon type="plus" /> Add field
               </Button>
@@ -1289,7 +1388,9 @@ class Interface extends Component {
           </div>
           <div className={styles.item_container}>
             <div className={styles.debug_response_container}>
-              {debugResult!==0&&(<JSONPretty id="json-pretty" data={debugData} />)}
+              {debugResult!==0&&(
+                <JSONPretty id="json-pretty" data={debugData} />
+              )}
             </div>
           </div>
           <div className={styles.debug_label_container}>

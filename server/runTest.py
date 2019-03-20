@@ -189,6 +189,24 @@ def jSONPostProcessor(data):
   ET.SubElement(JSONPostProcessor, 'stringProp', {"name": "JSONPostProcessor.match_numbers"})
   return JSONPostProcessor
 
+def beanShellPreProcessor(data):
+  BeanShellPreProcessor = ET.Element('BeanShellPreProcessor',{"guiclass": "TestBeanGUI", "testclass": "BeanShellPreProcessor",
+                                  "testname": "BeanShell PreProcessor", "enabled": "true"})
+  ET.SubElement(BeanShellPreProcessor, 'stringProp', {"name": "filename"})
+  ET.SubElement(BeanShellPreProcessor, 'stringProp', {"name": "parameters"})
+  ET.SubElement(BeanShellPreProcessor, 'boolProp', {"name": "resetInterpreter"}).text = "false"
+  ET.SubElement(BeanShellPreProcessor, 'stringProp', {"name": "script"}).text = data
+  return BeanShellPreProcessor
+
+def beanShellPostProcessor(data):
+  BeanShellPostProcessor = ET.Element('BeanShellPostProcessor',{"guiclass": "TestBeanGUI", "testclass": "BeanShellPostProcessor",
+                                  "testname": "BeanShell PostProcessor", "enabled": "true"})
+  ET.SubElement(BeanShellPostProcessor, 'stringProp', {"name": "filename"})
+  ET.SubElement(BeanShellPostProcessor, 'stringProp', {"name": "parameters"})
+  ET.SubElement(BeanShellPostProcessor, 'boolProp', {"name": "resetInterpreter"}).text = "false"
+  ET.SubElement(BeanShellPostProcessor, 'stringProp', {"name": "script"}).text = data
+  return BeanShellPostProcessor
+
 def set_data(tree,data):
   root = tree.getroot()
   ThreadGroup = root.find("./hashTree/hashTree/ThreadGroup")
@@ -222,6 +240,14 @@ def set_data(tree,data):
       if sample['extract']['extractType'] == 1:
         JSONPostProcessor = jSONPostProcessor(sample['extract'])
         sampleSetDown.append(JSONPostProcessor)
+        ET.SubElement(sampleSetDown, 'hashTree')
+      if sample['preShellType'] == 1:
+        BeanShellPreProcessor = beanShellPreProcessor(sample['preShellData'])
+        sampleSetDown.append(BeanShellPreProcessor)
+        ET.SubElement(sampleSetDown, 'hashTree')
+      if sample['postShellType'] == 1:
+        BeanShellPostProcessor = beanShellPostProcessor(sample['postShellData'])
+        sampleSetDown.append(BeanShellPostProcessor)
   return tree
 
 def makeResultPath(now):

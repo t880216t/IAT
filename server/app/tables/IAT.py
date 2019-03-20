@@ -65,9 +65,12 @@ class Sample(db.Model):
   add_time = db.Column(db.DateTime)
   user_id = db.Column(db.Integer)
   project_id = db.Column(db.Integer)
+  pre_shell_type = db.Column(db.SMALLINT)
+  pre_shell_data = db.Column(db.TEXT)
+  post_shell_type = db.Column(db.SMALLINT)
+  post_shell_data = db.Column(db.TEXT)
 
-
-  def __init__(self,pid,path,method,param_type,params,asserts_type,asserts_data,extract_type,extract_key_name,extract_data,user_id,project_id):
+  def __init__(self,pid,path,method,param_type,params,asserts_type,asserts_data,extract_type,extract_key_name,extract_data,user_id,project_id,pre_shell_type,pre_shell_data,post_shell_type,post_shell_data):
     self.pid = pid
     self.path = path
     self.method = method
@@ -81,6 +84,10 @@ class Sample(db.Model):
     self.add_time = datetime.now()
     self.user_id = user_id
     self.project_id = project_id
+    self.pre_shell_type = pre_shell_type
+    self.pre_shell_data = pre_shell_data
+    self.post_shell_type = post_shell_type
+    self.post_shell_data = post_shell_data
 
 class Task(db.Model):
   __tablename__ = 'task'

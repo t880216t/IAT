@@ -29,6 +29,18 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 db = SQLAlchemy(app)
 
 '''
+数据库表更新
+'''
+def add_column(engine, table_name, column):
+  engine.execute('ALTER TABLE %s ADD %s ' % (table_name, column))
+try:
+  column = "(`pre_shell_type` smallint(6) , `pre_shell_data` mediumtext ,`post_shell_type` smallint(6) ,`post_shell_data` mediumtext)"
+  add_column(db.session, 'sample', column)
+  print '创建新字段'
+except Exception,e:
+  print "无需更新"
+
+'''
 注册蓝图
 '''
 from .build.login import auth

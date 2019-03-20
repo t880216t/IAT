@@ -404,6 +404,10 @@ def taskInfo():
           "extractType": sampleData.extract_type,
           "extractData": json.loads(sampleData.extract_data),
         },
+        "preShellType":sampleData.pre_shell_type,
+        "preShellData":sampleData.pre_shell_data,
+        "postShellType":sampleData.post_shell_type,
+        "postShellData":sampleData.post_shell_data,
       })
   content = {
     "testname": taskData.name,
@@ -574,6 +578,10 @@ def getSampleInfo():
       "extractType": sampleData.extract_type,
       "extractData": json.loads(sampleData.extract_data),
     },
+    "preShellType": sampleData.pre_shell_type,
+    "preShellData": sampleData.pre_shell_data,
+    "postShellType": sampleData.post_shell_type,
+    "postShellData": sampleData.post_shell_data,
     "user_id": sampleData.user_id,
     "add_time": sampleData.add_time.strftime('%Y-%m-%d %H:%M:%S'),
   }
@@ -774,9 +782,15 @@ def updateSample():
     "extract_type": info["extract"]["extractType"],
     "extract_key_name": extract_key_name,
     "extract_data": json.dumps(info["extract"]["extractData"]),
+    "pre_shell_type": info["preShellType"],
+    "pre_shell_data": info["preShellData"],
+    "post_shell_type": info["postShellType"],
+    "post_shell_data": info["postShellData"],
     "user_id": user_id,
   }
+
   sampleData = Sample.query.filter_by(pid=id)
+
   if sampleData.first():
     sampleData.update(data)
     db.session.commit()
@@ -785,7 +799,7 @@ def updateSample():
     project_id = Tree.query.filter_by(id=id).first().project_id
     addData = Sample(id, info["path"], info["method"],info["paramType"], json.dumps(info["params"]), 1,
                      json.dumps(info["asserts"]["assertData"]), info["extract"]["extractType"], '',
-                     json.dumps(info["extract"]["extractData"]), user_id, project_id)
+                     json.dumps(info["extract"]["extractData"]), user_id, project_id,info["preShellType"],info["preShellData"],info["postShellType"],info["postShellData"])
     db.session.add(addData)
     db.session.commit()
     return make_response(jsonify({'code': 0, 'content': None, 'msg': u'添加成功!'}))
