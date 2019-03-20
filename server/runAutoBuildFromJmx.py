@@ -1,13 +1,8 @@
 #-*-coding:utf-8-*-
-__author__="orion-c"
-
-from xml.etree import ElementTree as et;
-import json,os,requests,time,sys
-
-def loadFileData(fileName):
-    file = open(fileName).read()
-    data = json.loads(file)
-    return data,file
+from xml.etree import ElementTree as et
+import sys,requests,json,time,random
+reload(sys)
+sys.setdefaultencoding("utf8")
 
 def addCase(projectId,name):
   data = {"id":projectId,"name":name}
@@ -34,40 +29,39 @@ def addSample(caseId,info):
     print(e)
     print("数据异常：",data)
 
-def getPath(url):
-  if '?' in url:
-    url = url[0:url.rfind('?', 1)]
-  url = url.split('/')
-  path = ''
-  for index,p in enumerate(url):
-    if index>2:
-      path += ("/"+p)
-  return path
-
-def runBuild(projectId,request_data):
-  for index,item in enumerate(request_data):
-    method = item['request']['method']
-    url = item['request']['url']
-    path = getPath(url)
-    if method == 'POST':
-      params = item['request']['postData']['params']
-    if method == 'GET':
-      params = item['request']['queryString']
-    name = path.replace("/","_")
-    new_params = []
+def runbuild(userId,projectId,fileName):
+  root=et.parse(fileName)
+  for each in root.getiterator("HTTPSamplerProxy"):
+    path = ''
+    method = ''
+    testname = each.attrib['testname']
+    params = []
     paramType = 1
-    for param in params:
-      new_params.append({
-        "id":int(round(time.time() * 1000)),
-        "key":param["name"],
-        "value":param["value"],
-        "type": False,
-      })
-    for header in item['request']['headers']:
-      if "application/json" in header["value"]:
-        paramType = 2
-      elif "multipart/form-data" in header["value"]:
-        paramType = 3
+    for childNode in each.getchildren():
+      if childNode.tag == 'elementProp':
+        for paramsContainerNode in childNode.getchildren():
+          for paramsNode in paramsContainerNode.getchildren():
+            key = ''
+            value = ''
+            for paramsNodeChildren in paramsNode.getchildren():
+              if paramsNodeChildren.attrib['name'] == 'Argument.name':
+                key = paramsNodeChildren.text
+              if paramsNodeChildren.attrib['name'] == 'Argument.value':
+                value = paramsNodeChildren.text
+
+            params.append({
+              "id":int(round(time.time() * 1000))+random.randint(1, 20),
+              "key":key,
+              "value":value,
+              "type": False,
+            })
+      if childNode.attrib['name'] == 'HTTPSampler.path':
+        path = childNode.text
+      if childNode.attrib['name'] == 'HTTPSampler.method':
+        method = childNode.text
+      if childNode.attrib['name'] == 'HTTPSampler.DO_MULTIPART_POST':
+        if childNode.text == 'true':
+          paramType = 3
     info = {
       "asserts": {
         "assertData": [{
@@ -81,22 +75,28 @@ def runBuild(projectId,request_data):
         "extractType": 0
       },
       "method": method,
-      "name": name,
-      "params": new_params,
+      "name": testname,
+      "params": params,
       "paramType": paramType,
       "path": path,
-      "user_id": 44
+      "user_id": userId
     }
-    caseId = addCase(projectId,name)
+    caseId = addCase(projectId, testname)
     if caseId:
       addSample(caseId, info)
 
-if "__main__"==__name__:
-  # fileName = 'test.har'
+    # print testname
+    # print method
+    # print paramType
+    # print path
+    # print params
+    # print "==============="
+
+if "__main__" == __name__:
+  # fileName = 'testData.jmx'
   # projectId = 66
-  projectId = sys.argv[1]
-  fileName = sys.argv[2]
-  all_data,file = loadFileData(fileName)
-  request_data = all_data['log']['entries']
-  runBuild(projectId,request_data)
-  file.close()
+  # userId = 44
+  userId = sys.argv[1]
+  projectId = sys.argv[2]
+  fileName = sys.argv[3]
+  runbuild(userId,projectId,fileName)

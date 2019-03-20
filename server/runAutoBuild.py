@@ -43,13 +43,16 @@ def getPath(url):
       path += ("/"+p)
   return path
 
-def runBuild(projectId,request_data):
+def runBuild(userId,projectId,request_data):
   for index,item in enumerate(request_data):
     method = item['request']['method']
     url = item['request']['url']
     path = getPath(url)
     if method == 'POST':
-      params = item['request']['postData']['params']
+      try:
+        params = item['request']['postData']['params']
+      except:
+        params = item['request']['queryString']
     if method == 'GET':
       params = item['request']['queryString']
     name = path.replace("/","_")
@@ -84,7 +87,7 @@ def runBuild(projectId,request_data):
       "params": new_params,
       "paramType": paramType,
       "path": path,
-      "user_id": 44
+      "user_id": userId
     }
     caseId = addCase(projectId,name)
     if caseId:
@@ -93,8 +96,9 @@ def runBuild(projectId,request_data):
 if "__main__"==__name__:
   # fileName = 'test.har'
   # projectId = 66
-  projectId = sys.argv[1]
-  fileName = sys.argv[2]
+  userId = sys.argv[1]
+  projectId = sys.argv[2]
+  fileName = sys.argv[3]
   all_data = loadFileData(fileName)
   request_data = all_data['log']['entries']
-  runBuild(projectId,request_data)
+  runBuild(userId,projectId,request_data)
