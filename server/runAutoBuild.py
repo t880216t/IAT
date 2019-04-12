@@ -87,7 +87,11 @@ def runBuild(userId,projectId,request_data):
       "params": new_params,
       "paramType": paramType,
       "path": path,
-      "user_id": userId
+      "user_id": userId,
+      "preShellType": 0,
+      "preShellData": "",
+      "postShellType": 0,
+      "postShellData": "",
     }
     caseId = addCase(projectId,name)
     if caseId:
