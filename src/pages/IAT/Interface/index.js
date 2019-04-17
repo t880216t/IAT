@@ -1165,7 +1165,7 @@ class Interface extends Component {
           </div>
           <div className={styles.item_content_container}>
             {infoParams&&infoParams.map((item,index)=>(
-              <InputGroup size='small' key={item.key} className={styles.item_attrs_container}>
+              <InputGroup size='small' key={item.id} className={styles.item_attrs_container}>
                 <Col span={6}>
                   <Input placeholder="属性名" value={item.key} onChange={(e)=>this.handleParamsKeyChange(e,index)} onBlur={()=>this.queryUpdateSample('params',this.state.infoParams)} />
                 </Col>
