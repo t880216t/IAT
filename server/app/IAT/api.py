@@ -212,16 +212,15 @@ def copyCase():
     db.session.add(data)
     db.session.commit()
     if sampleData:
-      # pid,path,method,params,asserts_type,asserts_data,extract_type,extract_key_name,extract_data,user_id,project_id
       addData = Sample(data.id, sampleData.path, sampleData.method,sampleData.param_type, sampleData.params, sampleData.asserts_type,
                        sampleData.asserts_data, sampleData.extract_type, sampleData.extract_key_name,
-                       sampleData.extract_data, user_id, sampleData.project_id)
+                       sampleData.extract_data, user_id, sampleData.project_id,sampleData.pre_shell_type,sampleData.pre_shell_data,sampleData.post_shell_type,sampleData.post_shell_data)
       db.session.add(addData)
       db.session.commit()
     return make_response(jsonify({'code': 0, 'content': None, 'msg': u'复制成功!'}))
   except Exception, e:
     print e
-    return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'删除失败!'}))
+    return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'复制成功!'}))
 
 
 @api.route('/addCase', methods=['POST'])
@@ -818,10 +817,11 @@ def debugSample():
     url = domain + rowData.path
     if rowData.params:
       paramsStr = json.loads(rowData.params)
-      formParams = {}
-      for item in paramsStr:
-        req_params[item["key"]] = item["value"]
-        formParams[item["key"]] = (None,item["value"])
+      if paramsStr:
+        formParams = {}
+        for item in paramsStr:
+          req_params[item["key"]] = item["value"]
+          formParams[item["key"]] = (None,item["value"])
     try:
       if rowData.method == 'POST':
         if rowData.param_type == 3:
