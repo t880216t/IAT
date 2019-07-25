@@ -119,7 +119,7 @@ class ImmReport extends PureComponent {
               >
                 {taskResult.testSuites && taskResult.testSuites.map( item => (
                     <Panel
-                      header={<a target="_blank" rel="noopener noreferrer" href={`/case?id=${item.id}&projectId=${taskResult.project}`}>{item.name}</a>}
+                      header={<a target="_blank" rel="noopener noreferrer" href={`/case/ui?id=${item.id}&projectId=${taskResult.project}`}>{item.name}</a>}
                       key={item.id}
                       className={[item.status === 'PASS' ? styles.caseSucess : styles.caseFail, styles.customPanelStyle]}
                     >
@@ -130,7 +130,7 @@ class ImmReport extends PureComponent {
                       >
                         {item.testCase && item.testCase.map(caseItem => (
                           <Panel
-                            header={<a target="_blank" rel="noopener noreferrer" href={`/case?id=${caseItem.id}&projectId=${taskResult.project}`}>{caseItem.name}</a>}
+                            header={<a target="_blank" rel="noopener noreferrer" href={`/case/ui?id=${caseItem.id}&projectId=${taskResult.project}`}>{caseItem.name}</a>}
                             key={caseItem.id}
                             className={[caseItem.status === 'PASS' ? styles.caseSucess : styles.caseFail, styles.customPanelStyle]}
                           >

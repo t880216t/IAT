@@ -1,56 +1,43 @@
-# -*-coding:utf-8-*-
-import schedule, subprocess, time
-from flask_script import Manager
-from app.tables.UAT import Task
-from app import app,db
+#-*-coding:utf-8-*-
+import schedule,subprocess
+import time,requests,json,sys
 
-manager = Manager(app)
+def getTaskStatus(taskId):
+  data = {'id': taskId}
+  url = 'http://127.0.0.1:5000/api/IAT/getTaskStatus'
+  try:
+    res = requests.get(url, data=data)
+    response = res.json()
+    if response["code"] == 0:
+      return response["content"]["status"],response["content"]["runTime"]
+    return None, None
+  except:
+    return None,None
 
-class TimScript():
-  def __init__(self, taskId):
-    self.taskId = taskId
-    self.stop = 0
+def start_job(taskId):
+    subprocess.call("python runTest.py %s "%taskId,shell=True)
 
-  def getTaskStatus(self,taskId):
-    rowData = Task.query.filter_by(id=taskId).first()
-    db.session.commit()
-    if rowData:
-      return rowData.status, rowData.run_time
-    else:
-      return None, None
-
-
-  def start_job(self,taskId):
-    subprocess.call("python runTest.py runScript -i %s" % taskId, shell=True)
-
-
-  def stop_job(self,taskId):
-    status, runTime = self.getTaskStatus(taskId)
+def stop_job(taskId):
+    status,runTime = getTaskStatus(taskId)
     if status == 4:
-      self.stop = 1
+      global stop
+      stop = 1
 
+if "__main__" == __name__:
+  taskId = sys.argv[1]
+  stop = 0
+  status, runTime = getTaskStatus(taskId)
+  if runTime and status:
+    print("定时时任务开始：taskId-",taskId,  "runTime -",runTime)
+    schedule.every().day.at(str(runTime)).do(start_job, taskId)
+    schedule.every(10).seconds.do(stop_job,taskId)
+  else:
+    print("run timing task [%s] error"%taskId)
 
-  def runScript(self):
-    status, runTime = self.getTaskStatus(self.taskId)
-    if runTime and status:
-      print("定时时任务开始：taskId-", self.taskId, "runTime -", runTime)
-      schedule.every().day.at(str(runTime)).do(self.start_job, self.taskId)
-      schedule.every(10).seconds.do(self.stop_job, self.taskId)
-    else:
-      print("run timing task [%s] error" % self.taskId)
-
-    while True:
+  while True:
       schedule.run_pending()
       time.sleep(1)
-      if self.stop == 1:
-        print("定时时任务关闭：taskId-", self.taskId, )
+      if stop == 1:
+        print("定时时任务关闭：taskId-", taskId,)
         break
 
-@manager.option('-i', '--task_id', dest='task_id', default='')
-def runScript(task_id):
-  mainScript = TimScript(task_id)
-  mainScript.runScript()
-
-
-if __name__ == "__main__":
-  manager.run()

@@ -23,25 +23,25 @@ const TaskModel = {
   },
   effects: {
     *goAddPage(_, { put }) {
-      yield put(routerRedux.push('/task/immediate/add'));
+      yield put(routerRedux.push('/task/ui/immediate/add'));
     },
     *goTimAddPage(_, { put }) {
-      yield put(routerRedux.push('/task/timing/add'));
+      yield put(routerRedux.push('/task/ui/timing/add'));
     },
     *goListPage(_, { put }) {
-      yield put(routerRedux.push('/task/immediate'));
+      yield put(routerRedux.push('/task/ui/immediate'));
     },
     *goTimListPage(_, { put }) {
-      yield put(routerRedux.push('/task/timing'));
+      yield put(routerRedux.push('/task/ui/timing'));
     },
     *goDetailPage({payload}, { put }) {
-      yield put(routerRedux.push(`/task/immediate/detail?${payload.detailId}`));
+      yield put(routerRedux.push(`/task/ui/immediate/detail?${payload.detailId}`));
     },
     *goReportPage({payload}, { put }) {
-      yield put(routerRedux.push(`/task/immediate/report?${payload.id}`));
+      yield put(routerRedux.push(`/task/ui/immediate/report?${payload.id}`));
     },
     *goTimReportPage({payload}, { put }) {
-      yield put(routerRedux.push(`/task/timing/report?${payload.id}`));
+      yield put(routerRedux.push(`/task/ui/timing/report?${payload.id}`));
     },
     *queryTaskList({ payload }, { call, put }) {
       yield put({ type: 'updateState', payload: { taskList: [] } });

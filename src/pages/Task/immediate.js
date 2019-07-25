@@ -138,7 +138,7 @@ class Immediate extends PureComponent {
       title: '任务名称',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => <a href={`/task/immediate/detail?${record.id}`} style={{ color: '#2e86de', fontWeight: 'bold' }}>{text}</a>,
+      render: (text, record) => <a href={`/task/ui/immediate/detail?${record.id}`} style={{ color: '#2e86de', fontWeight: 'bold' }}>{text}</a>,
     }, {
       title: '新建人',
       dataIndex: 'add_user',
@@ -159,7 +159,7 @@ class Immediate extends PureComponent {
       render: (text, record) => (
         <div>
           {record.status === 0 && <a onClick={() => this.handleRunTask(record.id)}>开始执行</a>}
-          {record.status === 3 && <a style={{ color: '#2e86de', fontWeight: 'bold' }} target="_blank" rel="noopener noreferrer" href={`/task/immediate/report?${record.id}`}>查看报告</a>}
+          {record.status === 3 && <a style={{ color: '#2e86de', fontWeight: 'bold' }} target="_blank" rel="noopener noreferrer" href={`/task/ui/immediate/report?${record.id}`}>查看报告</a>}
           {([0, 3].indexOf(record.status) > -1) && <Divider type="vertical" />}
           {!([1, 2].indexOf(record.status) > -1) && (
             <Popconfirm title="是否要删除此行？" onConfirm={() => this.handleDelTask(record.id)}>

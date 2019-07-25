@@ -2,7 +2,6 @@ import { stringify } from 'qs';
 import request from '@/utils/request';
 
 export async function queryAddProject(params) {
-  console.log(params)
   return request('/api/UAT/project/addProject', {
     method: 'POST',
     data: params,

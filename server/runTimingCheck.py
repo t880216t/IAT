@@ -9,7 +9,7 @@ manager = Manager(app)
 def runTimTask():
   timTaskDatas = Task.query.filter(db.and_(Task.status.notin_([0,4]),Task.task_type == 3)).all()
   for timTask in timTaskDatas:
-    subprocess.Popen("python runTiming.py runScript -i %s " % timTask.id, shell=True)
+    subprocess.Popen("python runUITiming.py runScript -i %s " % timTask.id, shell=True)
 
 def runGetBack():
   subprocess.call('python getBack.py',shell=True)

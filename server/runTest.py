@@ -1,421 +1,310 @@
 #-*-coding:utf-8-*-
-import os, json, binascii, hashlib, shutil, zipfile, sys, re
-from flask_script import Manager
-from app.tables.UAT import TimTaskLog,Tree,CaseInfo,CaseStep,CaseLibs,HomeDayExcuteCount,CaseProjectSetting,Task, GlobalValues, ProxyConfig, FailCaseLog
-from app import app,db
+import sys,requests,os,subprocess,json, importlib
+import xml.etree.ElementTree as ET
 from datetime import datetime
-from xml.dom.minidom import parse
-import xml.dom.minidom
+import pandas as pd
 
-manager = Manager(app)
+default_encoding = 'utf-8'
+if sys.getdefaultencoding() != default_encoding:
+  importlib.reload(sys)
+  sys.setdefaultencoding(default_encoding)
 
-def encrypt_name(name, salt=None, encryptlop=30):
-  if not salt:
-    salt = binascii.hexlify(os.urandom(32)).decode()
-  for i in range(encryptlop):
-    name = hashlib.sha1(str(name + salt).encode('utf-8')).hexdigest()
-  return name
+#状态设置请求
+def setTaskStatus(taskId,status,msg):
+  data = {'id':taskId,'status':status}
+  headers = {'Content-Type':'application/json'}
+  url = 'http://127.0.0.1:5000/api/IAT/updateTaskStatus'
+  res = requests.post(url,headers = headers,data=json.dumps(data))
+  response = res.json()
+  print(response["msg"])
 
-#清除文件
-def clear_project_file(project_path):
-    if os.path.exists(project_path):
-        delList = os.listdir(project_path)
-        for f in delList:
-            filePath = os.path.join(project_path, f)
-            if os.path.isfile(filePath):
-                try:
-                    os.remove(filePath)
-                    print(filePath + " was removed!")
-                except:
-                    print("--------------------------------删除旧文件失败")
-            elif os.path.isdir(filePath):
-                shutil.rmtree(filePath, True)
-            print("Directory: " + filePath + " was removed!")
-        try:
-          os.rmdir(project_path)
-        except:
-          print("delete has some error")
+def updateTaskResult(taskId,result,msg):
+  data = {'id':taskId,'result':json.dumps(result)}
+  headers = {'Content-Type':'application/json'}
+  url = 'http://127.0.0.1:5000/api/IAT/updateTaskResult'
+  res = requests.post(url,headers = headers,data=json.dumps(data))
+  response = res.json()
+  print(response["msg"])
 
-def getTaskInfo(taskId, taskRootPath):
-  # 任务信息
-  rowData = Task.query.filter_by(id=taskId).first()
-  caseIds = json.loads(rowData.case_id)
-  valueType = rowData.value_type
-  browserType = rowData.browser_type
-  proxyType = rowData.proxy_type
-  taskName = rowData.name
-  taskType = rowData.task_type
+def read_demo(demo_path):
+  tree = ET.parse(demo_path)
+  return tree
 
-  projectId = Tree.query.filter_by(id=caseIds[0]).first().project_id
-  projectRootData = Tree.query.filter(db.and_(Tree.project_id == projectId,Tree.pid == 0)).first()
-  projectConfig = CaseProjectSetting.query.filter_by(pid=projectRootData.id).first()
-  libDatas = CaseLibs.query.filter(db.and_(CaseLibs.id.in_(json.loads(projectConfig.libs)))).all()
-  libs = []
-  for lib in libDatas:
-    libs.append(lib.name)
+def configTestElement(test_domain,params=None,proxy=None):
+  domain = test_domain
+  protocol = ""
+  port = ""
+  if "://" in test_domain:
+    protocol = test_domain.split("://")[0]
+    domain = test_domain.split("://")[1]
+    if ":" in domain:
+      domain = domain.split(":")[0]
+  formatTestDomain = test_domain.replace("://","")
+  if ":" in formatTestDomain:
+    port = formatTestDomain.split(":")[1]
+  ConfigTestElement = ET.Element("ConfigTestElement",{
+    "guiclass":"HttpDefaultsGui",
+    "testclass":"ConfigTestElement",
+    "testname":u"HTTP请求默认值",
+    "enabled":"true",
+  })
+  elementProp = ET.SubElement(ConfigTestElement,"elementProp", {"name": "HTTPsampler.Arguments", "elementType": "Arguments",
+                                           "guiclass": "HTTPArgumentsPanel", "testclass": "Arguments",
+                                           "testname": u"用户定义的变量", "enabled": "true"})
+  collectionProp = ET.SubElement(elementProp,'collectionProp',{"name":"Arguments.arguments"})
+  if params:
+    for item in params:
+      if item:
+        paramElementProp = ET.Element('elementProp',{"name":item["key"], "elementType":"HTTPArgument"})
+        ET.SubElement(paramElementProp,'boolProp',{"name":"HTTPArgument.always_encode"}).text = 'false'
+        ET.SubElement(paramElementProp,'stringProp',{"name":"Argument.value"}).text = item["value"]
+        ET.SubElement(paramElementProp,'stringProp',{"name":"Argument.metadata"}).text = '='
+        ET.SubElement(paramElementProp,'boolProp',{"name":"HTTPArgument.use_equals"}).text = 'true'
+        ET.SubElement(paramElementProp,'stringProp',{"name":"Argument.name"}).text = item["key"]
+        collectionProp.append(paramElementProp)
 
-  # 查出所有勾选用例的数据
-  caseDatas = []
-  for caseId in caseIds:
-    caseInfo = Tree.query.filter_by(id=caseId).first()
-    caseDetailData = CaseInfo.query.filter_by(pid=caseId).first()
-    caseSteps = []
-    caseStepDatas = CaseStep.query.filter_by(case_id=caseId).order_by(db.asc(CaseStep.indexId)).all()
-    for caseStep in caseStepDatas:
-      stepData = json.loads(caseStep.values)
-      if stepData[0] == 'Open Browser':
-        # 根据任务增加浏览器配置
-        if browserType == 1:
-          if len(stepData) > 2:
-            stepData[2] = 'firefox'
-          else:
-            stepData.append('firefox')
-        if browserType == 2:
-          if len(stepData) > 2:
-            stepData[2] = 'chrome'
-          else:
-            stepData.append('chrome')
-        # 根据任务设置代理改写全局参数
-        if proxyType:
-          proxyRow = ProxyConfig.query.filter_by(id=proxyType).first()
-          if browserType == 1:
-            if proxyRow:
-              # 复制用户上传的对应代理配置，并解压到任务目录下
-              proxyZipPath = 'app/' + proxyRow.path
-              taskDir = 'taskFile/' + taskRootPath
-              if not os.path.exists(taskDir):
-                os.makedirs(taskDir)
-              if not os.path.exists(taskDir + '/ff_profile.zip'):
-                zipPath = shutil.copy(proxyZipPath, taskDir + '/ff_profile.zip')
-                z = zipfile.ZipFile(zipPath, 'r')
-                z.extractall(taskDir+'/ff_profile')
-                z.close()
-              if 'win' in sys.platform:
-                taskDir = 'taskFile\\\\' + taskRootPath
-                appRootPath = app.root_path.replace('\\','\\\\')
-                appRootPath = appRootPath[:-3]
-                proxyData = appRootPath + taskDir + '\\\\ff_profile'
-              else:
-                proxyData = app.root_path[:-3] + '/' + taskDir + '/ff_profile'
-              proxySetting = ['${FF_PROFILE}=','Set Variable', proxyData]
-              if len(stepData) > 3:
-                stepData[3] = 'ff_profile_dir=${FF_PROFILE}'
-              else:
-                stepData.append('ff_profile_dir=${FF_PROFILE}')
-              caseSteps.append({
-                'values': proxySetting
-              })
-          if browserType == 2:
-            if proxyRow:
-              proxyData = {'proxy': {'proxyType': 'MANUAL', 'httpProxy': proxyRow.path, 'sslProxy': proxyRow.path}}
-              proxySetting = ['${desired capabilities}=', 'Evaluate', json.dumps(proxyData)]
-              if len(stepData) > 3:
-                stepData[3] = 'desired_capabilities=${desired capabilities}'
-              else:
-                stepData.append('desired_capabilities=${desired capabilities}')
-              caseSteps.append({
-                'values': proxySetting
-              })
-      caseSteps.append({
-        'values': stepData
-      })
-    setUpData = caseDetailData.set_up if caseDetailData.set_up else '[]'
-    tearDownData = caseDetailData.tear_down if caseDetailData.tear_down else '[]'
-    caseDatas.append({
-      'case_name': caseInfo.name,
-      'caseId': caseId,
-      'suiteId':caseInfo.pid,
-      'case_steps':caseSteps,
-      'setUp': json.loads(setUpData),
-      'tearDown': json.loads(tearDownData),
-    })
+  ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.domain"}).text = domain
+  ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.port"}).text = port
+  ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.protocol"}).text = protocol
+  ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.contentEncoding"})
+  ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.path"})
+  ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.concurrentPool"}).text = "6"
+  if proxy:
+    try:
+      userName = ''
+      password = ''
+      server = ''
+      port = ''
+      if "@" in proxy:
+        userConfig = proxy.split('@')[0]
+        proxyConfig = proxy.split('@')[1]
+        userName = userConfig.split(':')[0]
+        password = userConfig.split(':')[1]
+        server = proxyConfig.split(':')[0]
+        port = proxyConfig.split(':')[1]
+      elif ":" in proxy:
+        server = proxy.split(':')[0]
+        port = proxy.split(':')[1]
+      ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.proxyHost"}).text = server
+      ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.proxyPort"}).text = port
+      ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.proxyUser"}).text = userName
+      ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.proxyPass"}).text = password
+    except Exception as e:
+      print("proxy error",e)
+  ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.connect_timeout"})
+  ET.SubElement(ConfigTestElement, 'stringProp', {"name": "HTTPSampler.response_timeout"})
+  return ConfigTestElement
 
-  test_suites = []
-  testSuiteIds = Tree.query.filter(db.and_(Tree.id.in_(caseIds))).with_entities(Tree.pid).distinct().all()
-  for suiteIdTuplte in testSuiteIds:
-    suiteId = suiteIdTuplte[0]
-    suiteData = Tree.query.filter_by(id=suiteId).first()
-    test_cases = []
-    for caseData in caseDatas:
-      if caseData['suiteId'] == suiteId:
-        test_cases.append(caseData)
-    suiteConfig = CaseProjectSetting.query.filter_by(pid=suiteId).first()
-    suiteLibDatas = CaseLibs.query.filter(db.and_(CaseLibs.id.in_(json.loads(suiteConfig.libs)))).all()
-    suitelibs = []
-    for lib in suiteLibDatas:
-      suitelibs.append(lib.name)
-    test_suites.append({
-      'name': suiteData.name,
-      'suiteId': suiteId,
-      'libs': suitelibs,
-      'test_cases': test_cases,
-    })
+def headerManager(headers=None):
+  HeaderManager = ET.Element("HeaderManager",{
+    "guiclass":"HeaderPanel",
+    "testclass":"HeaderManager",
+    "testname":u"HTTP信息头管理器",
+    "enabled":"true",
+  })
+  collectionProp = ET.SubElement(HeaderManager,'collectionProp',{"name":"HeaderManager.headers"})
+  if headers:
+    for item in headers:
+      if item:
+        paramElementProp = ET.Element('elementProp',{"name":"", "elementType":"Header"})
+        ET.SubElement(paramElementProp,'stringProp',{"name":"Header.name"}).text = item["key"]
+        ET.SubElement(paramElementProp,'stringProp',{"name":"Header.value"}).text = item["value"]
+        collectionProp.append(paramElementProp)
+  return HeaderManager
 
-  globalValuesData = GlobalValues.query.filter(db.and_(GlobalValues.project_id == projectId, GlobalValues.value_type == valueType)).all()
-  globalValues = []
-  for valueData in globalValuesData:
-    globalValues.append({
-      'name': valueData.key_name,
-      'value': valueData.key_value,
-    })
-  taskInfo = {
-    'project_name': projectRootData.name,
-    'taskName': taskName,
-    'libs': libs,
-    'test_suites': test_suites,
-    'browserType': browserType,
-    'proxyType': proxyType,
-    'taskType': taskType,
-    'globalValues': globalValues,
-  }
-  return taskInfo
+def HTTPSamplerProxy(sample):
+  HTTPSamplerProxy = ET.Element('HTTPSamplerProxy',{"guiclass":"HttpTestSampleGui", "testclass":"HTTPSamplerProxy", "testname":sample['name'], "enabled":"true"})
+  elementProp = ET.SubElement(HTTPSamplerProxy,"elementProp",{"name": "HTTPsampler.Arguments", "elementType": "Arguments",
+                                           "guiclass": "HTTPArgumentsPanel", "testclass": "Arguments",
+                                           "testname": "用户定义的变量", "enabled": "true"})
+  collectionProp = ET.SubElement(elementProp, 'collectionProp', {"name": "Arguments.arguments"})
+  if sample['params']:
+    if sample['paramType'] ==2:
+      formParams = {}
+      for item in sample['params']:
+        if item:
+          formParams[item["key"]] = item["value"]
+      paramElementProp = ET.Element('elementProp', {"name": "", "elementType": "HTTPArgument"})
+      ET.SubElement(paramElementProp, 'boolProp', {"name": "HTTPArgument.always_encode"}).text = 'false'
+      ET.SubElement(paramElementProp, 'stringProp', {"name": "Argument.value"}).text = json.dumps(formParams)
+      ET.SubElement(paramElementProp, 'stringProp', {"name": "Argument.metadata"}).text = '='
+      collectionProp.append(paramElementProp)
+    else:
+      for item in sample['params']:
+        if item:
+          paramElementProp = ET.Element('elementProp', {"name": item["key"], "elementType": "HTTPArgument"})
+          ET.SubElement(paramElementProp, 'boolProp', {"name": "HTTPArgument.always_encode"}).text = 'false'
+          ET.SubElement(paramElementProp, 'stringProp', {"name": "Argument.value"}).text = item["value"]
+          ET.SubElement(paramElementProp, 'stringProp', {"name": "Argument.metadata"}).text = '='
+          ET.SubElement(paramElementProp, 'boolProp', {"name": "HTTPArgument.use_equals"}).text = 'true'
+          ET.SubElement(paramElementProp, 'stringProp', {"name": "Argument.name"}).text = item["key"]
+          collectionProp.append(paramElementProp)
 
-def getCustomKeywords(taskId):
-  rowData = Task.query.filter_by(id=taskId).first()
-  caseIds = json.loads(rowData.case_id)
-  projectData = Tree.query.filter_by(id=caseIds[0]).first()
-  projectId = projectData.project_id
-  keywordRootId = projectData.pid
-  keywordRows = Tree.query.filter(db.and_(Tree.project_id == projectId,Tree.type == 4)).all()
+  DO_MULTIPART_POST = "false"
+  if sample['paramType'] ==3:
+    DO_MULTIPART_POST = "true"
+  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name": "HTTPSampler.domain"})
+  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name": "HTTPSampler.port"})
+  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name": "HTTPSampler.protocol"})
+  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name": "HTTPSampler.contentEncoding"})
+  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.path"}).text = sample['path']
+  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.method"}).text = sample['method']
+  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.follow_redirects"}).text = "false"
+  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.auto_redirects"}).text = "false"
+  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.use_keepalive"}).text = "true"
+  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.DO_MULTIPART_POST"}).text = DO_MULTIPART_POST
+  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.embedded_url_re"})
+  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.connect_timeout"})
+  ET.SubElement(HTTPSamplerProxy, 'stringProp', {"name":"HTTPSampler.response_timeout"})
+  return HTTPSamplerProxy
 
-  keywordRootConfig = CaseProjectSetting.query.filter_by(pid=keywordRootId).first()
-  keywordRootLibDatas = CaseLibs.query.filter(db.and_(CaseLibs.id.in_(json.loads(keywordRootConfig.libs)))).all()
-  keywordRootlibs = []
-  for lib in keywordRootLibDatas:
-    keywordRootlibs.append(lib.name)
+def ResponseAssertion(data):
+  ResponseAssertion = ET.Element('ResponseAssertion',{"guiclass":"AssertionGui", "testclass":"ResponseAssertion", "testname":"响应断言", "enabled":"true"})
+  collectionProp = ET.SubElement(ResponseAssertion, 'collectionProp', {"name": "Asserion.test_strings"})
+  if data['assertData']:
+    for item in data["assertData"]:
+      ET.SubElement(collectionProp,'stringProp',{'name':str(item['id'])}).text = item['value']
+  ET.SubElement(ResponseAssertion, 'stringProp', {"name": "Assertion.custom_message"})
+  ET.SubElement(ResponseAssertion, 'stringProp', {"name": "Assertion.test_field"}).text = "Assertion.response_data"
+  ET.SubElement(ResponseAssertion, 'boolProp', {"name": "Assertion.assume_success"}).text = "false"
+  ET.SubElement(ResponseAssertion, 'intProp', {"name": "Assertion.test_type"}).text = "16"
+  return ResponseAssertion
 
-  keywordDatas = []
-  for keyword in keywordRows:
-    keywordId = keyword.id
-    keyInfo = CaseInfo.query.filter_by(pid = keywordId).first()
-    caseSteps = []
-    caseStepDatas = CaseStep.query.filter_by(case_id=keywordId).all()
-    for caseStep in caseStepDatas:
-      caseSteps.append({
-        'values': json.loads(caseStep.values)
-      })
-    keywordDatas.append({
-      'name': keyInfo.name,
-      'Arguments': json.loads(keyInfo.params),
-      'returns': json.loads(keyInfo.return_values),
-      'caseSteps': caseSteps,
-    })
-  return keywordDatas, keywordRootlibs
+def JSONPathAssertion(data):
+  JSONPathAssertion = ET.Element('JSONPathAssertion',{"guiclass":"JSONPathAssertionGui", "testclass":"JSONPathAssertion", "testname":"JSON断言", "enabled":"true"})
+  ET.SubElement(JSONPathAssertion, 'stringProp', {"name": "JSON_PATH"}).text = "$."+data['assertData'][0]['key']
+  ET.SubElement(JSONPathAssertion, 'stringProp', {"name": "EXPECTED_VALUE"}).text = data['assertData'][0]['value']
+  ET.SubElement(JSONPathAssertion, 'boolProp', {"name": "JSONVALIDATION"}).text = "false"
+  ET.SubElement(JSONPathAssertion, 'boolProp', {"name": "EXPECT_NULL"}).text = "false"
+  ET.SubElement(JSONPathAssertion, 'boolProp', {"name": "INVERT"}).text = "false"
+  ET.SubElement(JSONPathAssertion, 'boolProp', {"name": "ISREGEX"}).text = "true"
+  return JSONPathAssertion
 
-def buildTaskProject(taskInfo,taskRootPath):
-  taskRootPath = 'taskFile/'+taskRootPath
-  if not os.path.exists(taskRootPath):
-    os.makedirs(taskRootPath)
-  # 创建项目目录
-  projectDir = taskRootPath+'/'+taskInfo['project_name']
-  os.makedirs(projectDir)
+def jSONPostProcessor(data):
+  JSONPostProcessor = ET.Element('JSONPostProcessor',
+                                 {"guiclass": "JSONPostProcessorGui", "testclass": "JSONPostProcessor",
+                                  "testname": "JSON提取器", "enabled": "true"})
+  ET.SubElement(JSONPostProcessor, 'stringProp', {"name": "JSONPostProcessor.referenceNames"}).text = data['extractData'][0]['key']
+  ET.SubElement(JSONPostProcessor, 'stringProp', {"name": "JSONPostProcessor.jsonPathExprs"}).text = data['extractData'][0]['value']
+  ET.SubElement(JSONPostProcessor, 'stringProp', {"name": "JSONPostProcessor.match_numbers"})
+  return JSONPostProcessor
 
-  # 创建项目初始化文件
-  with open(projectDir+'/__init__.robot', 'w', encoding='utf-8') as initFile:
-    initFile.writelines('*** Settings ***\n')
-    for lib in taskInfo['libs']:
-      initFile.writelines('Library    {lib}\n'.format(lib=lib))
+def beanShellPreProcessor(data):
+  BeanShellPreProcessor = ET.Element('BeanShellPreProcessor',{"guiclass": "TestBeanGUI", "testclass": "BeanShellPreProcessor",
+                                  "testname": "BeanShell PreProcessor", "enabled": "true"})
+  ET.SubElement(BeanShellPreProcessor, 'stringProp', {"name": "filename"})
+  ET.SubElement(BeanShellPreProcessor, 'stringProp', {"name": "parameters"})
+  ET.SubElement(BeanShellPreProcessor, 'boolProp', {"name": "resetInterpreter"}).text = "false"
+  ET.SubElement(BeanShellPreProcessor, 'stringProp', {"name": "script"}).text = data
+  return BeanShellPreProcessor
 
-  # 创建项目全局参数文件
-  with open(projectDir+'/globalValues.py', 'w', encoding='utf-8') as valuesFile:
-    for globalValue in taskInfo['globalValues']:
-      valuesFile.writelines("{key} = '{value}'\n".format(key=globalValue['name'], value=globalValue['value']))
+def beanShellPostProcessor(data):
+  BeanShellPostProcessor = ET.Element('BeanShellPostProcessor',{"guiclass": "TestBeanGUI", "testclass": "BeanShellPostProcessor",
+                                  "testname": "BeanShell PostProcessor", "enabled": "true"})
+  ET.SubElement(BeanShellPostProcessor, 'stringProp', {"name": "filename"})
+  ET.SubElement(BeanShellPostProcessor, 'stringProp', {"name": "parameters"})
+  ET.SubElement(BeanShellPostProcessor, 'boolProp', {"name": "resetInterpreter"}).text = "false"
+  ET.SubElement(BeanShellPostProcessor, 'stringProp', {"name": "script"}).text = data
+  return BeanShellPostProcessor
 
-  # 创建测试集及所包含的用例
-  for testSuite in taskInfo['test_suites']:
-    with open(projectDir + '/'+testSuite['name']+'.robot', 'w', encoding='utf-8') as suiteFile:
-      suiteFile.writelines('*** Settings ***\n')
-      suiteFile.writelines('Suite Teardown    close_all\n')
-      suiteFile.writelines('Resource    customKeyword.robot\n')
-      for lib in testSuite['libs']:
-        suiteFile.writelines('Library    {lib}\n'.format(lib=lib))
-      suiteFile.writelines('Variables    globalValues.py\n')
-      suiteFile.writelines('\n')
-      suiteFile.writelines('*** Test Cases ***\n')
-      # 用例信息
-      for case in testSuite['test_cases']:
-        suiteFile.writelines('{caseName}\n'.format(caseName=case['case_name']))
-        # 用例前置处理
-        if case['setUp']:
-          setUp = '    '.join(case['setUp'])
-          suiteFile.writelines('    [Setup]    {setUp}\n'.format(setUp=setUp))
-        for caseStep in case['case_steps']:
-          step = '    '.join(caseStep['values'])
-          suiteFile.writelines('    {step}\n'.format(step=step))
-        # 用例后置处理
-        if case['tearDown']:
-          tearDown = '    '.join(case['tearDown'])
-          suiteFile.writelines('    [Teardown]    {tearDown}\n'.format(tearDown=tearDown))
-        suiteFile.writelines('\n')
-  return projectDir
+def set_data(tree,data):
+  root = tree.getroot()
+  ThreadGroup = root.find("./hashTree/hashTree/ThreadGroup")
+  ThreadGroupHashTree = root.find("./hashTree/hashTree/hashTree")
+  #设置项目名称
+  ThreadGroup.set('testname', data["testname"])
+  #设置请求headers默认参数
+  HeaderManager = headerManager(data["headers"])
+  #设置请求默认参数
+  ConfigTestElement = configTestElement(data["domain"],data["params"],data["proxy"])
+  ThreadGroupHashTree.append(HeaderManager)
+  ET.SubElement(ThreadGroupHashTree,'hashTree')
+  ThreadGroupHashTree.append(ConfigTestElement)
+  ET.SubElement(ThreadGroupHashTree,'hashTree')
+  #增加请求节点
+  if data['samples']:
+    for sample in data["samples"]:
+      httpSamplerProxy = HTTPSamplerProxy(sample)
+      ThreadGroupHashTree.append(httpSamplerProxy)
+      sampleSetDown = ET.SubElement(ThreadGroupHashTree, 'hashTree')
+      if sample['asserts']['assertType'] == 1:
+        responseAssertion = ResponseAssertion(sample['asserts'])
+      if sample['asserts']['assertType'] == 2:
+        responseAssertion = JSONPathAssertion(sample['asserts'])
+      sampleSetDown.append(responseAssertion)
+      ET.SubElement(sampleSetDown,'hashTree')
+      if sample['paramType'] ==2:
+        spamleHeaderManager = headerManager([{"key":"content-type","value":"application/json;"}])
+        sampleSetDown.append(spamleHeaderManager)
+        ET.SubElement(sampleSetDown, 'hashTree')
+      if sample['extract']['extractType'] == 1:
+        JSONPostProcessor = jSONPostProcessor(sample['extract'])
+        sampleSetDown.append(JSONPostProcessor)
+        ET.SubElement(sampleSetDown, 'hashTree')
+      if sample['preShellType'] == 1:
+        BeanShellPreProcessor = beanShellPreProcessor(sample['preShellData'])
+        sampleSetDown.append(BeanShellPreProcessor)
+        ET.SubElement(sampleSetDown, 'hashTree')
+      if sample['postShellType'] == 1:
+        BeanShellPostProcessor = beanShellPostProcessor(sample['postShellData'])
+        sampleSetDown.append(BeanShellPostProcessor)
+  return tree
 
-def buildCustomKeywordFile(projectDir,customKeywords, keywordRootlibs):
-  with open(projectDir + '/customKeyword.robot', 'w', encoding='utf-8') as keywordFile:
-    if len(keywordRootlibs) > 0:
-      keywordFile.writelines('*** Settings ***\n')
-      for lib in keywordRootlibs:
-        keywordFile.writelines('Library    {lib}\n'.format(lib=lib))
-      keywordFile.writelines('\n')
-    keywordFile.writelines('*** Keywords ***\n')
-    # 默认关键词
-    keywordFile.writelines('close_all\n')
-    keywordFile.writelines('    Close All Browsers\n')
-    keywordFile.writelines('\n')
-    for keywordData in customKeywords:
-      keywordFile.writelines('{name}\n'.format(name=keywordData['name']))
-      if keywordData['Arguments']:
-        Arguments = '    '.join(keywordData['Arguments'])
-        keywordFile.writelines('    [Arguments]    {Arguments}\n'.format(Arguments=Arguments))
-      for caseStep in keywordData['caseSteps']:
-        # 这里可能存在某些api不是放在第一个参数的，需要归类根据type判断
-        step = '    '.join(caseStep['values'])
-        keywordFile.writelines('    {step}\n'.format(step=step))
-      if keywordData['returns']:
-        returns = '    '.join(keywordData['returns'])
-        keywordFile.writelines('    [Return]    {returns}\n'.format(returns=returns))
-      keywordFile.writelines('\n')
-
-def excuteScript(projectDir):
-  cmd = 'robot --outputdir {projectDir} {projectDir} > {projectDir}/log.txt'.format(projectDir=projectDir)
-  os.system(cmd)
-
-def GetMiddleStr(content, startStr, endStr):
-  patternStr = r'%s(.+?)%s' % (startStr, endStr)
-  m = re.findall(patternStr,content)
-  if m:
-    return m[0]
-
-def alasyRootLog(taskInfo, projectDir, taskRootPath):
-  logFile = projectDir + '/output.xml'
-  DOMTree = xml.dom.minidom.parse(logFile)
-  robotDom = DOMTree.documentElement
-  taskLog = {
-    'name': taskInfo['taskName']
-  }
-  testSuites = []
-  for suite1 in robotDom.childNodes:
-    if suite1.nodeName == 'suite':
-      # 项目信息
-      for suiteChild in suite1.childNodes:
-        if suiteChild.nodeName == 'status':
-          taskLog['startTime'] = suiteChild.getAttribute("starttime")
-          taskLog['endTime'] = suiteChild.getAttribute("endtime")
-        # 测试集信息
-        if suiteChild.nodeName == 'suite':
-          suiteInfo = {'name': suiteChild.getAttribute("name")}
-          # 用例信息
-          testCase = []
-          for suite2 in suiteChild.childNodes:
-            if suite2.nodeName == 'status':
-              suiteInfo['status'] = suite2.getAttribute("status")
-            if suite2.nodeName == 'test':
-              case = {'name': suite2.getAttribute("name")}
-              # 步骤信息
-              caseSteps = []
-              for test in suite2.childNodes:
-                if test.nodeName == 'status':
-                  case['status'] = test.getAttribute("status")
-                if test.nodeName == 'kw':
-                  stepInfo = {
-                    'name': test.getAttribute("name"),
-                    'capture': ''
-                  }
-                  for kw in test.childNodes:
-                    if kw.nodeName == 'status':
-                      stepInfo['status'] = kw.getAttribute("status")
-                    if kw.nodeName == 'msg':
-                      stepInfo['msg'] = kw.firstChild.data
-                      stepInfo['msgLevel'] = kw.getAttribute("level")
-                    if kw.nodeName == 'kw':
-                      for cap in kw.childNodes:
-                        if cap.nodeName == 'msg':
-                          capture = cap.firstChild.data
-                          capture = GetMiddleStr(capture, 'href="', '"><img')
-                          if capture:
-                            taskOutCapPath = app.root_path + '/static/output/' + taskRootPath
-                            if not os.path.exists(taskOutCapPath):
-                              os.makedirs(taskOutCapPath)
-                            shutil.copy(projectDir + '/' + capture, taskOutCapPath + '/' +capture)
-                            stepInfo['capture'] = 'static/output/' + taskRootPath + '/' + capture
-                  caseSteps.append(stepInfo)
-                case['caseSteps'] = caseSteps
-              testCase.append(case)
-          suiteInfo['testCase'] = testCase
-          testSuites.append(suiteInfo)
-      taskLog['testSuites'] = testSuites
-    if suite1.nodeName == 'statistics':
-      for statistics1 in suite1.childNodes:
-        if statistics1.nodeName == 'total':
-          for stat in statistics1.childNodes:
-            if stat.nodeName == 'stat' and stat.firstChild.data == 'All Tests':
-              sucessCount = int(stat.getAttribute("pass"))
-              failCount = int(stat.getAttribute("fail"))
-              taskLog['sucess'] = sucessCount
-              taskLog['fail'] = failCount
-              taskLog['total'] = failCount + sucessCount
-  for suite in taskInfo['test_suites']:
-    for logSuite in taskLog['testSuites']:
-      if suite['name'] == logSuite['name']:
-        logSuite['id'] = suite['suiteId']
-        for case in suite['test_cases']:
-          for logCase in logSuite['testCase']:
-            if case['case_name'] == logCase['name']:
-              logCase['id'] = case['caseId']
-              if logCase['status'] == "FAIL":
-                data = FailCaseLog(logCase['id'])
-                db.session.add(data)
-                db.session.commit()
-  data = HomeDayExcuteCount(taskLog['total'], taskLog['fail'])
-  db.session.add(data)
-  db.session.commit()
-  return taskLog
-
-def saveLogToDB(taskId,logs):
-  logStr = json.dumps(logs)
-  data = {
-    'task_log': logStr
-  }
-  rowData = Task.query.filter_by(id=taskId)
-  rowData.update(data)
-  db.session.commit()
-
-def saveTimLogToDB(taskInfo,taskId,logs):
-  if taskInfo['taskType'] == 3:
-    logStr = json.dumps(logs)
-    excuteDate = datetime.now().strftime('%Y-%m-%d')
-    data = TimTaskLog(taskId,excuteDate,logStr)
-    db.session.add(data)
-    db.session.commit()
-
-def setTaskStatus(taskId,status):
-  data = {
-    'status': status
-  }
-  rowData = Task.query.filter_by(id=taskId)
-  rowData.update(data)
-  db.session.commit()
-
-@manager.option('-i','--task_id',dest='task_id',default='')
-def runScript(task_id):
-  setTaskStatus(task_id, 2)
-  try:
+def makeResultPath(now):
+  reulstPath = 'scripts/'+now
+  if not os.path.exists(reulstPath):
+    os.makedirs(reulstPath)
+  else:
     now = datetime.now().strftime('%Y-%m-%d_%H_%M_%S')
-    taskRootPath = encrypt_name(now)
-    taskInfo = getTaskInfo(task_id,taskRootPath)
-    customKeywords, keywordRootlibs = getCustomKeywords(task_id)
-    projectDir = buildTaskProject(taskInfo,taskRootPath)
-    buildCustomKeywordFile(projectDir,customKeywords, keywordRootlibs)
-    excuteScript(projectDir)
-    logs = alasyRootLog(taskInfo, projectDir, taskRootPath)
-    saveLogToDB(task_id,logs)
-    saveTimLogToDB(taskInfo,task_id,logs)
-    setTaskStatus(task_id, 3)
-    clear_project_file('taskFile/' + taskRootPath)
-  except Exception as e:
-    print(e)
-    setTaskStatus(task_id, 4)
+    reulstPath = 'scripts/' + now
+    os.makedirs(reulstPath)
+  return reulstPath
 
+def runJmeterTest(reulstPath):
+  #cmd = "jmeter -n -t %s -l %s -e -o %s "%(reulstPath+'/testData.jmx',reulstPath+'/result.csv',reulstPath+'/resultDir')
+  cmd = "jmeter -n -t %s -l %s "%(reulstPath+'/testData.jmx',reulstPath+'/result.csv')
+  print(cmd)
+  subprocess.call(cmd, shell=True)
 
-if __name__ == "__main__":
-    manager.run()
+def readResult(path):
+  # 打开文件
+  data = pd.read_table(path,sep=",")
+  columns = data.columns
+  values = data.values
+  content = []
+  for case_result in values:
+    item = {}
+    for index in range(len(columns)):
+      item[columns[index]] = str(case_result[index])
+    content.append(item)
+  return content
 
+if '__main__' == __name__:
+  taskId = sys.argv[1]
+  # taskId = 35
+  url = 'http://127.0.0.1:5000/api/IAT/taskInfo'
+  params = {"id":taskId}
+  res = requests.get(url,params=params)
+  response = res.json()
+  if response["code"] == 0:
+    try:
+      setTaskStatus(taskId, 1, "get task info")
+      now = datetime.now().strftime('%Y-%m-%d_%H_%M_%S')
+      reulstPath = makeResultPath(now)
+      tree = read_demo('templete.jmx')
+      tree = set_data(tree,data=response["content"])
+      tree.write(reulstPath+'/testData.jmx')
+      setTaskStatus(taskId, 2, "build task script")
+      runJmeterTest(reulstPath)
+      setTaskStatus(taskId, 3, "excute script sucess")
+      try:
+        resultContent = readResult(reulstPath+'/result.csv')
+        updateTaskResult(taskId,resultContent,"upload result")
+      except Exception as e:
+        print(e)
+        setTaskStatus(taskId, 5, "task fail,please check jmeter env")
+    except Exception as e:
+      print (e)
+      setTaskStatus(taskId, 5, "build task script fail")
+  else:
+    setTaskStatus(taskId,4,"get task info fail")

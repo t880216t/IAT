@@ -122,76 +122,198 @@ export default {
           path: '/case',
           name: 'case',
           icon: 'bank',
-          component: './Case/index',
+          routes: [
+            {
+              path: '/case/ui',
+              name: 'ui',
+              component: './Case/index',
+            },
+            {
+              path: '/case/api',
+              name: 'api',
+              component: './IAT/Interface/index',
+            },
+          ],
         },
         {
           path: '/task',
           name: 'task',
           icon: 'apartment',
           routes: [
-            // {
-            //   path: '/system/index',
-            //   name: 'index',
-            //   component: './System/index',
-            // },
             {
-              path: '/task/immediate',
-              name: 'immediate',
-              hideChildrenInMenu: true,
+              path: '/task/ui',
+              name: 'ui',
               routes: [
                 {
-                  path: '/task/immediate',
-                  redirect: '/task/immediate/list',
-                },
-                {
-                  path: '/task/immediate/list',
-                  name: 'list',
-                  component: './Task/immediate',
-                },
-                {
-                  path: '/task/immediate/add',
-                  name: 'add',
-                  component: './Task/add',
-                },
-                {
-                  path: '/task/immediate/report',
-                  name: 'report',
-                  component: './Task/immReport',
-                },
-                {
-                  path: '/task/immediate/detail',
-                  name: 'detail',
-                  component: './Task/immDetail',
+                  path: '/task/ui/immediate',
+                  name: 'immediate',
+                  hideChildrenInMenu: true,
+                  routes: [
+                    {
+                      path: '/task/ui/immediate',
+                      redirect: '/task/ui/immediate/list',
+                    },
+                    {
+                      path: '/task/ui/immediate/list',
+                      name: 'list',
+                      component: './Task/immediate',
+                    },
+                    {
+                      path: '/task/ui/immediate/add',
+                      name: 'add',
+                      component: './Task/add',
+                    },
+                    {
+                      path: '/task/ui/immediate/report',
+                      name: 'report',
+                      component: './Task/immReport',
+                    },
+                    {
+                      path: '/task/ui/immediate/detail',
+                      name: 'detail',
+                      component: './Task/immDetail',
+                    },
+                  ],
+                },{
+                  path: '/task/ui/timing',
+                  name: 'timing',
+                  hideChildrenInMenu: true,
+                  routes: [
+                    {
+                      path: '/task/ui/timing',
+                      redirect: '/task/ui/timing/list',
+                    },
+                    {
+                      path: '/task/ui/timing/list',
+                      name: 'list',
+                      component: './Task/timing',
+                    },
+                    {
+                      path: '/task/ui/timing/add',
+                      name: 'add',
+                      component: './Task/timAdd',
+                    },
+                    {
+                      path: '/task/ui/timing/report',
+                      name: 'report',
+                      component: './Task/timReport',
+                    },
+                    {
+                      path: '/task/ui/timing/detail',
+                      name: 'detail',
+                      component: './Task/timDetail',
+                    },
+                  ],
                 },
               ],
-            },{
-              path: '/task/timing',
-              name: 'timing',
-              hideChildrenInMenu: true,
+            },
+            {
+              path: '/task/api',
+              name: 'api',
               routes: [
                 {
-                  path: '/task/timing',
-                  redirect: '/task/timing/list',
+                  path: '/task/api/immediate',
+                  name: 'immediate',
+                  hideChildrenInMenu: true,
+                  routes: [
+                    {
+                      path: '/task/api/immediate',
+                      name: 'immediate',
+                      redirect: '/task/api/immediate/list',
+                    },
+                    {
+                      path: '/task/api/immediate/list',
+                      name: 'list',
+                      component: './IAT/Task/immediate',
+                    },
+                    {
+                      path: '/task/api/immediate/add',
+                      name: 'add',
+                      component: './IAT/Task/addImm',
+                    },
+                    {
+                      path: '/task/api/immediate/detail',
+                      name: 'detail',
+                      component: './IAT/Task/immDetail',
+                    },
+                    {
+                      path: '/task/api/immediate/report',
+                      name: 'report',
+                      component: './IAT/Task/immReport',
+                    },
+                  ],
                 },
                 {
-                  path: '/task/timing/list',
-                  name: 'list',
-                  component: './Task/timing',
+                  path: '/task/api/timing',
+                  name: 'timing',
+                  hideChildrenInMenu: true,
+                  routes: [
+                    {
+                      path: '/task/api/timing',
+                      name: 'timing',
+                      redirect: '/task/api/timing/list',
+                    },
+                    {
+                      path: '/task/api/timing/list',
+                      name: 'list',
+                      component: './IAT/Task/timing',
+                    },
+                    {
+                      path: '/task/api/timing/add',
+                      name: 'add',
+                      component: './IAT/Task/addTim',
+                    },
+                    {
+                      path: '/task/api/timing/detail',
+                      name: 'detail',
+                      component: './IAT/Task/immDetail',
+                    },
+                    {
+                      path: '/task/api/timing/report',
+                      name: 'report',
+                      component: './IAT/Task/timReport',
+                    },
+                  ],
+                },
+              ],
+            }
+          ],
+        },
+        {
+          path: '/config',
+          name: 'config',
+          icon: 'code-sandbox',
+          authority: ['admin', 'user'],
+          routes: [
+            {
+              path: '/config/ui',
+              name: 'ui',
+              routes: [
+                {
+                  path: '/config/ui/project',
+                  name: 'project',
+                  component: './System/project',
                 },
                 {
-                  path: '/task/timing/add',
-                  name: 'add',
-                  component: './Task/timAdd',
+                  path: '/config/ui/proxy',
+                  name: 'proxy',
+                  component: './System/proxy',
                 },
                 {
-                  path: '/task/timing/report',
-                  name: 'report',
-                  component: './Task/timReport',
+                  path: '/config/ui/keywords',
+                  name: 'keywords',
+                  component: './System/keywords',
                 },
+              ],
+            },
+            {
+              path: '/config/api',
+              name: 'api',
+              routes: [
                 {
-                  path: '/task/timing/detail',
-                  name: 'detail',
-                  component: './Task/timDetail',
+                  path: '/config/api/project',
+                  name: 'project',
+                  component: './IAT/System/project',
                 },
               ],
             },
@@ -200,28 +322,14 @@ export default {
         {
           path: '/system',
           name: 'system',
-          icon: 'code-sandbox',
+          icon: 'setting',
           authority: ['admin', 'user'],
           routes: [
-            // {
-            //   path: '/system/index',
-            //   name: 'index',
-            //   component: './System/index',
-            // },
             {
-              path: '/system/project',
-              name: 'project',
+              path: '/system/users',
+              name: 'users',
+              icon: 'user',
               component: './System/project',
-            },
-            {
-              path: '/system/proxy',
-              name: 'proxy',
-              component: './System/proxy',
-            },
-            {
-              path: '/system/keywords',
-              name: 'keywords',
-              component: './System/keywords',
             },
           ],
         },

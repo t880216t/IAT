@@ -38,6 +38,9 @@ app.register_blueprint(auth, url_prefix='/api/auth')
 from .build.user import user
 app.register_blueprint(user, url_prefix='/api')
 
+from .IAT.api import api
+app.register_blueprint(api, url_prefix='/api/IAT')
+
 from .UAT.case import case
 app.register_blueprint(case, url_prefix='/api/UAT/case')
 
