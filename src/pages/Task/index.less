@@ -1,0 +1,156 @@
+.customPanelStyle{
+  overflow: hidden;
+  border: 0;
+  border-radius: 4px;
+  :global{
+    .ant-collapse-content-box{
+      background: #f7f7f7;
+    }
+    .ant-collapse-content > .ant-collapse-content-box{
+      padding: 16px 0 16px 16px;
+    }
+    .antd-pro-pages-task-index-customPanelStyle .ant-collapse-content > .ant-collapse-content-box{
+      padding: 0;
+    }
+  }
+}
+.pre_image {
+  width: 80px;
+  height: 80px;
+  margin-left: 10px;
+  padding: 5px;
+  border: 1px solid #d9d9d9;
+  border-radius: 5px;
+}
+.caseSucess{
+  background: #6ab04c;
+}
+.caseFail{
+  background: #eb4d4b;
+}
+.stepBox{
+  padding: 16px;
+  background: #fff;
+}
+.pageHeaderContent {
+  position: relative;
+  p{
+    margin-bottom: 5px;
+  }
+  .total{
+    margin-left: 10px;
+    color: rgba(0,0,0,.85);
+    font-weight: bold;
+    font-size: 20px;
+  }
+  .sucess{
+    margin-left: 10px;
+    color: #52c41a;
+    font-weight: bold;
+    font-size: 20px;
+  }
+  .fail{
+    margin-left: 10px;
+    color:#f5222d;
+    font-weight: bold;
+    font-size: 20px;
+
+  }
+}
+.extraImg {
+  width: 195px;
+  margin-top: -60px;
+}
+.resultCollapse{
+  a{
+    color: #fff;
+    font-size: 18px;
+  }
+}
+.cardList {
+  margin-bottom: -24px;
+
+  .card {
+    min-height:190px;
+    :global {
+      .ant-card-meta-title {
+        margin-bottom: 12px;
+        & > a {
+          display: inline-block;
+          max-width: 100%;
+          color: fade(#000, 85%);
+        }
+      }
+      .ant-card-actions {
+        background: #f7f9fa;
+      }
+      .ant-card-body {
+        height: 75%;
+      }
+      .ant-card-body:hover {
+        .ant-card-meta-title > a {
+          color: #1890ff;
+        }
+      }
+    }
+  }
+  .item {
+    height: 64px;
+  }
+
+  :global {
+    .ant-list .ant-list-item-content-single {
+      max-width: 100%;
+    }
+  }
+}
+.newButton {
+  width: 100%;
+  height: 188px;
+  background-color: #fff;
+  border-color: hsv(0, 0, 85%);
+  border-radius: 2px;
+  color: fade(#000, 45%);
+}
+.switchContainer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  width: 100%;
+  .switchButton {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    :global {
+      .ant-switch-checked {
+        background-color: #2ecc71;
+      }
+    }
+  }
+}
+.descriptionContainer{
+  padding-bottom: 10px;
+}
+.deleteAction{
+  position: absolute;
+  bottom: 10px;
+  left: 25px;
+}
+.deleteIcon{
+  color: red;
+  font-size: 18px;
+}
+.reportHref{
+  position: absolute;
+  right: 15px;
+  bottom: 10px;
+}
+.item_container{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.taskRunTime{
+  font-weight: bold;
+}

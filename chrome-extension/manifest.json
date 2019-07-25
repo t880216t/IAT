@@ -1,0 +1,50 @@
+{
+  "manifest_version": 2,
+  "name": "Web元素捕手",
+  "description": "一款配合UI Auto Test的元素获取插件，请注意这个插件无法单独使用，需配合UAT网页端使用。",
+  "version": "1.0.0",
+  "icons": {
+    "16": "image/icon-16.png",
+    "128": "image/icon-128.png"
+  },
+  "browser_action": {
+    "default_icon": {
+      "19": "image/icon-19.png",
+      "38": "image/icon-38.png"
+    },
+    "default_title": "Web元素捕手"
+  },
+  "web_accessible_resources": [
+    "index.html"
+  ],
+  "permissions": [
+    "alarms", "tabs", "notifications","<all_urls>", "activeTab", "downloads", "storage","contextMenus"
+  ],
+  "background": {
+    "persistent": false,
+    "scripts": [
+      "background.js",
+      "./translator/robot-translator.js"
+    ]
+  },
+  "externally_connectable": {
+    "matches": [
+      "*://*.orion-c.test/*"
+    ]
+  },
+  "content_scripts": [{
+    "matches": [
+      "<all_urls>"
+    ],
+    "js": [
+      "content.js",
+      "./locator/xpath-locator.js",
+      "./locator/tree-builder.js",
+      "./locator/classifier.js",
+      "./locator/scanner.js"
+    ],
+    "run_at": "document_start",
+    "all_frames": true
+  }],
+  "content_security_policy": "script-src 'self' 'sha256-GgRxrVOKNdB4LrRsVPDSbzvfdV4UqglmviH9GoBJ5jk='; object-src 'self'"
+}
