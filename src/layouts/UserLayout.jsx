@@ -33,9 +33,6 @@ const UserLayout = props => {
       })}
     >
       <div className={styles.container} style={{ backgroundImage: `url('${homeback.imgUrl}')` }}>
-        <div className={styles.lang}>
-          <SelectLang />
-        </div>
         <div className={styles.content}>
           {children}
         </div>

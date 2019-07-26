@@ -138,7 +138,7 @@ class Immediate extends PureComponent {
       title: '任务名称',
       dataIndex: 'name',
       key: 'name',
-      render: (text, record) => <a href={`/task/ui/immediate/detail?${record.id}`} style={{ color: '#2e86de', fontWeight: 'bold' }}>{text}</a>,
+      render: (text, record) => <a target="_blank" rel="noopener noreferrer" href={`/task/ui/immediate/detail?${record.id}`} style={{ color: '#2e86de', fontWeight: 'bold' }}>{text}</a>,
     }, {
       title: '新建人',
       dataIndex: 'add_user',

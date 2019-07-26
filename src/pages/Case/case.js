@@ -8,7 +8,7 @@ import StepList from './CaseStepNew/index';
 const { Search, TextArea } = Input;
 const { Step } = Steps;
 
-const targetExtensionId = 'emfopkjhidgcfmljbjhmgiolhbcgfeng'; // 插件的ID
+const targetExtensionId = 'podifkoefcjppjkokchkannclebaeoek'; // 插件的ID
 
 @connect(({ caseInfo, loading }) => ({
   caseInfo,

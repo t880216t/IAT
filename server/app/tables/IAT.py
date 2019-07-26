@@ -95,6 +95,7 @@ class Task(db.Model):
   name = db.Column(db.String(500))
   domain = db.Column(db.String(500))
   task_type = db.Column(db.SMALLINT)
+  value_type = db.Column(db.SMALLINT)
   status = db.Column(db.SMALLINT)
   run_time = db.Column(db.String(255))
   task_desc = db.Column(db.String(1000))
@@ -109,11 +110,12 @@ class Task(db.Model):
   add_time = db.Column(db.DateTime)
   update_time = db.Column(db.DateTime)
 
-  def __init__(self,name,task_desc,project_id,task_type,run_time,domain,headers,params,proxy,case,user_id,status):
+  def __init__(self,name,task_desc,project_id,task_type,run_time,domain,headers,params,proxy,case,user_id,status,value_type):
     self.name = name
     self.task_desc = task_desc
     self.project_id = project_id
     self.task_type = task_type
+    self.value_type = value_type
     self.run_time = run_time
     self.domain = domain
     self.headers = headers
@@ -124,3 +126,21 @@ class Task(db.Model):
     self.update_time = datetime.now()
     self.user_id = user_id
     self.status = status
+
+class GlobalValues(db.Model):
+  __tablename__ = 'global_values'
+  id = db.Column(db.Integer, primary_key=True)
+  key_name = db.Column(db.String(500))
+  key_value = db.Column(db.String(4000))
+  project_id = db.Column(db.Integer)
+  add_time = db.Column(db.DateTime)
+  user_id = db.Column(db.Integer)
+  value_type = db.Column(db.SMALLINT)
+
+  def __init__(self,key_name,key_value,project_id,user_id, value_type):
+    self.key_name = key_name
+    self.key_value = key_value
+    self.project_id = project_id
+    self.user_id = user_id
+    self.value_type = value_type
+    self.add_time = datetime.now()

@@ -10,6 +10,7 @@ import { Resizable } from 're-resizable';
 import JSONPretty from 'react-json-pretty';
 import { setTage, getTage } from '@/services/tags';
 import styles from './index.less'
+import CaseProject from './CaseProject/index';
 
 import 'brace/mode/java';
 import 'brace/theme/dracula';
@@ -43,6 +44,8 @@ class Interface extends Component {
         rightClickItem: null,
         debugDomain: null,
         selectNoteType: null,
+        selectIndexId: null,
+        selectNoteId: null,
         infoParamsFormatType: null,
         infoName: '',
         infoPath: '',
@@ -354,6 +357,10 @@ class Interface extends Component {
       })
   };
 
+  handleTreeUpdate = () => {
+    this.queryTreeList(this.state.project);
+  }
+
   queryTreeList=(id, isRef = false) => {
     const { dispatch } = this.props;
     dispatch({
@@ -480,9 +487,12 @@ class Interface extends Component {
 
   onSelect = (selectedKeys, info) => {
     if (selectedKeys.length > 0) {
+      const { noteType, id, index_id } = info.node.props.dataRef;
       this.setState({
         selectedKeys,
-        selectNoteType: info.node.props.dataRef.noteType,
+        selectNoteId: id,
+        selectNoteType: noteType,
+        selectIndexId: index_id,
         infoName: '',
         infoPath: '',
         infoMethod: 'GET',
@@ -990,8 +1000,8 @@ class Interface extends Component {
     const {
       projectList, project, treeList, rightClickItem, expandedKeys, hasPreShell, hasPostShell,
       selectedKeys, autoExpandParent, selectNoteType, infoName, infoPath, preShellData, postShellData,
-      infoMethod, infoParams, infoAssertType, infoExtractType, infoAssertData, infoParamsFormatType,
-      infoExtractData, debugDomain, debugData, showAddHeader, debugHeader, debugResult, extractList
+      infoMethod, infoParams, infoAssertType, infoExtractType, infoAssertData, infoParamsFormatType, selectNoteId,
+      infoExtractData, debugDomain, debugData, showAddHeader, debugHeader, debugResult, extractList, selectIndexId
     } = this.state;
     const { loading, debugLoading } = this.props;
     const loop = data => data.map(item => {
@@ -1416,42 +1426,46 @@ class Interface extends Component {
     );
     return (
       <Content>
-        <Layout style={{ background: '#fff', borderRadius: '5px' }} onClick={() => this.clearMenu()}>
-          <Sider style={{ background: '#fff', height: '90vh', zIndex: 2 }}>
-            <Resizable className={styles.left_res_container} enable={{ right: true }} defaultSize={{ height: '90vh' }} size={{ height: '90vh' }}>
-              <Select placeholder="请选择项目" value={project || undefined} style={{ width: '100%' }} size="small" onChange={this.handleProjectChange}>
-                {projectList && projectList.map(item => (
-                  <Option value={item.id} key={item.id}>{item.name}</Option>
-                ))}
-              </Select>
-              <div
-                className={styles.left_container}
-                ref={this.setDomTreeBoxRef}
+        <div className={styles.contentContainer}>
+          <Resizable className={styles.left_res_container} enable={{ right: true }} defaultSize={{ height: '90vh' }} size={{ height: '90vh' }}>
+            <Select placeholder="请选择项目" value={project || undefined} style={{ width: '100%' }} size="small" onChange={this.handleProjectChange}>
+              {projectList && projectList.map(item => (
+                <Option value={item.id} key={item.id}>{item.name}</Option>
+              ))}
+            </Select>
+            <div
+              className={styles.left_container}
+              ref={this.setDomTreeBoxRef}
+            >
+              <Tree
+                showIcon
+                draggable
+                autoExpandParent={autoExpandParent}
+                defaultExpandAll
+                selectedKeys={selectedKeys}
+                expandedKeys={expandedKeys}
+                onSelect={this.onSelect}
+                onDrop={this.onDrop}
+                onCheck={this.onCheck}
+                onExpand={this.onExpandTree}
+                onRightClick={e => this.handleOnRightClick(e)}
               >
-                <Tree
-                  showIcon
-                  draggable
-                  // expandAction="doubleClick"
-                  autoExpandParent={autoExpandParent}
-                  defaultExpandAll
-                  selectedKeys={selectedKeys}
-                  expandedKeys={expandedKeys}
-                  onSelect={this.onSelect}
-                  onDrop={this.onDrop}
-                  onCheck={this.onCheck}
-                  onExpand={this.onExpandTree}
-                  onRightClick={e => this.handleOnRightClick(e)}
-                >
-                  {treeList && loop(treeList)}
-                </Tree>
-              </div>
-            </Resizable>
-          </Sider>
-          <div style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
+                {treeList && loop(treeList)}
+              </Tree>
+            </div>
+          </Resizable>
+          <div className={styles.rightContentContainer}>
             <Content style={{ background: '#fff', padding: 10, height: '90vh', width: '70%', borderRight: '1px solid #e8e8e8' }}>
               <div className={styles.right_container}>
                 {!(selectedKeys && selectedKeys.length > 0) && <Empty />}
-                {(selectedKeys && selectNoteType === 1) && Folder}
+                {(selectedKeys && selectNoteType === 1 && selectIndexId === 0) && (
+                  <CaseProject
+                    selectNoteId={selectNoteId}
+                    handleTreeUpdate={() => this.handleTreeUpdate()}
+                  />
+                  )
+                }
+                {(selectedKeys && selectNoteType === 1 && selectIndexId !== 0) && Folder}
                 {(selectedKeys && selectNoteType === 2) && Case}
               </div>
             </Content>
@@ -1461,7 +1475,7 @@ class Interface extends Component {
               </div>
             </Content>
           </div>
-        </Layout>
+        </div>
         {rightClickItem && this.getNodeTreeMenu()}
       </Content>
     );

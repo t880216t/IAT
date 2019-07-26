@@ -223,31 +223,6 @@ class AddImm extends PureComponent {
                 </Select>
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="任务名称">
-              {getFieldDecorator('name', {
-                rules: [
-                  {
-                    required: true,
-                    message: '任务名称不可为空',
-                  },
-                ],
-              })(<Input placeholder="请输入任务名称" />)}
-            </FormItem>
-            <FormItem {...formItemLayout} label="任务描述">
-              {getFieldDecorator('taskDesc', {
-                rules: [
-                  {
-                    required: false,
-                  },
-                ],
-              })(
-                <TextArea
-                  style={{ minHeight: 32 }}
-                  placeholder="请输入任务描述"
-                  rows={4}
-                />
-              )}
-            </FormItem>
             <FormItem {...formItemLayout} label="任务类型">
               <div>
                 {getFieldDecorator('taskType', {
@@ -278,6 +253,46 @@ class AddImm extends PureComponent {
                   )}
                 </FormItem>
               </div>
+            </FormItem>
+            <FormItem {...formItemLayout} label="任务名称">
+              {getFieldDecorator('name', {
+                rules: [
+                  {
+                    required: true,
+                    message: '任务名称不可为空',
+                  },
+                ],
+              })(<Input placeholder="请输入任务名称" />)}
+            </FormItem>
+            <FormItem {...formItemLayout} label="任务描述">
+              {getFieldDecorator('taskDesc', {
+                rules: [
+                  {
+                    required: false,
+                  },
+                ],
+              })(
+                <TextArea
+                  style={{ minHeight: 32 }}
+                  placeholder="请输入任务描述"
+                  rows={4}
+                />
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="参数类型">
+              {getFieldDecorator('valueType', {
+                rules: [
+                  {
+                    required: true,
+                  },
+                ],
+                initialValue: 1,
+              })(
+                <Radio.Group>
+                  <Radio value={1}>正式版</Radio>
+                  <Radio value={2} disabled>测试版</Radio>
+                </Radio.Group>,
+              )}
             </FormItem>
             <FormItem {...formItemLayout} label="测试域名">
               {getFieldDecorator('domain', {

@@ -7,7 +7,7 @@ import StepList from './CustomKeyword/index';
 const { Search } = Input;
 const { TextArea } = Input;
 
-const targetExtensionId = 'emfopkjhidgcfmljbjhmgiolhbcgfeng'; // 插件的ID
+const targetExtensionId = 'podifkoefcjppjkokchkannclebaeoek'; // 插件的ID
 
 @connect(({ caseInfo, loading }) => ({
   caseInfo,

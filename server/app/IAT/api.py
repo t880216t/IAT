@@ -1,6 +1,6 @@
 # -*-coding:utf-8-*-
 from flask import Blueprint, jsonify, make_response, session, request
-from app.tables.IAT import Project, Tree, Sample, Task, TaskCount
+from app.tables.IAT import Project, Tree, Sample, Task, TaskCount, GlobalValues
 from app.tables.User import users
 import os,hashlib,subprocess, json, time, datetime, binascii, requests
 from sqlalchemy import extract
@@ -59,7 +59,7 @@ def projectList():
   if projectList:
     for item in projectList:
       caseCount = Sample.query.filter(db.and_(Sample.project_id == item.id)).count()
-      row_data = users.query.filter(db.and_(users.id == user_id)).first()
+      row_data = users.query.filter(db.and_(users.id == item.user_id)).first()
       username = ""
       if row_data:
         username = row_data.username
@@ -267,7 +267,7 @@ def addTask():
     case = json.dumps([])
   try:
     addData = Task(info["name"], task_desc, info["project"], info["taskType"], info["runTime"],
-                   info["domain"], headers, params,proxy, case, user_id, 0)
+                   info["domain"], headers, params,proxy, case, user_id, 0, info["valueType"])
     db.session.add(addData)
     db.session.commit()
     return make_response(jsonify({'code': 0, 'content': None, 'msg': u'添加成功!'}))
@@ -308,6 +308,7 @@ def updateTaskInfo():
     data = {
       "name": info["name"],
       "task_type": info["taskType"],
+      "value_type": info["valueType"],
       "run_time": info["runTime"],
       "task_desc": task_desc,
       "domain": info["domain"],
@@ -416,6 +417,7 @@ def taskInfo():
     "proxy": taskData.proxy,
     "taskDesc": taskData.task_desc,
     "taskType": taskData.task_type,
+    "valueType": taskData.value_type,
     "runTime": taskData.run_time,
     "project": taskData.project_id,
     "samples": samples,
@@ -501,6 +503,7 @@ def taskPrew():
     "proxy": taskData.proxy,
     "taskDesc": taskData.task_desc,
     "taskType": taskData.task_type,
+    "valueType": taskData.value_type,
     "runTime": taskData.run_time,
     "project": taskData.project_id,
     "caseIds": caseIds,
@@ -896,3 +899,117 @@ def uploadFile():
     return make_response(jsonify({'code': 0, 'content':None, 'msg': 'upload sucess'}))
   else:
     return make_response(jsonify({'code': 10002, 'content':None, 'msg': 'upload fail!'}))
+
+@api.route('/projectRootInfo',methods=['GET'])
+def projectRootInfo():
+  id = request.values.get("id")
+  content = {}
+  treeData = Tree.query.filter_by(id = id).first()
+  if treeData:
+    content['name'] = treeData.name
+
+  return make_response(jsonify({'code': 0, 'content': content, 'msg': ''}))
+
+def syncTreeName(id,name):
+  rowData = Tree.query.filter_by(id=id)
+  if rowData:
+    data = {
+      'name': name,
+    }
+    rowData.update(data)
+    db.session.commit()
+
+@api.route('/uploadTreeName',methods=['POST'])
+def uploadTreeName():
+  id = request.json.get("id")
+  name = request.json.get("name")
+  syncTreeName(id, name)
+  return make_response(jsonify({'code': 0, 'content': None, 'msg': u'操作成功!'}))
+
+
+@api.route('/projectGlobalValues', methods=['GET'])
+def projectGlobalValues():
+  id = request.values.get("id")
+  projectId = Tree.query.filter_by(id=id).first().project_id
+  globalValuesData = GlobalValues.query.filter_by(project_id=projectId).order_by(db.asc(GlobalValues.add_time)).all()
+  content = []
+  if globalValuesData:
+    for item in globalValuesData:
+      content.append({
+        "id": item.id,
+        "key": item.key_name,
+        "value": item.key_value,
+        "valueType": item.value_type,
+      })
+  return make_response(jsonify({'code': 0, 'msg': '', 'content': content}))
+
+@api.route('/addGlobalValues', methods=['POST'])
+def addGlobalValues():
+  user_id = session.get('user_id')
+  keyName = request.json.get("keyName")
+  keyValue = request.json.get("keyValue")
+  projectTreeId = request.json.get("projectId")
+  valueType = request.json.get("valueType")
+  try:
+    rowData = GlobalValues.query.filter_by(key_name = keyName).first()
+    projectId = Tree.query.filter_by(id = projectTreeId).first().project_id
+    if rowData:
+      return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'关键词名称重复!'}))
+    data = GlobalValues(keyName, keyValue, projectId, user_id, valueType)
+    db.session.add(data)
+    db.session.commit()
+    if valueType == 1:
+      defaultData = GlobalValues(keyName, '', projectId, user_id, 2)
+      db.session.add(defaultData)
+      db.session.commit()
+    if valueType == 2:
+      defaultData = GlobalValues(keyName, '', projectId, user_id, 1)
+      db.session.add(defaultData)
+      db.session.commit()
+    return make_response(jsonify({'code': 0, 'content': None, 'msg': u'新建成功!'}))
+  except Exception as e:
+    print(e)
+    return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'新建失败!'}))
+
+@api.route('/deleteGlobalValues', methods=['POST'])
+def deleteGlobalValues():
+  id = request.json.get("id")
+  try:
+    rowData = GlobalValues.query.filter_by(id = id).first()
+    if rowData:
+      oldKeyName = rowData.key_name
+      db.session.delete(rowData)
+      db.session.commit()
+      otherRowData = GlobalValues.query.filter_by(key_name=oldKeyName).first()
+      if otherRowData:
+        db.session.delete(otherRowData)
+        db.session.commit()
+      return make_response(jsonify({'code': 0, 'content': None, 'msg': u'删除成功!'}))
+    else:
+      return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'删除失败!'}))
+  except Exception as e:
+    print(e)
+    return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'删除失败!'}))
+
+@api.route('/updateGlobalValues', methods=['POST'])
+def updateGlobalValues():
+  id = request.json.get("id")
+  keyName = request.json.get("keyName")
+  keyValue = request.json.get("keyValue")
+  rowData = GlobalValues.query.filter_by(id=id)
+  if rowData.first():
+    oldKeyName = rowData.first().key_name
+    data = {
+      'key_name': keyName,
+      'key_value': keyValue,
+    }
+    rowData.update(data)
+    db.session.commit()
+    otherRowData = GlobalValues.query.filter_by(key_name = oldKeyName)
+    if otherRowData.first():
+      data = {
+        'key_name': keyName,
+      }
+      otherRowData.update(data)
+      db.session.commit()
+  return make_response(jsonify({'code': 0, 'content': None, 'msg': u'操作成功'}))

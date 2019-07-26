@@ -148,12 +148,48 @@ export async function queryTaskDelete(params) {
   });
 }
 
+export async function queryUploadTreeName(params) {
+  return request('/api/IAT/uploadTreeName', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function queryAddGlobalValues(params) {
+  return request('/api/IAT/addGlobalValues', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function queryDeleteGlobalValues(params) {
+  return request('/api/IAT/deleteGlobalValues', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function queryUpdateGlobalValues(params) {
+  return request('/api/IAT/updateGlobalValues', {
+    method: 'POST',
+    data: params,
+  });
+}
+
 export async function queryProjectList(params) {
   return request(`/api/IAT/projectList?status=${params.status.toString()}&_=${new Date().getTime().toString()}`);
 }
 
 export async function queryTaskInfo(params) {
   return request(`/api/IAT/taskPrew?id=${params.id.toString()}&_=${new Date().getTime().toString()}`);
+}
+
+export async function queryProjectGlobalValues(params) {
+  return request(`/api/IAT/projectGlobalValues?id=${params.id.toString()}&_=${new Date().getTime().toString()}`);
+}
+
+export async function queryProjectRootInfo(params) {
+  return request(`/api/IAT/projectRootInfo?id=${params.id.toString()}&_=${new Date().getTime().toString()}`);
 }
 
 export async function queryTaskResult(params) {

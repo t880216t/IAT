@@ -2,6 +2,7 @@
 import sys,requests,os,subprocess,json, importlib, binascii, hashlib, shutil
 import xml.etree.ElementTree as ET
 from flask_script import Manager
+from app.tables.IAT import Project, Tree, Sample, Task, TaskCount, GlobalValues
 from app import app,db
 from datetime import datetime
 import pandas as pd
@@ -41,27 +42,29 @@ def encrypt_name(name, salt=None, encryptlop=30):
   return name
 
 #状态设置请求
-def setTaskStatus(taskId,status,msg):
-  data = {'id':taskId,'status':status}
-  headers = {'Content-Type':'application/json'}
-  url = 'http://127.0.0.1:5000/api/IAT/updateTaskStatus'
-  res = requests.post(url,headers = headers,data=json.dumps(data))
-  response = res.json()
-  print(response["msg"])
+def setTaskStatus(taskId,status, msg):
+  data = {
+    'status': status
+  }
+  rowData = Task.query.filter_by(id=taskId)
+  rowData.update(data)
+  db.session.commit()
+  print(msg)
 
 def updateTaskResult(taskId,result,msg):
-  data = {'id':taskId,'result':json.dumps(result)}
-  headers = {'Content-Type':'application/json'}
-  url = 'http://127.0.0.1:5000/api/IAT/updateTaskResult'
-  res = requests.post(url,headers = headers,data=json.dumps(data))
-  response = res.json()
-  print(response["msg"])
+  data = {
+    'result': json.dumps(result)
+  }
+  rowData = Task.query.filter_by(id=taskId)
+  rowData.update(data)
+  db.session.commit()
+  print(msg)
 
 def read_demo(demo_path):
   tree = ET.parse(demo_path)
   return tree
 
-def configTestElement(test_domain,params=None,proxy=None):
+def configTestElement(test_domain,params=None,proxy=None,projectGlobalValues=None):
   domain = test_domain
   protocol = ""
   port = ""
@@ -83,6 +86,17 @@ def configTestElement(test_domain,params=None,proxy=None):
                                            "guiclass": "HTTPArgumentsPanel", "testclass": "Arguments",
                                            "testname": u"用户定义的变量", "enabled": "true"})
   collectionProp = ET.SubElement(elementProp,'collectionProp',{"name":"Arguments.arguments"})
+  if projectGlobalValues:
+    for item in projectGlobalValues:
+      if item:
+        paramElementProp = ET.Element('elementProp',{"name":item["key"], "elementType":"HTTPArgument"})
+        ET.SubElement(paramElementProp,'boolProp',{"name":"HTTPArgument.always_encode"}).text = 'false'
+        ET.SubElement(paramElementProp,'stringProp',{"name":"Argument.value"}).text = item["value"]
+        ET.SubElement(paramElementProp,'stringProp',{"name":"Argument.metadata"}).text = '='
+        ET.SubElement(paramElementProp,'boolProp',{"name":"HTTPArgument.use_equals"}).text = 'true'
+        ET.SubElement(paramElementProp,'stringProp',{"name":"Argument.name"}).text = item["key"]
+        collectionProp.append(paramElementProp)
+
   if params:
     for item in params:
       if item:
@@ -238,6 +252,17 @@ def beanShellPostProcessor(data):
   ET.SubElement(BeanShellPostProcessor, 'stringProp', {"name": "script"}).text = data
   return BeanShellPostProcessor
 
+def getGlobalValues(projectId, valueType):
+  rowDatas = GlobalValues.query.filter(db.and_(GlobalValues.project_id == projectId,GlobalValues.value_type == valueType)).all()
+  content = []
+  if rowDatas:
+    for rowData in rowDatas:
+      content.append({
+        'key': rowData.key_name,
+        'value': rowData.key_value,
+      })
+  return content
+
 def set_data(tree,data):
   root = tree.getroot()
   ThreadGroup = root.find("./hashTree/hashTree/ThreadGroup")
@@ -246,8 +271,10 @@ def set_data(tree,data):
   ThreadGroup.set('testname', data["testname"])
   #设置请求headers默认参数
   HeaderManager = headerManager(data["headers"])
+  # 获取项目全局参数
+  projectGlobalValues = getGlobalValues(data['project'],data['valueType'])
   #设置请求默认参数
-  ConfigTestElement = configTestElement(data["domain"],data["params"],data["proxy"])
+  ConfigTestElement = configTestElement(data["domain"],data["params"],data["proxy"],projectGlobalValues)
   ThreadGroupHashTree.append(HeaderManager)
   ET.SubElement(ThreadGroupHashTree,'hashTree')
   ThreadGroupHashTree.append(ConfigTestElement)
@@ -306,36 +333,76 @@ def readResult(path):
     content.append(item)
   return content
 
+def getTaskInfo(taskId):
+  taskData = Task.query.filter(db.and_(Task.id == taskId, )).first()
+  sampleIds = json.loads(taskData.case)
+  samples = []
+  caseIds = []
+  for id in sampleIds:
+    sampleData = Sample.query.filter_by(pid=id).first()
+    sampleName = Tree.query.filter_by(id=id).first().name
+    if sampleData:
+      caseIds.append(sampleData.pid)
+      samples.append({
+        "id": sampleData.id,
+        "name": sampleName,
+        "path": sampleData.path,
+        "method": sampleData.method,
+        "paramType": sampleData.param_type,
+        "params": json.loads(sampleData.params),
+        "asserts": {
+          "assertType": sampleData.asserts_type,
+          "assertData": json.loads(sampleData.asserts_data),
+        },
+        "extract": {
+          "extractType": sampleData.extract_type,
+          "extractData": json.loads(sampleData.extract_data),
+        },
+        "preShellType": sampleData.pre_shell_type,
+        "preShellData": sampleData.pre_shell_data,
+        "postShellType": sampleData.post_shell_type,
+        "postShellData": sampleData.post_shell_data,
+      })
+  taskInfo = {
+    "testname": taskData.name,
+    "domain": taskData.domain,
+    "headers": json.loads(taskData.headers),
+    "params": json.loads(taskData.params),
+    "proxy": taskData.proxy,
+    "taskDesc": taskData.task_desc,
+    "taskType": taskData.task_type,
+    "valueType": taskData.value_type,
+    "runTime": taskData.run_time,
+    "project": taskData.project_id,
+    "samples": samples,
+    "caseIds": caseIds,
+  }
+  return taskInfo
+
 @manager.option('-i','--task_id',dest='task_id',default='')
 def runScript(task_id):
-  url = 'http://127.0.0.1:5000/api/IAT/taskInfo'
-  params = {"id": task_id}
-  res = requests.get(url, params=params)
-  response = res.json()
-  if response["code"] == 0:
+  taskInfo = getTaskInfo(task_id)
+  try:
+    setTaskStatus(task_id, 1, "get task info")
+    now = datetime.now().strftime('%Y-%m-%d_%H_%M_%S')
+    taskRootPath = encrypt_name(now)
+    reulstPath = makeResultPath(taskRootPath)
+    tree = read_demo('templete.jmx')
+    tree = set_data(tree, data=taskInfo)
+    tree.write(reulstPath + '/testData.jmx')
+    setTaskStatus(task_id, 2, "build task script")
+    runJmeterTest(reulstPath)
+    setTaskStatus(task_id, 3, "excute script sucess")
     try:
-      setTaskStatus(task_id, 1, "get task info")
-      now = datetime.now().strftime('%Y-%m-%d_%H_%M_%S')
-      taskRootPath = encrypt_name(now)
-      reulstPath = makeResultPath(taskRootPath)
-      tree = read_demo('templete.jmx')
-      tree = set_data(tree, data=response["content"])
-      tree.write(reulstPath + '/testData.jmx')
-      setTaskStatus(task_id, 2, "build task script")
-      runJmeterTest(reulstPath)
-      setTaskStatus(task_id, 3, "excute script sucess")
-      try:
-        resultContent = readResult(reulstPath + '/result.csv')
-        updateTaskResult(task_id, resultContent, "upload result")
-        clear_project_file('taskFile/' + taskRootPath)
-      except Exception as e:
-        print(e)
-        setTaskStatus(task_id, 5, "task fail,please check jmeter env")
+      resultContent = readResult(reulstPath + '/result.csv')
+      updateTaskResult(task_id, resultContent, "upload result")
+      # clear_project_file('taskFile/' + taskRootPath)
     except Exception as e:
       print(e)
-      setTaskStatus(task_id, 5, "build task script fail")
-  else:
-    setTaskStatus(task_id, 4, "get task info fail")
+      setTaskStatus(task_id, 5, "task fail,please check jmeter env")
+  except Exception as e:
+    print(e)
+    setTaskStatus(task_id, 5, "build task script fail")
 
 
 if '__main__' == __name__:

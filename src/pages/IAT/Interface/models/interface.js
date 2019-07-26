@@ -14,6 +14,12 @@ import {
   queryDebugSample,
   queryExtractList,
   queryUpdateTreeIndex,
+  queryProjectRootInfo,
+  queryUploadTreeName,
+  queryProjectGlobalValues,
+  queryAddGlobalValues,
+  queryDeleteGlobalValues,
+  queryUpdateGlobalValues,
 } from '@/services/iatApi';
 import { reloadAuthorized } from '@/utils/Authorized';
 
@@ -22,10 +28,37 @@ export default {
   state: {
     treeList: [],
     extractList: [],
+    globalValues: [],
     infoData: {},
+    projectRootInfo: {},
   },
-
   effects: {
+    *queryProjectRootInfo({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { projectRootInfo: [] } });
+      const response = yield call(queryProjectRootInfo, payload);
+      if (response) {
+        yield put({ type: 'updateState', payload: { projectRootInfo: response.content } });
+      }
+    },
+    *queryProjectGlobalValues({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { globalValues: [] } });
+      const response = yield call(queryProjectGlobalValues, payload);
+      if (response) {
+        yield put({ type: 'updateState', payload: { globalValues: response.content } });
+      }
+    },
+    *queryUploadTreeName({ payload }, { call, put }) {
+      yield call(queryUploadTreeName, payload);
+    },
+    *queryAddGlobalValues({ payload }, { call, put }) {
+      yield call(queryAddGlobalValues, payload);
+    },
+    *queryDeleteGlobalValues({ payload }, { call, put }) {
+      yield call(queryDeleteGlobalValues, payload);
+    },
+    *queryUpdateGlobalValues({ payload }, { call, put }) {
+      yield call(queryUpdateGlobalValues, payload);
+    },
     *queryUpdateSample({ payload }, { call, put }) {
       const response = yield call(queryUpdateSample, payload);
       if (response) {

@@ -18,7 +18,6 @@ const GlobalHeaderRight = props => {
   return (
     <div className={className}>
       <Avatar menu/>
-      <SelectLang className={styles.action} />
     </div>
   );
 };

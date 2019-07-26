@@ -124,7 +124,7 @@ class Timing extends PureComponent {
     );
     const cardTitle = item => (
         <div className={styles.switchContainer}>
-          <a href={`/task/ui/timing/detail?${item.id}`} style={{ color: '#40a9ff', fontWeight: 'bold' }}>
+          <a target="_blank" rel="noopener noreferrer" href={`/task/ui/timing/detail?${item.id}`} style={{ color: '#40a9ff', fontWeight: 'bold' }}>
             {item.name}
           </a>
           <div className={styles.switchButton}>
