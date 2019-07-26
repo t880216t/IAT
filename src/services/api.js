@@ -246,6 +246,20 @@ export async function querySetProjectStatus(params) {
   });
 }
 
+export async function querySetUserStatus(params) {
+  return request('/api/UAT/project/setUserStatus', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function querySetUserType(params) {
+  return request('/api/UAT/project/setUserType', {
+    method: 'POST',
+    data: params,
+  });
+}
+
 export async function queryUpdateKeywords(params) {
   return request('/api/UAT/project/updateKeywords', {
     method: 'POST',
@@ -273,6 +287,10 @@ export async function queryCaseData(params) {
 
 export async function queryProxyConfigList() {
   return request(`/api/UAT/project/proxyConfigList?_=${new Date().getTime().toString()}`);
+}
+
+export async function queryUserList() {
+  return request(`/api/UAT/project/userList?_=${new Date().getTime().toString()}`);
 }
 
 export async function queryHomeData() {

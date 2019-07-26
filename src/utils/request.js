@@ -66,6 +66,12 @@ request.interceptors.response.use(async response => {
     errorHandlerRe(response);
   }
   const data = await response.clone().json();
+  if (data && data.code === 10001) {
+    message.config({
+      top: '15%',
+    });
+    message.error(data.msg);
+  }
   if (data && data.code === 10002) {
     message.config({
       top: '15%',

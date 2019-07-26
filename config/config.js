@@ -292,17 +292,17 @@ export default {
                 {
                   path: '/config/ui/project',
                   name: 'project',
-                  component: './System/project',
+                  component: './Config/project',
                 },
                 {
                   path: '/config/ui/proxy',
                   name: 'proxy',
-                  component: './System/proxy',
+                  component: './Config/proxy',
                 },
                 {
                   path: '/config/ui/keywords',
                   name: 'keywords',
-                  component: './System/keywords',
+                  component: './Config/keywords',
                 },
               ],
             },
@@ -323,13 +323,13 @@ export default {
           path: '/system',
           name: 'system',
           icon: 'setting',
-          authority: ['admin', 'user'],
+          authority: ['admin'],
           routes: [
             {
               path: '/system/users',
               name: 'users',
               icon: 'user',
-              component: './System/project',
+              component: './System/users',
             },
           ],
         },

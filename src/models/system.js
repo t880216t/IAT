@@ -12,6 +12,9 @@ import {
   queryGetAllLibs,
   queryGetLibKeywords,
   queryUpdateKeywords,
+  queryUserList,
+  querySetUserStatus,
+  querySetUserType,
 } from '@/services/api';
 
 const SytemModel = {
@@ -24,6 +27,13 @@ const SytemModel = {
     libKeywords: [],
   },
   effects: {
+    *queryUserList({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { userList: [] } });
+      const response = yield call(queryUserList, payload);
+      if (response) {
+        yield put({ type: 'updateState', payload: { userList: response.content } });
+      }
+    },
     *queryProjectList({ payload }, { call, put }) {
       yield put({ type: 'updateState', payload: { projectList: [] } });
       const response = yield call(queryProjectList, payload);
@@ -70,6 +80,12 @@ const SytemModel = {
     },
     *querySetProjectStatus({ payload }, { call, put }) {
       yield call(querySetProjectStatus, payload);
+    },
+    *querySetUserStatus({ payload }, { call, put }) {
+      yield call(querySetUserStatus, payload);
+    },
+    *querySetUserType({ payload }, { call, put }) {
+      yield call(querySetUserType, payload);
     },
     *queryAddProxyConfig({ payload }, { call, put }) {
       yield call(queryAddProxyConfig, payload);

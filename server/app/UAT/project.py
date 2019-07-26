@@ -314,3 +314,61 @@ def updateKeywords():
     return make_response(jsonify({'code': 0, 'content': None, 'msg': u'操作成功'}))
   else:
     return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'操作失败'}))
+
+@project.route('/userList', methods=['GET'])
+def userList():
+  userDatas = users.query.filter_by(status = 1).order_by(db.asc(users.add_time)).all()
+  content = []
+  if userDatas:
+    for item in userDatas:
+      content.append({
+        "id": item.id,
+        "name": item.username,
+        "email": item.email,
+        "account_type": item.account_type,
+        "status": item.status,
+        "add_time": item.add_time.strftime('%Y-%m-%d %H:%M:%S'),
+      })
+  return make_response(jsonify({'code': 0, 'msg': '', 'content': content}))
+
+def assertAdmin(user_id):
+  row_data = users.query.filter(db.and_(users.id == user_id)).first()
+  print(row_data.account_type)
+  if row_data and row_data.account_type == 1:
+    print('admin:',row_data.username,)
+    return True
+  else:
+    print('error admin:', row_data.username, )
+    return False
+
+@project.route('/setUserStatus', methods=['POST'])
+def setUserStatus():
+  user_id = session.get('user_id')
+  id = request.json.get("id")
+  status = request.json.get("status")
+  data = {'status': status}
+  if not assertAdmin(user_id):
+    return make_response(jsonify({'code': 10001, 'msg': '没有权限', 'content': []}))
+  row_data = users.query.filter(db.and_(users.id == id))
+  if row_data.first():
+    row_data.update(data)
+    db.session.commit()
+    return make_response(jsonify({'code': 0, 'msg': 'sucess', 'content': []}))
+  else:
+    return make_response(jsonify({'code': 10001, 'msg': 'error', 'content': []}))
+
+@project.route('/setUserType', methods=['POST'])
+def setUserType():
+  user_id = session.get('user_id')
+  id = request.json.get("id")
+  accountType = request.json.get("accountType")
+  data = {'account_type': accountType}
+  if not assertAdmin(user_id):
+    return make_response(jsonify({'code': 10001, 'msg': '没有权限', 'content': []}))
+  row_data = users.query.filter(db.and_(users.id == id))
+  if row_data.first():
+    row_data.update(data)
+    db.session.commit()
+    return make_response(jsonify({'code': 0, 'msg': 'sucess', 'content': []}))
+  else:
+    return make_response(jsonify({'code': 10001, 'msg': 'error', 'content': []}))
