@@ -1,9 +1,10 @@
 /* eslint-disable react/sort-comp,react/no-typos */
 import React, { PureComponent } from 'react';
 import {
-  Layout, Table, Badge, Icon, Popconfirm, message, Input, Card, Divider, Col, Button, Radio, Spin
+  Table, Badge, Icon, Popconfirm, Card, Divider, Button,
 } from 'antd';
 import { connect } from 'dva';
+import io from 'socket.io-client';
 
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
 
@@ -12,16 +13,52 @@ import { PageHeaderWrapper } from '@ant-design/pro-layout';
   loading: loading.effects['iatTask/queryTaskList']
 }))
 class Immediate extends PureComponent {
-  state={
-    taskList: []
+  // 构造
+  constructor(props) {
+    super(props);
+    // 初始状态
+    this.state = {
+      taskList: []
+    };
+    this.socket = null;
   }
 
   componentWillMount() {
-    this.queryTaskList()
+    const urlParams = new URL(window.location.href);
+    this.setState({ hostname: urlParams.hostname });
+    this.socket = io(`ws://${urlParams.hostname}:5000/wstask`);
+    this.socket.on('connect', () => {
+      console.log('<= 连接调试服务器成功！');
+    });
+    this.queryTaskList();
+    this.getTaskList();
+  }
+
+  componentDidMount() {
+    this.socket.on('setTaskStatus', status => {
+      console.log('<= 收到任务状态', status);
+    });
   }
 
   componentWillUnMount() {
-    clearInterval(this.timer);
+    // clearInterval(this.timer);
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
+    this.socket.on('disconnect', () => {
+      console.log('关闭连接');
+    });
+  }
+
+  getTaskList = () => {
+    if (this.timer) {
+      clearTimeout(this.timer);
+    }
+    this.timer = setInterval(() => {
+      this.socket.emit('iatTaskList', { taskType: 1 }, taskList => {
+        this.setState({ taskList });
+      });
+    }, 2000);
   }
 
   queryTaskList=() => {
@@ -55,7 +92,7 @@ class Immediate extends PureComponent {
     })
       .then(() => {
         this.queryTaskList()
-        this.timer = setInterval(() => this.queryTaskList(), 10000);
+        // this.timer = setInterval(() => this.queryTaskList(), 10000);
       })
   };
 

@@ -33,11 +33,11 @@ class TimScript():
   def runScript(self):
     status, runTime = self.getTaskStatus(self.taskId)
     if runTime and status:
-      print("定时时任务开始：taskId-", self.taskId, "runTime -", runTime)
+      print("UI定时任务开始：taskId-", self.taskId, "runTime -", runTime)
       schedule.every().day.at(str(runTime)).do(self.start_job, self.taskId)
       schedule.every(10).seconds.do(self.stop_job, self.taskId)
     else:
-      print("run timing task [%s] error" % self.taskId)
+      print("run UI timing task [%s] error" % self.taskId)
 
     while True:
       schedule.run_pending()

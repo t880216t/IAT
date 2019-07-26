@@ -26,6 +26,7 @@ def saveListToDB(imgList):
       data = HomeBack(img)
       db.session.add(data)
       db.session.commit()
+      print('添加：%s' % img)
     else:
       print('已存在：%s'%img)
 

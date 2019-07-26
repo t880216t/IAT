@@ -1,7 +1,7 @@
 export default {
-  navTheme: 'light',
+  navTheme: 'dark',
   primaryColor: '#1890FF',
-  layout: 'topmenu',
+  layout: 'sidemenu',
   contentWidth: 'Fluid',
   fixedHeader: true,
   autoHideHeader: true,
@@ -10,7 +10,7 @@ export default {
   menu: {
     locale: false,
   },
-  title: 'UI Auto Test',
+  title: 'Victorinox For Test',
   pwa: false,
   iconfontUrl: '',
 };

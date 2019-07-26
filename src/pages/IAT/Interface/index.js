@@ -1417,8 +1417,8 @@ class Interface extends Component {
     return (
       <Content>
         <Layout style={{ background: '#fff', borderRadius: '5px' }} onClick={() => this.clearMenu()}>
-          <Sider style={{ background: '#fff', height: '80vh', zIndex: 2 }}>
-            <Resizable className={styles.left_res_container} enable={{ right: true }} defaultSize={{ height: '80vh' }} size={{ height: '80vh' }}>
+          <Sider style={{ background: '#fff', height: '90vh', zIndex: 2 }}>
+            <Resizable className={styles.left_res_container} enable={{ right: true }} defaultSize={{ height: '90vh' }} size={{ height: '90vh' }}>
               <Select placeholder="请选择项目" value={project || undefined} style={{ width: '100%' }} size="small" onChange={this.handleProjectChange}>
                 {projectList && projectList.map(item => (
                   <Option value={item.id} key={item.id}>{item.name}</Option>
@@ -1448,14 +1448,14 @@ class Interface extends Component {
             </Resizable>
           </Sider>
           <div style={{ display: 'flex', flexDirection: 'row', width: '100%' }}>
-            <Content style={{ background: '#fff', padding: 10, height: '80vh', width: '70%', borderRight: '1px solid #e8e8e8' }}>
+            <Content style={{ background: '#fff', padding: 10, height: '90vh', width: '70%', borderRight: '1px solid #e8e8e8' }}>
               <div className={styles.right_container}>
                 {!(selectedKeys && selectedKeys.length > 0) && <Empty />}
                 {(selectedKeys && selectNoteType === 1) && Folder}
                 {(selectedKeys && selectNoteType === 2) && Case}
               </div>
             </Content>
-            <Content style={{ background: '#fff', padding: 10, height: '80vh', width: '30%' }}>
+            <Content style={{ background: '#fff', padding: 10, height: '90vh', width: '30%' }}>
               <div className={styles.right_container}>
                 {(selectedKeys && selectNoteType === 2) && Debug}
               </div>

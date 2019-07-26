@@ -1,6 +1,8 @@
 #-*-coding:utf-8-*-
-import sys,requests,os,subprocess,json, importlib
+import sys,requests,os,subprocess,json, importlib, binascii, hashlib, shutil
 import xml.etree.ElementTree as ET
+from flask_script import Manager
+from app import app,db
 from datetime import datetime
 import pandas as pd
 
@@ -8,6 +10,35 @@ default_encoding = 'utf-8'
 if sys.getdefaultencoding() != default_encoding:
   importlib.reload(sys)
   sys.setdefaultencoding(default_encoding)
+
+manager = Manager(app)
+
+#清除文件
+def clear_project_file(project_path):
+    if os.path.exists(project_path):
+        delList = os.listdir(project_path)
+        for f in delList:
+            filePath = os.path.join(project_path, f)
+            if os.path.isfile(filePath):
+                try:
+                    os.remove(filePath)
+                    print(filePath + " was removed!")
+                except:
+                    print("--------------------------------删除旧文件失败")
+            elif os.path.isdir(filePath):
+                shutil.rmtree(filePath, True)
+            print("Directory: " + filePath + " was removed!")
+        try:
+          os.rmdir(project_path)
+        except:
+          print("delete has some error")
+
+def encrypt_name(name, salt=None, encryptlop=30):
+  if not salt:
+    salt = binascii.hexlify(os.urandom(32)).decode()
+  for i in range(encryptlop):
+    name = hashlib.sha1(str(name + salt).encode('utf-8')).hexdigest()
+  return name
 
 #状态设置请求
 def setTaskStatus(taskId,status,msg):
@@ -250,15 +281,11 @@ def set_data(tree,data):
         sampleSetDown.append(BeanShellPostProcessor)
   return tree
 
-def makeResultPath(now):
-  reulstPath = 'scripts/'+now
-  if not os.path.exists(reulstPath):
-    os.makedirs(reulstPath)
-  else:
-    now = datetime.now().strftime('%Y-%m-%d_%H_%M_%S')
-    reulstPath = 'scripts/' + now
-    os.makedirs(reulstPath)
-  return reulstPath
+def makeResultPath(taskRootPath):
+  taskDir = 'taskFile/' + taskRootPath
+  if not os.path.exists(taskDir):
+    os.makedirs(taskDir)
+  return taskDir
 
 def runJmeterTest(reulstPath):
   #cmd = "jmeter -n -t %s -l %s -e -o %s "%(reulstPath+'/testData.jmx',reulstPath+'/result.csv',reulstPath+'/resultDir')
@@ -279,32 +306,37 @@ def readResult(path):
     content.append(item)
   return content
 
-if '__main__' == __name__:
-  taskId = sys.argv[1]
-  # taskId = 35
+@manager.option('-i','--task_id',dest='task_id',default='')
+def runScript(task_id):
   url = 'http://127.0.0.1:5000/api/IAT/taskInfo'
-  params = {"id":taskId}
-  res = requests.get(url,params=params)
+  params = {"id": task_id}
+  res = requests.get(url, params=params)
   response = res.json()
   if response["code"] == 0:
     try:
-      setTaskStatus(taskId, 1, "get task info")
+      setTaskStatus(task_id, 1, "get task info")
       now = datetime.now().strftime('%Y-%m-%d_%H_%M_%S')
-      reulstPath = makeResultPath(now)
+      taskRootPath = encrypt_name(now)
+      reulstPath = makeResultPath(taskRootPath)
       tree = read_demo('templete.jmx')
-      tree = set_data(tree,data=response["content"])
-      tree.write(reulstPath+'/testData.jmx')
-      setTaskStatus(taskId, 2, "build task script")
+      tree = set_data(tree, data=response["content"])
+      tree.write(reulstPath + '/testData.jmx')
+      setTaskStatus(task_id, 2, "build task script")
       runJmeterTest(reulstPath)
-      setTaskStatus(taskId, 3, "excute script sucess")
+      setTaskStatus(task_id, 3, "excute script sucess")
       try:
-        resultContent = readResult(reulstPath+'/result.csv')
-        updateTaskResult(taskId,resultContent,"upload result")
+        resultContent = readResult(reulstPath + '/result.csv')
+        updateTaskResult(task_id, resultContent, "upload result")
+        clear_project_file('taskFile/' + taskRootPath)
       except Exception as e:
         print(e)
-        setTaskStatus(taskId, 5, "task fail,please check jmeter env")
+        setTaskStatus(task_id, 5, "task fail,please check jmeter env")
     except Exception as e:
-      print (e)
-      setTaskStatus(taskId, 5, "build task script fail")
+      print(e)
+      setTaskStatus(task_id, 5, "build task script fail")
   else:
-    setTaskStatus(taskId,4,"get task info fail")
+    setTaskStatus(task_id, 4, "get task info fail")
+
+
+if '__main__' == __name__:
+  manager.run()

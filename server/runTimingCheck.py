@@ -13,7 +13,7 @@ def runTimTask():
     subprocess.Popen("python runUITiming.py runScript -i %s " % timTask.id, shell=True)
   iatTimTaskDatas = IATTask.query.filter(db.and_(IATTask.status.notin_([0,4]),IATTask.task_type == 2)).all()
   for timTask in iatTimTaskDatas:
-    subprocess.Popen('python runTiming.py %s' % timTask.id, shell=True)
+    subprocess.Popen('python runTiming.py runScript -i %s' % timTask.id, shell=True)
 
 def runGetBack():
   subprocess.call('python getBack.py',shell=True)
