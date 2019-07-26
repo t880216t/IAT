@@ -1,6 +1,6 @@
 import React, { PureComponent } from 'react';
 import {
-  List, Tree, Select, Icon, Menu, message, Input, Card, Divider, TimePicker, Button, Switch, Spin
+  List, Tree, Select, Icon, Popconfirm, message, Input, Card, Divider, TimePicker, Button, Switch, Spin
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
@@ -93,7 +93,28 @@ class Timing extends PureComponent {
       .then(() => {
         this.queryTaskList()
       })
-  }
+  };
+
+  handleGoReport= id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'iatTask/goTimReportPage',
+      payload: { id },
+    });
+  };
+
+  handleDelTask=id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'iatTask/queryTaskDelete',
+      payload: {
+        id,
+      },
+    })
+      .then(() => {
+        this.queryTaskList();
+      });
+  };
 
   render() {
     const { loading } = this.props;
@@ -122,11 +143,6 @@ class Timing extends PureComponent {
           <span>任务描述：</span>
           <div>{item.taskDesc}</div>
         </div>
-        {item.status === 3 && (
-          <div className={styles.reportHref}>
-            <a style={{ color: '#40a9ff', fontWeight: 'bold' }} href={`/task/api/timing/report?${item.id}`}>查看报告 <Icon type="right" /></a>
-          </div>
-        )}
       </div>
     );
     const cardTitle = item => (
@@ -144,6 +160,16 @@ class Timing extends PureComponent {
           </div>
         </div>
       );
+    const reportLink = item => {
+      if (item.status === 3) {
+        return (
+          <Button type="link" icon="file-done" onClick={() => this.handleGoReport(item.id)}>查看报告</Button>
+        );
+      }
+      return (
+        <span><Icon type="file-done" />  暂无报告</span>
+      );
+    };
     return (
       <PageHeaderWrapper title="每日任务列表" content={content}>
         <div className={styles.cardList}>
@@ -158,7 +184,17 @@ class Timing extends PureComponent {
                   <Card
                     hoverable
                     className={styles.card}
-                    // actions={[<Icon style={{color:'red'}} type="delete" />]}
+                    actions={[
+                      <Popconfirm
+                        title="确认删除该任务？"
+                        onConfirm={() => this.handleDelTask(item.id)}
+                        okText="确定"
+                        cancelText="取消"
+                      >
+                        <Icon className={styles.deleteIcon} type="delete" />
+                      </Popconfirm>,
+                      reportLink(item),
+                    ]}
                   >
                     <Card.Meta title={cardTitle(item)} description={description(item)} />
                   </Card>

@@ -34,6 +34,9 @@ export default {
     *goDetailPage({ payload }, { put }) {
       yield put(routerRedux.push(`/task/api/immediate/detail?${payload.detailId}`));
     },
+    *goTimReportPage({ payload }, { put }) {
+      yield put(routerRedux.push(`/task/api/timing/report?${payload.id}`));
+    },
     *queryAddTask({ payload }, { call, put }) {
       const response = yield call(queryAddTask, payload);
       if (response) {
