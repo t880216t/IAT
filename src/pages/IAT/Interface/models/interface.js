@@ -20,6 +20,7 @@ import {
   queryAddGlobalValues,
   queryDeleteGlobalValues,
   queryUpdateGlobalValues,
+  queryCaseData,
 } from '@/services/iatApi';
 import { reloadAuthorized } from '@/utils/Authorized';
 
@@ -38,6 +39,13 @@ export default {
       const response = yield call(queryProjectRootInfo, payload);
       if (response) {
         yield put({ type: 'updateState', payload: { projectRootInfo: response.content } });
+      }
+    },
+    *queryCaseData({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { caseData: [] } });
+      const response = yield call(queryCaseData, payload);
+      if (response) {
+        yield put({ type: 'updateState', payload: { caseData: response.content } });
       }
     },
     *queryProjectGlobalValues({ payload }, { call, put }) {

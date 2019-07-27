@@ -555,7 +555,7 @@ def getTreeInfo():
   }
   return make_response(jsonify({'code': 0, 'content': content, 'msg': u''}))
 
-
+# old case data
 @api.route('/getSampleInfo', methods=['POST'])
 def getSampleInfo():
   user_id = session.get('user_id')

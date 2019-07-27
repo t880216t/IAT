@@ -180,6 +180,10 @@ export async function queryProjectList(params) {
   return request(`/api/IAT/projectList?status=${params.status.toString()}&_=${new Date().getTime().toString()}`);
 }
 
+export async function queryCaseData(params) {
+  return request(`/api/IAT/case/getCaseData?caseId=${params.caseId.toString()}&_=${new Date().getTime().toString()}`);
+}
+
 export async function queryTaskInfo(params) {
   return request(`/api/IAT/taskPrew?id=${params.id.toString()}&_=${new Date().getTime().toString()}`);
 }

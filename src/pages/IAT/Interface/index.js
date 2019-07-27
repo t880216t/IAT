@@ -11,6 +11,7 @@ import JSONPretty from 'react-json-pretty';
 import { setTage, getTage } from '@/services/tags';
 import styles from './index.less'
 import CaseProject from './CaseProject/index';
+import CaseInfo from './CaseInfo/index';
 
 import 'brace/mode/java';
 import 'brace/theme/dracula';
@@ -1466,7 +1467,13 @@ class Interface extends Component {
                   )
                 }
                 {(selectedKeys && selectNoteType === 1 && selectIndexId !== 0) && Folder}
-                {(selectedKeys && selectNoteType === 2) && Case}
+                {/*{(selectedKeys && selectNoteType === 2) && Case}*/}
+                {(selectedKeys && selectNoteType === 2) && (
+                  <CaseInfo
+                    selectNoteId={selectNoteId}
+                    handleTreeUpdate={() => this.handleTreeUpdate()}
+                  />
+                )}
               </div>
             </Content>
             <Content style={{ background: '#fff', padding: 10, height: '90vh', width: '30%' }}>
