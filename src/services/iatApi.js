@@ -190,6 +190,13 @@ export async function queryDeleteValue(params) {
   });
 }
 
+export async function queryUpdateCaseData(params) {
+  return request('/api/IAT/case/updateCaseData', {
+    method: 'POST',
+    data: params,
+  });
+}
+
 export async function queryUpdateKeyValues(params) {
   return request('/api/IAT/case/updateKeyValues', {
     method: 'POST',

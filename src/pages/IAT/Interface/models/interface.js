@@ -26,6 +26,7 @@ import {
   queryUpdateKeyValues,
   querySearchKeywords,
   queryUpdateShellData,
+  queryUpdateCaseData,
 } from '@/services/iatApi';
 import { reloadAuthorized } from '@/utils/Authorized';
 
@@ -77,6 +78,9 @@ export default {
     },
     *queryUploadTreeName({ payload }, { call, put }) {
       yield call(queryUploadTreeName, payload);
+    },
+    *queryUpdateCaseData({ payload }, { call, put }) {
+      yield call(queryUpdateCaseData, payload);
     },
     *queryUpdateShellData({ payload }, { call, put }) {
       yield call(queryUpdateShellData, payload);

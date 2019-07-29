@@ -341,7 +341,7 @@ export default class ApiCaseInfoPage extends Component {
                 </Col>
                 <Col span={8}>
                   {getFieldDecorator('path', {
-                    initialValue: caseData.path || undefined,
+                    initialValue: caseData.path || '',
                   })(
                     <Input
                       style={{ width: 300 }}

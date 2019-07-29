@@ -1,6 +1,6 @@
 # -*-coding:utf-8-*-
 from flask import Blueprint, jsonify, make_response, session, request
-from app.tables.IAT import Project, Tree, iatKeyValues, Task, iatShellData, GlobalValues
+from app.tables.IAT import Project, Tree, iatKeyValues, iatCaseInfo, iatShellData, GlobalValues
 from app.tables.User import users
 import os,hashlib,subprocess, json, time, datetime, binascii, requests
 from sqlalchemy import extract
@@ -107,6 +107,16 @@ def getCaseData():
       'type': 'add',
     })
 
+    caseInfoData = iatCaseInfo.query.filter(db.and_(iatCaseInfo.pid == caseId)).first()
+    method, path, paramType, assertType, extractType = '', '', '', '', ''
+    if caseInfoData:
+      method, path, paramType, assertType, extractType = \
+        caseInfoData.method,\
+        caseInfoData.path,\
+        caseInfoData.param_type,\
+        caseInfoData.assert_type,\
+        caseInfoData.extract_type,
+
     content = {
       'id': treeData.id,
       'name': treeData.name,
@@ -117,6 +127,11 @@ def getCaseData():
       'jsonExtractValues': jsonExtractValues,
       'preShell': preShell,
       'postShell': postShell,
+      'method': method,
+      'path': path,
+      'paramType': paramType,
+      'assertType': assertType,
+      'extractType': extractType,
     }
 
   return make_response(jsonify({'code': 0, 'content': content, 'msg': u'新建成功!'}))
@@ -203,6 +218,38 @@ def updateShellData():
     db.session.commit()
   else:
     data = iatShellData(caseId,shellType,editValue)
+    db.session.add(data)
+    db.session.commit()
+
+  return make_response(jsonify({'code': 0, 'content': None, 'msg': u'操作成功'}))
+
+@iatCase.route('/updateCaseData', methods=['POST'])
+def updateCaseData():
+  user_id = session.get('user_id')
+  caseId = request.json.get("caseId")
+  caseInfo = request.json.get("caseInfo")
+  rowData = iatCaseInfo.query.filter(db.and_(iatCaseInfo.pid == caseId))
+  if rowData.first():
+    data = {
+      'method': caseInfo['method'],
+      'path': caseInfo['path'],
+      'param_type': caseInfo['paramType'],
+      'assert_type': caseInfo['assertType'],
+      'extract_type': caseInfo['extractType'],
+      'user_id': user_id,
+    }
+    rowData.update(data)
+    db.session.commit()
+  else:
+    data = iatCaseInfo(
+      caseId,
+      caseInfo['method'],
+      caseInfo['path'],
+      caseInfo['paramType'],
+      caseInfo['assertType'],
+      caseInfo['extractType'],
+      user_id,
+    )
     db.session.add(data)
     db.session.commit()
 

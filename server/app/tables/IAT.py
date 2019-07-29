@@ -178,3 +178,25 @@ class iatShellData(db.Model):
     self.shell_type = shell_type
     self.shell_data = shell_data
     self.add_time = datetime.now()
+
+class iatCaseInfo(db.Model):
+  __tablename__ = 'iat_case_info'
+  id = db.Column(db.Integer, primary_key=True)
+  pid = db.Column(db.Integer)
+  method = db.Column(db.String(500))
+  path = db.Column(db.String(500))
+  param_type = db.Column(db.SMALLINT)
+  assert_type = db.Column(db.SMALLINT)
+  extract_type = db.Column(db.SMALLINT)
+  add_time = db.Column(db.DateTime)
+  user_id = db.Column(db.Integer)
+
+  def __init__(self, pid, method, path, param_type, assert_type, extract_type, user_id):
+    self.pid = pid
+    self.method = method
+    self.path = path
+    self.param_type = param_type
+    self.assert_type = assert_type
+    self.extract_type = extract_type
+    self.user_id = user_id
+    self.add_time = datetime.now()

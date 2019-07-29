@@ -998,7 +998,15 @@ class Interface extends Component {
   }
 
   handleFormValueChange = allValues => {
-    console.log('allValues:', allValues);
+    const { selectNoteId } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'interfaceCase/queryUpdateCaseData',
+      payload: {
+        caseId: selectNoteId,
+        caseInfo: allValues,
+      }
+    })
   }
 
   render() {
