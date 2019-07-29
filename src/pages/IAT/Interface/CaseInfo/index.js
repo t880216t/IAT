@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 import { connect } from 'dva';
 
 import 'brace/mode/java';
-import 'brace/theme/dracula';
+import 'brace/theme/xcode';
 import styles from './index.less'
 import FormKeyValuesSearchCell from '../../../../components/FormKeyValuesSearchCell/index';
 import FormKeyValuesCell from '../../../../components/FormKeyValuesCell/index';
@@ -310,7 +310,7 @@ export default class ApiCaseInfoPage extends Component {
                 })(
                   <AceEditor
                     mode="java"
-                    theme="dracula"
+                    theme="monokai"
                     style={{
                       margin: '8px 0',
                       display: getFieldValue('preShellType') ? 'block' : 'none',
@@ -388,11 +388,14 @@ export default class ApiCaseInfoPage extends Component {
                 <Radio value={3}>
                   form-data
                 </Radio>
+                <Radio value={4}>
+                  Body Data
+                </Radio>
               </Radio.Group>,
             )}
           </Form.Item>
           <Form.Item label="请求参数" className={styles.keyValueContainer}>
-            {caseData.paramsValues && caseData.paramsValues.map(item => {
+            {(getFieldValue('paramType')!==4 && caseData.paramsValues) && caseData.paramsValues.map(item => {
                 if (item.type === 'add') {
                   return (
                     <Button key={item.type} type="dashed" size="small" onClick={() => this.handleAddEmptyValue(2)} style={{ width: '80%' }}>
@@ -409,6 +412,27 @@ export default class ApiCaseInfoPage extends Component {
                     handleDeleteGlobalValue={() => this.handleDeleteValue(item.id)}
                   />)
               }
+            )}
+            {(getFieldValue('paramType') === 4) && (
+              <Form.Item style={{ marginBottom: 0 }}>
+                {getFieldDecorator('preShellData', {
+                  initialValue: caseData.preShell || '',
+                })(
+                  <AceEditor
+                    mode="json"
+                    theme="monokai"
+                    style={{
+                      margin: '8px 0',
+                      display: getFieldValue('preShellType') ? 'block' : 'none',
+                    }}
+                    name="preShellInput"
+                    editorProps={{ $blockScrolling: true }}
+                    height="300px"
+                    onChange={newValue => this.setState({ preShellData: newValue })}
+                    onBlur={() => this.handleCaseShellChange(caseData.id, 1)}
+                  />,
+                )}
+              </Form.Item>
             )}
           </Form.Item>
           <Form.Item label="后置shell">
@@ -428,7 +452,7 @@ export default class ApiCaseInfoPage extends Component {
                 })(
                   <AceEditor
                     mode="java"
-                    theme="dracula"
+                    theme="xcode"
                     style={{
                       margin: '8px 0',
                       display: getFieldValue('postShellType') ? 'block' : 'none',
