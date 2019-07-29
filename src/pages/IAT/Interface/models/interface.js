@@ -21,6 +21,12 @@ import {
   queryDeleteGlobalValues,
   queryUpdateGlobalValues,
   queryCaseData,
+  queryAddEmtpyValue,
+  queryDeleteValue,
+  queryUpdateKeyValues,
+  querySearchKeywords,
+  queryUpdateShellData,
+  queryUpdateCaseData,
 } from '@/services/iatApi';
 import { reloadAuthorized } from '@/utils/Authorized';
 
@@ -29,6 +35,7 @@ export default {
   state: {
     treeList: [],
     extractList: [],
+    searchKeywords: [],
     globalValues: [],
     infoData: {},
     projectRootInfo: {},
@@ -39,6 +46,13 @@ export default {
       const response = yield call(queryProjectRootInfo, payload);
       if (response) {
         yield put({ type: 'updateState', payload: { projectRootInfo: response.content } });
+      }
+    },
+    *queryCaseDataWithLoading({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { caseData: [] } });
+      const response = yield call(queryCaseData, payload);
+      if (response) {
+        yield put({ type: 'updateState', payload: { caseData: response.content } });
       }
     },
     *queryCaseData({ payload }, { call, put }) {
@@ -55,8 +69,30 @@ export default {
         yield put({ type: 'updateState', payload: { globalValues: response.content } });
       }
     },
+    *querySearchKeywords({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { searchKeywords: [] } });
+      const response = yield call(querySearchKeywords, payload);
+      if (response) {
+        yield put({ type: 'updateState', payload: { searchKeywords: response.content } });
+      }
+    },
     *queryUploadTreeName({ payload }, { call, put }) {
       yield call(queryUploadTreeName, payload);
+    },
+    *queryUpdateCaseData({ payload }, { call, put }) {
+      yield call(queryUpdateCaseData, payload);
+    },
+    *queryUpdateShellData({ payload }, { call, put }) {
+      yield call(queryUpdateShellData, payload);
+    },
+    *queryAddEmtpyValue({ payload }, { call, put }) {
+      yield call(queryAddEmtpyValue, payload);
+    },
+    *queryUpdateKeyValues({ payload }, { call, put }) {
+      yield call(queryUpdateKeyValues, payload);
+    },
+    *queryDeleteValue({ payload }, { call, put }) {
+      yield call(queryDeleteValue, payload);
     },
     *queryAddGlobalValues({ payload }, { call, put }) {
       yield call(queryAddGlobalValues, payload);

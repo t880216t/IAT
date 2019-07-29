@@ -16,8 +16,7 @@ app.config['PERMANENT_SESSION_LIFETIME']=timedelta(days=1) #设置session的保�
 '''
 from flask_sqlalchemy import SQLAlchemy
 
-# app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:root@127.0.0.1:3306/IAT?charset=utf8mb4"
-app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:focus1234@192.168.51.111:3306/IAT?charset=utf8mb4"
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql+pymysql://root:root@127.0.0.1:3306/IAT?charset=utf8mb4"
 # 动态追踪数据库的修改. 性能不好. 且未来版本中会移除. 目前只是为了解决控制台的提示才写的
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
@@ -41,6 +40,9 @@ app.register_blueprint(user, url_prefix='/api')
 
 from .IAT.api import api
 app.register_blueprint(api, url_prefix='/api/IAT')
+
+from .IAT.case import iatCase
+app.register_blueprint(iatCase, url_prefix='/api/IAT/case')
 
 from .UAT.case import case
 app.register_blueprint(case, url_prefix='/api/UAT/case')

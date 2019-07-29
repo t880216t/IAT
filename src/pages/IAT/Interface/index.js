@@ -997,6 +997,18 @@ class Interface extends Component {
     this.setState({ showAddHeader: !this.state.showAddHeader, debugHeader: [] })
   }
 
+  handleFormValueChange = allValues => {
+    const { selectNoteId } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'interfaceCase/queryUpdateCaseData',
+      payload: {
+        caseId: selectNoteId,
+        caseInfo: allValues,
+      }
+    })
+  }
+
   render() {
     const {
       projectList, project, treeList, rightClickItem, expandedKeys, hasPreShell, hasPostShell,
@@ -1472,6 +1484,7 @@ class Interface extends Component {
                   <CaseInfo
                     selectNoteId={selectNoteId}
                     handleTreeUpdate={() => this.handleTreeUpdate()}
+                    handleFormValueChange={this.handleFormValueChange}
                   />
                 )}
               </div>

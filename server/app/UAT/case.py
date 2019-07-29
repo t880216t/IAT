@@ -569,7 +569,6 @@ def searchKeywords():
         'valueType': matchKeyword.value_type,
       })
     newGlobalValues = deleteDuplicate(globalValues)
-    print(newGlobalValues)
     content += newGlobalValues
 
   if len(matchCustomKeywordsInTree) > 0:

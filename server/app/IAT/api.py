@@ -931,7 +931,7 @@ def uploadTreeName():
 def projectGlobalValues():
   id = request.values.get("id")
   projectId = Tree.query.filter_by(id=id).first().project_id
-  globalValuesData = GlobalValues.query.filter_by(project_id=projectId).order_by(db.asc(GlobalValues.add_time)).all()
+  globalValuesData = GlobalValues.query.filter(db.and_(GlobalValues.project_id==projectId, GlobalValues.value_type.in_([1,2]))).order_by(db.asc(GlobalValues.add_time)).all()
   content = []
   if globalValuesData:
     for item in globalValuesData:
@@ -950,20 +950,21 @@ def addGlobalValues():
   keyValue = request.json.get("keyValue")
   projectTreeId = request.json.get("projectId")
   valueType = request.json.get("valueType")
+  caseId = request.json.get("caseId")
   try:
     rowData = GlobalValues.query.filter_by(key_name = keyName).first()
     projectId = Tree.query.filter_by(id = projectTreeId).first().project_id
     if rowData:
       return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'关键词名称重复!'}))
-    data = GlobalValues(keyName, keyValue, projectId, user_id, valueType)
+    data = GlobalValues(keyName, keyValue, projectId, user_id, valueType, caseId)
     db.session.add(data)
     db.session.commit()
     if valueType == 1:
-      defaultData = GlobalValues(keyName, '', projectId, user_id, 2)
+      defaultData = GlobalValues(keyName, '', projectId, user_id, 2, caseId)
       db.session.add(defaultData)
       db.session.commit()
     if valueType == 2:
-      defaultData = GlobalValues(keyName, '', projectId, user_id, 1)
+      defaultData = GlobalValues(keyName, '', projectId, user_id, 1, caseId)
       db.session.add(defaultData)
       db.session.commit()
     return make_response(jsonify({'code': 0, 'content': None, 'msg': u'新建成功!'}))
