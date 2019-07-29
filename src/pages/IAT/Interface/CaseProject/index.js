@@ -110,7 +110,7 @@ export default class ProjectPage extends Component {
     dispatch({
       type: 'interfaceCase/queryAddGlobalValues',
       payload: {
-        keyName, keyValue, projectId, valueType,
+        keyName, keyValue, projectId, valueType, caseId: 0,
       },
     })
       .then(() => {

@@ -135,12 +135,46 @@ class GlobalValues(db.Model):
   project_id = db.Column(db.Integer)
   add_time = db.Column(db.DateTime)
   user_id = db.Column(db.Integer)
+  case_id = db.Column(db.Integer)
   value_type = db.Column(db.SMALLINT)
 
-  def __init__(self,key_name,key_value,project_id,user_id, value_type):
+  def __init__(self,key_name,key_value,project_id,user_id, value_type, case_id):
     self.key_name = key_name
     self.key_value = key_value
     self.project_id = project_id
     self.user_id = user_id
     self.value_type = value_type
+    self.case_id = case_id
+    self.add_time = datetime.now()
+
+class iatKeyValues(db.Model):
+  __tablename__ = 'iat_key_values'
+  id = db.Column(db.Integer, primary_key=True)
+  pid = db.Column(db.Integer)
+  key_name = db.Column(db.String(500))
+  key_value = db.Column(db.String(2000))
+  add_time = db.Column(db.DateTime)
+  user_id = db.Column(db.Integer)
+  value_type = db.Column(db.SMALLINT)
+
+  def __init__(self,key_name,key_value,pid,user_id, value_type):
+    self.key_name = key_name
+    self.key_value = key_value
+    self.pid = pid
+    self.user_id = user_id
+    self.value_type = value_type
+    self.add_time = datetime.now()
+
+class iatShellData(db.Model):
+  __tablename__ = 'iat_shell_data'
+  id = db.Column(db.Integer, primary_key=True)
+  pid = db.Column(db.Integer)
+  shell_type = db.Column(db.SMALLINT)
+  shell_data = db.Column(db.TEXT)
+  add_time = db.Column(db.DateTime)
+
+  def __init__(self,pid,shell_type,shell_data):
+    self.pid = pid
+    self.shell_type = shell_type
+    self.shell_data = shell_data
     self.add_time = datetime.now()

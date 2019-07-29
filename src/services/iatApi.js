@@ -176,6 +176,41 @@ export async function queryUpdateGlobalValues(params) {
   });
 }
 
+export async function queryAddEmtpyValue(params) {
+  return request('/api/IAT/case/addEmtpyValue', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function queryDeleteValue(params) {
+  return request('/api/IAT/case/deleteValue', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function queryUpdateKeyValues(params) {
+  return request('/api/IAT/case/updateKeyValues', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function querySearchKeywords(params) {
+  return request('/api/IAT/case/searchKeywords', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function queryUpdateShellData(params) {
+  return request('/api/IAT/case/updateShellData', {
+    method: 'POST',
+    data: params,
+  });
+}
+
 export async function queryProjectList(params) {
   return request(`/api/IAT/projectList?status=${params.status.toString()}&_=${new Date().getTime().toString()}`);
 }

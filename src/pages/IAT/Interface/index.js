@@ -997,6 +997,10 @@ class Interface extends Component {
     this.setState({ showAddHeader: !this.state.showAddHeader, debugHeader: [] })
   }
 
+  handleFormValueChange = allValues => {
+    console.log('allValues:', allValues);
+  }
+
   render() {
     const {
       projectList, project, treeList, rightClickItem, expandedKeys, hasPreShell, hasPostShell,
@@ -1472,6 +1476,7 @@ class Interface extends Component {
                   <CaseInfo
                     selectNoteId={selectNoteId}
                     handleTreeUpdate={() => this.handleTreeUpdate()}
+                    handleFormValueChange={this.handleFormValueChange}
                   />
                 )}
               </div>
