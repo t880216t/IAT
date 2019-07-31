@@ -183,16 +183,19 @@ class iatCaseInfo(db.Model):
   __tablename__ = 'iat_case_info'
   id = db.Column(db.Integer, primary_key=True)
   pid = db.Column(db.Integer)
+  domain = db.Column(db.String(500))
   method = db.Column(db.String(500))
   path = db.Column(db.String(500))
+  body_data = db.Column(db.String(4000))
   param_type = db.Column(db.SMALLINT)
   assert_type = db.Column(db.SMALLINT)
   extract_type = db.Column(db.SMALLINT)
   add_time = db.Column(db.DateTime)
   user_id = db.Column(db.Integer)
 
-  def __init__(self, pid, method, path, param_type, assert_type, extract_type, user_id):
+  def __init__(self, pid, domain, method, path, param_type, assert_type, extract_type, user_id):
     self.pid = pid
+    self.domain = domain
     self.method = method
     self.path = path
     self.param_type = param_type

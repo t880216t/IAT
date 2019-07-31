@@ -145,7 +145,6 @@ def taskInfo():
 
 @task.route('/updateTask', methods=['POST'])
 def updateTask():
-  
   user_id = session.get('user_id')
   id = request.json.get("id")
   browserType = request.json.get("browserType")

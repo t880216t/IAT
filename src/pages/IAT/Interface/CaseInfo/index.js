@@ -5,7 +5,7 @@ import io from 'socket.io-client';
 import { connect } from 'dva';
 
 import 'brace/mode/java';
-import 'brace/theme/xcode';
+import 'brace/theme/solarized_light';
 import styles from './index.less'
 import FormKeyValuesSearchCell from '../../../../components/FormKeyValuesSearchCell/index';
 import FormKeyValuesCell from '../../../../components/FormKeyValuesCell/index';
@@ -206,6 +206,21 @@ export default class ApiCaseInfoPage extends Component {
       })
   }
 
+  handleCaseBodyDataChange = caseId => {
+    console.log(caseId);
+    const { bodyData } = this.state;
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'interfaceCase/queryUpdateCaseBodyData',
+      payload: {
+        caseId, bodyData
+      }
+    })
+      .then(() => {
+        this.queryCaseData(caseId)
+      })
+  }
+
   handleCheckShell = (shellType, value) => {
     const { id } = this.state.caseData;
     if (shellType === 1) {
@@ -310,7 +325,7 @@ export default class ApiCaseInfoPage extends Component {
                 })(
                   <AceEditor
                     mode="java"
-                    theme="monokai"
+                    theme="solarized_light"
                     style={{
                       margin: '8px 0',
                       display: getFieldValue('preShellType') ? 'block' : 'none',
@@ -325,6 +340,17 @@ export default class ApiCaseInfoPage extends Component {
                 )}
               </Form.Item>
             </div>
+          </Form.Item>
+          <Form.Item label="请求域名" >
+            {getFieldDecorator('domain', {
+              initialValue: caseData.domain || '',
+            })(
+              <Input
+                size="small"
+                placeholder="请求域名. eg: http://www.test.com:5000"
+                style={{ width: 400 }}
+              />,
+            )}
           </Form.Item>
           <Form.Item label="请求路径" >
             <InputGroup size="small">
@@ -356,7 +382,7 @@ export default class ApiCaseInfoPage extends Component {
             {caseData.headerValues && caseData.headerValues.map(item => {
                 if (item.type === 'add') {
                   return (
-                    <Button key={item.type} type="dashed" size="small" onClick={() => this.handleAddEmptyValue(1)} style={{ width: '80%' }}>
+                    <Button key={item.type} type="dashed" size="small" onClick={() => this.handleAddEmptyValue(1)} style={{ width: '90%' }}>
                       <Icon type="plus" /> 添加请求头设置
                     </Button>)
                 }
@@ -380,25 +406,27 @@ export default class ApiCaseInfoPage extends Component {
                 <Radio value={1}>
                   x-www-form-urlencoded
                 </Radio>
+                <Radio value={3}>
+                  form-data
+                </Radio>
                 <Radio value={2}>
                   <Tooltip title="设置该类型参数后，将不支持任务中的全局默认参数设置">
                     <a>json</a>
                   </Tooltip>
                 </Radio>
-                <Radio value={3}>
-                  form-data
-                </Radio>
                 <Radio value={4}>
-                  Body Data
+                  <Tooltip title="设置该类型参数后，将不支持任务中的全局默认参数设置">
+                    <a>Body-data</a>
+                  </Tooltip>
                 </Radio>
               </Radio.Group>,
             )}
           </Form.Item>
-          <Form.Item label="请求参数" className={styles.keyValueContainer}>
-            {(getFieldValue('paramType')!==4 && caseData.paramsValues) && caseData.paramsValues.map(item => {
+          <Form.Item label="请求参数" className={getFieldValue('paramType') !== 4 ? styles.keyValueContainer : ''}>
+            {(getFieldValue('paramType') !== 4 && caseData.paramsValues) && caseData.paramsValues.map(item => {
                 if (item.type === 'add') {
                   return (
-                    <Button key={item.type} type="dashed" size="small" onClick={() => this.handleAddEmptyValue(2)} style={{ width: '80%' }}>
+                    <Button key={item.type} type="dashed" size="small" onClick={() => this.handleAddEmptyValue(2)} style={{ width: '90%' }}>
                       <Icon type="plus" /> 添加参数设置
                     </Button>)
                 }
@@ -415,21 +443,21 @@ export default class ApiCaseInfoPage extends Component {
             )}
             {(getFieldValue('paramType') === 4) && (
               <Form.Item style={{ marginBottom: 0 }}>
-                {getFieldDecorator('preShellData', {
-                  initialValue: caseData.preShell || '',
+                {getFieldDecorator('bodyData', {
+                  initialValue: caseData.bodyData || '',
                 })(
                   <AceEditor
                     mode="json"
-                    theme="monokai"
+                    theme="solarized_light"
                     style={{
                       margin: '8px 0',
-                      display: getFieldValue('preShellType') ? 'block' : 'none',
                     }}
-                    name="preShellInput"
+                    value={caseData.bodyData || undefined}
+                    name="bodyDataInput"
                     editorProps={{ $blockScrolling: true }}
                     height="300px"
-                    onChange={newValue => this.setState({ preShellData: newValue })}
-                    onBlur={() => this.handleCaseShellChange(caseData.id, 1)}
+                    onChange={newValue => this.setState({ bodyData: newValue })}
+                    onBlur={() => this.handleCaseBodyDataChange(caseData.id)}
                   />,
                 )}
               </Form.Item>
@@ -452,7 +480,7 @@ export default class ApiCaseInfoPage extends Component {
                 })(
                   <AceEditor
                     mode="java"
-                    theme="xcode"
+                    theme="solarized_light"
                     style={{
                       margin: '8px 0',
                       display: getFieldValue('postShellType') ? 'block' : 'none',
@@ -485,15 +513,17 @@ export default class ApiCaseInfoPage extends Component {
               )}
               <Form.Item className={styles.keyValueContainer}>
                 {getFieldValue('assertType') === 1 ? (
-                  caseData.textAssertValues && caseData.textAssertValues.map(item => {
-                        if (item.type === 'add') {
+                  <div style={{ marginTop: 10}}>
+                    {
+                      caseData.textAssertValues && caseData.textAssertValues.map(item => {
+                          if (item.type === 'add') {
+                            return (
+                              <Button key={item.type} type="dashed" size="small" onClick={() => this.handleAddEmptyValue(3)} style={{ width: '90%' }}>
+                                <Icon type="plus" /> 添加校验设置
+                              </Button>)
+                          }
                           return (
-                            <Button key={item.type} type="dashed" size="small" onClick={() => this.handleAddEmptyValue(3)} style={{ width: '80%' }}>
-                              <Icon type="plus" /> 添加校验设置
-                            </Button>)
-                        }
-                        return (
-                          <div style={{ marginBottom: 10, display: 'flex', flexDirection: 'row' }} key={item.id}>
+                            <div style={{ marginBottom: 10, display: 'flex', flexDirection: 'row' }} key={item.id}>
                             <TextArea
                               placeholder={'需要校验的返回值.eg: "code":0 '}
                               defaultValue={item.value}
@@ -502,17 +532,19 @@ export default class ApiCaseInfoPage extends Component {
                                 e => this.handleKeyValueChange(item.id, { keyValue: e.target.value })
                               }
                             />
-                            <div className={styles.section_delete}>
-                              <Icon type="minus-circle" onClick={() => this.handleDeleteValue(item.id)} />
-                            </div>
-                          </div>)
-                      }
-                    )
+                              <div className={styles.section_delete}>
+                                <Icon type="minus-circle" onClick={() => this.handleDeleteValue(item.id)} />
+                              </div>
+                            </div>)
+                        }
+                      )
+                    }
+                  </div>
                 ) : (
                   caseData.jsonAssertValues && caseData.jsonAssertValues.map(item => {
                       if (item.type === 'add') {
                       return (
-                      <Button key={item.type} type="dashed" size="small" onClick={() => this.handleAddEmptyValue(4)} style={{ width: '80%' }}>
+                      <Button key={item.type} type="dashed" size="small" onClick={() => this.handleAddEmptyValue(4)} style={{ width: '90%' }}>
                         <Icon type="plus" /> 添加校验设置
                       </Button>)
                     }
@@ -544,14 +576,17 @@ export default class ApiCaseInfoPage extends Component {
                   <Radio value={1}>
                     JSON提取
                   </Radio>
+                  <Radio value={2}>
+                    正则提取
+                  </Radio>
                 </Radio.Group>,
               )}
               <Form.Item className={styles.keyValueContainer}>
-                {getFieldValue('extractType') === 1 && (
+                {getFieldValue('extractType') !== 0 && (
                   caseData.jsonExtractValues && caseData.jsonExtractValues.map(item => {
                       if (item.type === 'add') {
                         return (
-                          <Button key={item.type} type="dashed" size="small" onClick={() => this.queryAddEmptyGlobalValue(3)} style={{ width: '80%' }}>
+                          <Button key={item.type} type="dashed" size="small" onClick={() => this.queryAddEmptyGlobalValue(3)} style={{ width: '90%' }}>
                             <Icon type="plus" /> 添加参数化设置
                           </Button>)
                       }

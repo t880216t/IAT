@@ -27,6 +27,8 @@ import {
   querySearchKeywords,
   queryUpdateShellData,
   queryUpdateCaseData,
+  queryUpdateCaseBodyData,
+  queryDebugCase,
 } from '@/services/iatApi';
 import { reloadAuthorized } from '@/utils/Authorized';
 
@@ -39,6 +41,7 @@ export default {
     globalValues: [],
     infoData: {},
     projectRootInfo: {},
+    taskInfo: {},
   },
   effects: {
     *queryProjectRootInfo({ payload }, { call, put }) {
@@ -76,8 +79,18 @@ export default {
         yield put({ type: 'updateState', payload: { searchKeywords: response.content } });
       }
     },
+    *queryDebugCase({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { taskInfo: {} } });
+      const response = yield call(queryDebugCase, payload);
+      if (response) {
+        yield put({ type: 'updateState', payload: { taskInfo: response.content } });
+      }
+    },
     *queryUploadTreeName({ payload }, { call, put }) {
       yield call(queryUploadTreeName, payload);
+    },
+    *queryUpdateCaseBodyData({ payload }, { call, put }) {
+      yield call(queryUpdateCaseBodyData, payload);
     },
     *queryUpdateCaseData({ payload }, { call, put }) {
       yield call(queryUpdateCaseData, payload);

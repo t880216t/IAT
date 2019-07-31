@@ -43,10 +43,11 @@ def getTaskInfo(taskId):
   projectId = Tree.query.filter_by(id=caseIds[0]).first().project_id
   projectRootData = Tree.query.filter(db.and_(Tree.project_id == projectId,Tree.pid == 0)).first()
   projectConfig = CaseProjectSetting.query.filter_by(pid=projectRootData.id).first()
-  libDatas = CaseLibs.query.filter(db.and_(CaseLibs.id.in_(json.loads(projectConfig.libs)))).all()
   libs = []
-  for lib in libDatas:
-    libs.append(lib.name)
+  if projectConfig:
+    libDatas = CaseLibs.query.filter(db.and_(CaseLibs.id.in_(json.loads(projectConfig.libs)))).all()
+    for lib in libDatas:
+      libs.append(lib.name)
 
   # 查出所有勾选用例的数据
   caseDatas = []
@@ -79,10 +80,11 @@ def getTaskInfo(taskId):
       if caseData['suiteId'] == suiteId:
         test_cases.append(caseData)
     suiteConfig = CaseProjectSetting.query.filter_by(pid=suiteId).first()
-    suiteLibDatas = CaseLibs.query.filter(db.and_(CaseLibs.id.in_(json.loads(suiteConfig.libs)))).all()
     suitelibs = []
-    for lib in suiteLibDatas:
-      suitelibs.append(lib.name)
+    if suiteConfig:
+      suiteLibDatas = CaseLibs.query.filter(db.and_(CaseLibs.id.in_(json.loads(suiteConfig.libs)))).all()
+      for lib in suiteLibDatas:
+        suitelibs.append(lib.name)
     test_suites.append({
       'name': suiteData.name,
       'suiteId': suiteId,
@@ -92,11 +94,12 @@ def getTaskInfo(taskId):
 
   globalValuesData = GlobalValues.query.filter(db.and_(GlobalValues.project_id == projectId, GlobalValues.value_type == valueType)).all()
   globalValues = []
-  for valueData in globalValuesData:
-    globalValues.append({
-      'name': valueData.key_name,
-      'value': valueData.key_value,
-    })
+  if globalValuesData:
+    for valueData in globalValuesData:
+      globalValues.append({
+        'name': valueData.key_name,
+        'value': valueData.key_value,
+      })
   taskInfo = {
     'project_name': projectRootData.name,
     'libs': libs,
@@ -114,10 +117,11 @@ def getCustomKeywords(taskId):
   keywordRows = Tree.query.filter(db.and_(Tree.project_id == projectId,Tree.type == 4)).all()
 
   keywordRootConfig = CaseProjectSetting.query.filter_by(pid=keywordRootId).first()
-  keywordRootLibDatas = CaseLibs.query.filter(db.and_(CaseLibs.id.in_(json.loads(keywordRootConfig.libs)))).all()
   keywordRootlibs = []
-  for lib in keywordRootLibDatas:
-    keywordRootlibs.append(lib.name)
+  if keywordRootConfig:
+    keywordRootLibDatas = CaseLibs.query.filter(db.and_(CaseLibs.id.in_(json.loads(keywordRootConfig.libs)))).all()
+    for lib in keywordRootLibDatas:
+      keywordRootlibs.append(lib.name)
 
   keywordDatas = []
   for keyword in keywordRows:

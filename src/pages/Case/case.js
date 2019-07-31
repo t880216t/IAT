@@ -227,7 +227,7 @@ export default class CaseContent extends Component {
           })(
             <TextArea
               placeholder="请输入功能描述"
-              autosize={{ minRows: 2, maxRows: 6 }}
+              autosize={{ minRows: 2, maxRows: 2 }}
               onBlur={() => this.handleValueChange()}
             />,
           )}

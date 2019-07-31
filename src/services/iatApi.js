@@ -197,6 +197,13 @@ export async function queryUpdateCaseData(params) {
   });
 }
 
+export async function queryUpdateCaseBodyData(params) {
+  return request('/api/IAT/case/updateCaseBodyData', {
+    method: 'POST',
+    data: params,
+  });
+}
+
 export async function queryUpdateKeyValues(params) {
   return request('/api/IAT/case/updateKeyValues', {
     method: 'POST',
@@ -213,6 +220,13 @@ export async function querySearchKeywords(params) {
 
 export async function queryUpdateShellData(params) {
   return request('/api/IAT/case/updateShellData', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function queryDebugCase(params) {
+  return request('/api/IAT/case/debugCase', {
     method: 'POST',
     data: params,
   });

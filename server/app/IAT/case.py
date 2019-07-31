@@ -1,23 +1,24 @@
 # -*-coding:utf-8-*-
 from flask import Blueprint, jsonify, make_response, session, request
-from app.tables.IAT import Project, Tree, iatKeyValues, iatCaseInfo, iatShellData, GlobalValues
+from app.tables.IAT import Task, Tree, iatKeyValues, iatCaseInfo, iatShellData, GlobalValues
 from app.tables.User import users
-import os,hashlib,subprocess, json, time, datetime, binascii, requests
+import os, hashlib, subprocess, json, time, datetime, binascii, requests
 from sqlalchemy import extract
 from app import db, app
 
 iatCase = Blueprint('iatCase', __name__)
 
+
 @iatCase.route('/getCaseData', methods=['GET'])
 def getCaseData():
   user_id = session.get('user_id')
   caseId = request.values.get("caseId")
-  treeData = Tree.query.filter_by(id = caseId).first()
+  treeData = Tree.query.filter_by(id=caseId).first()
   content = {}
   if treeData:
     # 请求头
     headerValues = []
-    headerValueDatas = iatKeyValues.query.filter(db.and_(iatKeyValues.value_type == 1, iatKeyValues.pid == caseId))\
+    headerValueDatas = iatKeyValues.query.filter(db.and_(iatKeyValues.value_type == 1, iatKeyValues.pid == caseId)) \
       .order_by(db.asc(iatKeyValues.add_time)).all()
     if headerValueDatas:
       for item in headerValueDatas:
@@ -108,14 +109,16 @@ def getCaseData():
     })
 
     caseInfoData = iatCaseInfo.query.filter(db.and_(iatCaseInfo.pid == caseId)).first()
-    method, path, paramType, assertType, extractType = '', '', '', '', ''
+    method, path, paramType, assertType, extractType, bodyData, domain = '', '', '', '', '', '', ''
     if caseInfoData:
-      method, path, paramType, assertType, extractType = \
-        caseInfoData.method,\
-        caseInfoData.path,\
-        caseInfoData.param_type,\
-        caseInfoData.assert_type,\
-        caseInfoData.extract_type,
+      method, path, paramType, assertType, extractType, bodyData, domain = \
+        caseInfoData.method, \
+        caseInfoData.path, \
+        caseInfoData.param_type, \
+        caseInfoData.assert_type, \
+        caseInfoData.extract_type, \
+        caseInfoData.body_data,\
+        caseInfoData.domain,
 
     content = {
       'id': treeData.id,
@@ -128,13 +131,16 @@ def getCaseData():
       'preShell': preShell,
       'postShell': postShell,
       'method': method,
+      'domain': domain,
       'path': path,
       'paramType': paramType,
       'assertType': assertType,
       'extractType': extractType,
+      'bodyData': bodyData,
     }
 
   return make_response(jsonify({'code': 0, 'content': content, 'msg': u'新建成功!'}))
+
 
 @iatCase.route('/addEmtpyValue', methods=['POST'])
 def addEmtpyValue():
@@ -147,6 +153,7 @@ def addEmtpyValue():
 
   return make_response(jsonify({'code': 0, 'content': {'id': data.id}, 'msg': u'新建成功!'}))
 
+
 @iatCase.route('/deleteValue', methods=['POST'])
 def deleteValue():
   user_id = session.get('user_id')
@@ -158,6 +165,7 @@ def deleteValue():
     return make_response(jsonify({'code': 0, 'content': None, 'msg': u'删除成功!'}))
   else:
     return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'删除失败!'}))
+
 
 @iatCase.route('/updateKeyValues', methods=['POST'])
 def updateKeyValues():
@@ -175,10 +183,12 @@ def updateKeyValues():
 
   return make_response(jsonify({'code': 0, 'content': None, 'msg': u'操作成功'}))
 
+
 def deleteDuplicate(data_list):
   # 去除列表中字段值重复的元素
-  result = {i['key_name']:i for i in reversed(data_list)}.values()
+  result = {i['key_name']: i for i in reversed(data_list)}.values()
   return result
+
 
 @iatCase.route('/searchKeywords', methods=['POST'])
 def searchKeywords():
@@ -190,7 +200,8 @@ def searchKeywords():
   globalValues = []
   queryWords = "%" + words + "%"
   projectId = Tree.query.filter_by(id=caseId).first().project_id
-  GlobalValuesData = GlobalValues.query.filter(db.and_(GlobalValues.key_name.like(queryWords), GlobalValues.project_id == projectId)).limit(10).all()
+  GlobalValuesData = GlobalValues.query.filter(
+    db.and_(GlobalValues.key_name.like(queryWords), GlobalValues.project_id == projectId)).limit(10).all()
   if len(GlobalValuesData) > 0:
     for matchKeyword in GlobalValuesData:
       globalValues.append({
@@ -202,6 +213,7 @@ def searchKeywords():
     content += newGlobalValues
 
   return make_response(jsonify({'code': 0, 'content': content, 'msg': u''}))
+
 
 @iatCase.route('/updateShellData', methods=['POST'])
 def updateShellData():
@@ -217,11 +229,12 @@ def updateShellData():
     rowData.update(data)
     db.session.commit()
   else:
-    data = iatShellData(caseId,shellType,editValue)
+    data = iatShellData(caseId, shellType, editValue)
     db.session.add(data)
     db.session.commit()
 
   return make_response(jsonify({'code': 0, 'content': None, 'msg': u'操作成功'}))
+
 
 @iatCase.route('/updateCaseData', methods=['POST'])
 def updateCaseData():
@@ -231,6 +244,7 @@ def updateCaseData():
   rowData = iatCaseInfo.query.filter(db.and_(iatCaseInfo.pid == caseId))
   if rowData.first():
     data = {
+      'domain': caseInfo['domain'],
       'method': caseInfo['method'],
       'path': caseInfo['path'],
       'param_type': caseInfo['paramType'],
@@ -243,6 +257,7 @@ def updateCaseData():
   else:
     data = iatCaseInfo(
       caseId,
+      caseInfo['domain'],
       caseInfo['method'],
       caseInfo['path'],
       caseInfo['paramType'],
@@ -254,3 +269,41 @@ def updateCaseData():
     db.session.commit()
 
   return make_response(jsonify({'code': 0, 'content': None, 'msg': u'操作成功'}))
+
+
+@iatCase.route('/updateCaseBodyData', methods=['POST'])
+def updateCaseBodyData():
+  user_id = session.get('user_id')
+  caseId = request.json.get("caseId")
+  bodyData = request.json.get("bodyData")
+  rowData = iatCaseInfo.query.filter(db.and_(iatCaseInfo.pid == caseId))
+  if rowData.first():
+    data = {
+      'body_data': bodyData,
+      'user_id': user_id,
+    }
+    rowData.update(data)
+    db.session.commit()
+    return make_response(jsonify({'code': 0, 'content': None, 'msg': u'操作成功'}))
+  else:
+    return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'操作失败'}))
+
+
+@iatCase.route('/debugCase', methods=['POST'])
+def debugCase():
+  user_id = session.get('user_id')
+  caseId = request.json.get("caseId")
+  domain = request.json.get("domain")
+  proxy = request.json.get("proxy")
+  valueType = request.json.get("valueType")
+  rowData = iatCaseInfo.query.filter_by(pid=caseId).first()
+  if rowData:
+    projectId = Tree.query.filter_by(id=caseId).first().project_id
+    # name,task_desc,project_id,task_type,run_time,domain,headers,params,proxy,case,user_id,status,value_type
+    data = Task('调试任务', '', projectId, 3, '00:00', domain, '', json.dumps([]), proxy, json.dumps([caseId]), user_id, 0, valueType)
+    db.session.add(data)
+    db.session.commit()
+    subprocess.Popen("python debugApiCaseScript.py runScript -i %s" % data.id, shell=True)
+    return make_response(jsonify({'code': 0, 'content': { 'id': data.id }, 'msg': ''}))
+  else:
+    return make_response(jsonify({'code': 10002, 'content': None, 'msg': '用例信息异常！'}))

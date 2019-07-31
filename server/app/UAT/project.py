@@ -75,7 +75,7 @@ def addProject():
     db.session.add(data)
     db.session.commit()
     addTreeNote(data.id, 0, name, 1, user_id, 0)
-    addTreeNote(data.id, 0, '自定义词库', 3, user_id, 0)
+    addTreeNote(data.id, 0, '自定义词库', 3, user_id, 1)
     return make_response(jsonify({'code': 0, 'content': None, 'msg': u'新建成功!'}))
   except Exception as e:
     print(e)

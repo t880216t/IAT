@@ -13,13 +13,24 @@ def get_connect():
   print('connect client sucess')
 
 @socketio.on('taskInfo',namespace='/wstask')
-def get_connect(message):
+def taskInfo(message):
   taskId = message['taskId']
   row_data = Task.query.filter_by(id=taskId).first()
   taskInfo = {
     'taskId': message['taskId'],
     'status': row_data.status,
     'taskLog': row_data.task_log,
+  }
+  return taskInfo
+
+@socketio.on('iatTaskInfo',namespace='/wstask')
+def iatTaskInfo(message):
+  taskId = message['taskId']
+  row_data = IATTask.query.filter_by(id=taskId).first()
+  taskInfo = {
+    'taskId': message['taskId'],
+    'status': row_data.status,
+    'taskLog': row_data.result,
   }
   return taskInfo
 

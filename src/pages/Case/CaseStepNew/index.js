@@ -5,8 +5,9 @@ import { connect } from 'dva';
 import styles from './index.less';
 import EditCell from '../../../components/EditCell/index';
 
-@connect(({ caseInfo, loading }) => ({
+@connect(({ caseInfo, global, loading }) => ({
   caseInfo,
+  global,
   loading: loading.effects['caseInfo/queryCaseData'],
 }))
 export default class CaseContent extends Component {
@@ -300,17 +301,19 @@ export default class CaseContent extends Component {
     return { x: left, y: top };
   };
 
-  handleRowContextMenu=(event, record)=>{
+  handleRowContextMenu= (event, record) => {
     event.preventDefault();
     const xy = this.getXY(event.target);
     const { x } = xy;
     const { y } = xy;
+    const { collapsed } = this.props.global;
+    const leftOffset = collapsed ? 120 : 300;
     const tmpStyle = {
       position: 'absolute',
       boxShadow: '3px 3px 1px #ecf0f1',
       border: '1px solid #ecf0f1',
-      left: `${x - 180}px`,
-      top: `${y - 350}px`,
+      left: `${x - leftOffset}px`,
+      top: `${y - 340}px`,
       zIndex: 999,
     };
     this.setState({ tmpStyle, rightClickItem: record });

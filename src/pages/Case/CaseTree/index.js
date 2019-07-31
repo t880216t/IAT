@@ -44,7 +44,7 @@ export default class CaseTree extends PureComponent {
         </Menu>
       );
     }
-    if (noteType === 3 && dataRef.indexId === 0) {
+    if (noteType === 3 && dataRef.indexId === 1) {
       menu = (
         <Menu id="right_menu" onClick={this.handleRightMenuClick} style={tmpStyle} className={styles.RightMenu}>
           <Menu.Item key="3">
@@ -157,16 +157,16 @@ export default class CaseTree extends PureComponent {
     const { scrollTop } = this.treeBox;
     let top = ele.offsetTop - scrollTop;
     let left = ele.offsetLeft;
-    while (ele.offsetParent) {
-      ele = ele.offsetParent;
-      if (window.navigator.userAgent.indexOf('MSTE 8') > -1) {
-        top += ele.offsetTop;
-        left += ele.offsetLeft;
-      } else {
-        top += ele.offsetTop + ele.clientTop;
-        left += ele.offsetLeft + ele.clientLeft;
-      }
-    }
+    // while (ele.offsetParent) {
+    //   ele = ele.offsetParent;
+    //   if (window.navigator.userAgent.indexOf('MSTE 8') > -1) {
+    //     top += ele.offsetTop;
+    //     left += ele.offsetLeft;
+    //   } else {
+    //     top += ele.offsetTop + ele.clientTop;
+    //     left += ele.offsetLeft + ele.clientLeft;
+    //   }
+    // }
     return { x: left, y: top };
   };
 
@@ -177,8 +177,8 @@ export default class CaseTree extends PureComponent {
     this.setState({
       rightClickItem: {
         // pageX: x + e.event.currentTarget.clientWidth,
-        pageX: x + 70,
-        pageY: y - 70,
+        pageX: x + 50,
+        pageY: y + 10,
         id: e.node.props.eventKey,
         noteType: e.node.props.noteType,
         dataRef: e.node.props.dataRef,
@@ -230,7 +230,7 @@ export default class CaseTree extends PureComponent {
           </TreeNode>
         );
       }
-      if (item.noteType === 3 && item.indexId === 0) {
+      if (item.noteType === 3 && item.indexId === 1) {
         return (
           <TreeNode
             icon={<Icon type="project" theme="filled" style={{ color: '#f0932b' }} />}

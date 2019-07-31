@@ -12,6 +12,7 @@ import { setTage, getTage } from '@/services/tags';
 import styles from './index.less'
 import CaseProject from './CaseProject/index';
 import CaseInfo from './CaseInfo/index';
+import CaseDebug from './CaseDebug/index';
 
 import 'brace/mode/java';
 import 'brace/theme/dracula';
@@ -89,7 +90,7 @@ class Interface extends Component {
     if (params.indexOf('?') !== -1) {
       const caseId = params.substr(1);
       if (caseId) {
-        this.setState({ caseId })
+        this.setState({ caseId, selectNoteId: caseId })
       }
       this.queryProjectList(caseId)
     } else {
@@ -1491,7 +1492,11 @@ class Interface extends Component {
             </Content>
             <Content style={{ background: '#fff', padding: 10, height: '90vh', width: '30%' }}>
               <div className={styles.right_container}>
-                {(selectedKeys && selectNoteType === 2) && Debug}
+                {(selectedKeys && selectNoteType === 2) && (
+                  <CaseDebug
+                    selectNoteId={selectNoteId}
+                  />
+                )}
               </div>
             </Content>
           </div>

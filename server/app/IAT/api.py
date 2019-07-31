@@ -522,9 +522,9 @@ def taskExcute():
     db.session.commit()
     taskType = taskData.first().task_type
     if taskType == 2:
-      subprocess.Popen('python runTiming.py %s' % id, shell=True)
+      subprocess.Popen('python runTiming.py runScript -i %s' % id, shell=True)
     else:
-      subprocess.Popen('python runTest.py %s' % id, shell=True)
+      subprocess.Popen('python runTest.py runScript -i %s' % id, shell=True)
     return make_response(jsonify({'code': 0, 'content': None, 'msg': u'开始执行!'}))
   else:
     return make_response(jsonify({'code': 10001, 'msg': u'执行失败!', 'content': None}))
@@ -1006,6 +1006,8 @@ def updateGlobalValues():
     }
     rowData.update(data)
     db.session.commit()
+    if rowData.first().value_type == 3:
+      return make_response(jsonify({'code': 0, 'content': None, 'msg': u'操作成功'}))
     otherRowData = GlobalValues.query.filter_by(key_name = oldKeyName)
     if otherRowData.first():
       data = {
