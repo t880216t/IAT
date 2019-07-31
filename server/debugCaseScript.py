@@ -1,7 +1,7 @@
 #-*-coding:utf-8-*-
-import os,json,binascii,hashlib, shutil
+import os,json,binascii,hashlib, shutil, sys
 from flask_script import Manager
-from app.tables.UAT import Project,Tree,CaseInfo,CaseStep,CaseLibs,CaseKeywords,CaseProjectSetting,Task, GlobalValues
+from app.tables.UAT import Tree,CaseInfo,CaseStep,CaseLibs,ProjectFile,CaseProjectSetting,Task, GlobalValues
 from app import app,db
 from datetime import datetime
 from xml.dom.minidom import parse
@@ -100,6 +100,20 @@ def getTaskInfo(taskId):
         'name': valueData.key_name,
         'value': valueData.key_value,
       })
+  # 全局文件参数
+  globalFilesData = ProjectFile.query.filter(db.and_(ProjectFile.pid == projectId)).all()
+  if globalFilesData:
+    for valueData in globalFilesData:
+      if 'win' in sys.platform:
+        appRootPath = app.root_path.replace('\\', '\\\\')
+        fileData = appRootPath +'\\\\'+ valueData.key_value
+      else:
+        fileData = app.root_path + valueData.key_value
+      globalValues.append({
+        'name': valueData.key_name,
+        'value': fileData,
+      })
+
   taskInfo = {
     'project_name': projectRootData.name,
     'libs': libs,
@@ -128,7 +142,7 @@ def getCustomKeywords(taskId):
     keywordId = keyword.id
     keyInfo = CaseInfo.query.filter_by(pid = keywordId).first()
     caseSteps = []
-    caseStepDatas = CaseStep.query.filter_by(case_id=keywordId).all()
+    caseStepDatas = CaseStep.query.filter_by(case_id=keywordId).order_by(db.asc(CaseStep.indexId)).all()
     for caseStep in caseStepDatas:
       caseSteps.append({
         'values': json.loads(caseStep.values)
@@ -293,7 +307,7 @@ def runScript(task_id):
     logs = alasyRootLog(projectDir)
     saveLogToDB(task_id,logs)
     setTaskStatus(task_id, 3)
-    clear_project_file('taskFile/'+taskRootPath)
+    # clear_project_file('taskFile/'+taskRootPath)
   except Exception as e:
     print(e)
     setTaskStatus(task_id, 4)

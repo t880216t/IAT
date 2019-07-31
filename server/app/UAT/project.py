@@ -1,6 +1,6 @@
 # -*-coding:utf-8-*-
 from flask import Blueprint, jsonify, make_response, session, request
-from app.tables.UAT import Project,Tree, GlobalValues, ProxyConfig, CaseLibs, CaseKeywords
+from app.tables.UAT import Project,Tree, GlobalValues, ProxyConfig, CaseLibs, CaseKeywords, ProjectFile
 from app.tables.User import users
 from datetime import datetime
 import os, hashlib, json, base64, binascii
@@ -178,6 +178,28 @@ def uploadFile():
       os.makedirs(fileDir)
     upload_file.save(os.path.join(app.root_path, app.config['UPLOAD_FILE_FOLDER'], fileName))
     return make_response(jsonify({'code': 0, 'content':{'filePath':app.config['UPLOAD_FILE_FOLDER']+fileName}, 'msg': u'上传成功!'}))
+  else:
+    return make_response(jsonify({'code': 10002, 'content':None, 'msg': u'上传失败!'}))
+
+@project.route('/uploadTestFile',methods=['POST'])
+def uploadTestFile():
+  upload_file = request.files["file"]
+  if upload_file:
+    fileHash = encrypt_name(upload_file.filename)
+    fileType = upload_file.filename.split('.')[-1]
+    fileName = fileHash + '.' + fileType
+    fileDir = app.root_path +'/'+ app.config['UPLOAD_TEST_FILE_FOLDER']
+    if not os.path.isdir(fileDir):
+      os.makedirs(fileDir)
+    upload_file.save(os.path.join(app.root_path, app.config['UPLOAD_TEST_FILE_FOLDER'], fileName))
+    return make_response(jsonify({
+      'code': 0,
+      'content':{
+        'filePath': app.config['UPLOAD_TEST_FILE_FOLDER']+fileName,
+        'fileName': upload_file.filename,
+      },
+      'msg': u'上传成功!'
+    }))
   else:
     return make_response(jsonify({'code': 10002, 'content':None, 'msg': u'上传失败!'}))
 
@@ -372,3 +394,43 @@ def setUserType():
     return make_response(jsonify({'code': 0, 'msg': 'sucess', 'content': []}))
   else:
     return make_response(jsonify({'code': 10001, 'msg': 'error', 'content': []}))
+
+@project.route('/addGlobalFile', methods=['POST'])
+def addGlobalFile():
+  user_id = session.get('user_id')
+  keyName = request.json.get("keyName")
+  keyValue = request.json.get("keyValue")
+  fileName = request.json.get("fileName")
+  projectId = request.json.get("projectId")
+  try:
+    globalRowData = GlobalValues.query.filter_by(key_name = keyName).first()
+    if globalRowData:
+      return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'关键词名称重复!'}))
+
+    fileRowData = ProjectFile.query.filter_by(key_name=keyName).first()
+    if fileRowData:
+      return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'关键词名称重复!'}))
+
+    # key_name, key_value, file_name, file_path, pid, user_id
+    data = ProjectFile(keyName, keyValue, fileName, keyValue, projectId, user_id)
+    db.session.add(data)
+    db.session.commit()
+    return make_response(jsonify({'code': 0, 'content': None, 'msg': u'新建成功!'}))
+  except Exception as e:
+    print(e)
+    return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'新建失败!'}))
+
+@project.route('/deleteGlobalFile', methods=['POST'])
+def deleteGlobalFile():
+  id = request.json.get("id")
+  try:
+    rowData = ProjectFile.query.filter_by(id = id).first()
+    if rowData:
+      db.session.delete(rowData)
+      db.session.commit()
+      return make_response(jsonify({'code': 0, 'content': None, 'msg': u'删除成功!'}))
+    else:
+      return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'删除失败!'}))
+  except Exception as e:
+    print(e)
+    return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'删除失败!'}))

@@ -25,6 +25,8 @@ import {
   queryUpdateCaseInfo,
   queryUpdateStepIndexDesc,
   queryUploadTreeName,
+  queryAddGlobalFile,
+  queryDeleteGlobalFile,
 } from '@/services/api';
 
 const CaseModel = {
@@ -118,6 +120,12 @@ const CaseModel = {
     },
     *queryAddCase({ payload }, { call, put }) {
       yield call(queryAddCase, payload);
+    },
+    *queryAddGlobalFile({ payload }, { call, put }) {
+      yield call(queryAddGlobalFile, payload);
+    },
+    *queryDeleteGlobalFile({ payload }, { call, put }) {
+      yield call(queryDeleteGlobalFile, payload);
     },
     *queryUpdateStepIndexDesc({ payload }, { call, put }) {
       yield call(queryUpdateStepIndexDesc, payload);

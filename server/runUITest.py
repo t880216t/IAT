@@ -1,7 +1,7 @@
 #-*-coding:utf-8-*-
 import os, json, binascii, hashlib, shutil, zipfile, sys, re
 from flask_script import Manager
-from app.tables.UAT import TimTaskLog,Tree,CaseInfo,CaseStep,CaseLibs,HomeDayExcuteCount,CaseProjectSetting,Task, GlobalValues, ProxyConfig, FailCaseLog
+from app.tables.UAT import TimTaskLog,Tree,CaseInfo,CaseStep,CaseLibs,HomeDayExcuteCount,CaseProjectSetting,Task, GlobalValues, ProxyConfig, FailCaseLog, ProjectFile
 from app import app,db
 from datetime import datetime
 from xml.dom.minidom import parse
@@ -158,6 +158,14 @@ def getTaskInfo(taskId, taskRootPath):
       'name': valueData.key_name,
       'value': valueData.key_value,
     })
+  # 全局文件参数
+  globalFilesData = ProjectFile.query.filter(db.and_(ProjectFile.pid == projectId)).all()
+  if globalFilesData:
+    for valueData in globalFilesData:
+      globalValues.append({
+        'name': valueData.key_name,
+        'value': app.root_path + '/' + valueData.key_value,
+      })
   taskInfo = {
     'project_name': projectRootData.name,
     'taskName': taskName,
@@ -189,7 +197,7 @@ def getCustomKeywords(taskId):
     keywordId = keyword.id
     keyInfo = CaseInfo.query.filter_by(pid = keywordId).first()
     caseSteps = []
-    caseStepDatas = CaseStep.query.filter_by(case_id=keywordId).all()
+    caseStepDatas = CaseStep.query.filter_by(case_id=keywordId).order_by(db.asc(CaseStep.indexId)).all()
     for caseStep in caseStepDatas:
       caseSteps.append({
         'values': json.loads(caseStep.values)

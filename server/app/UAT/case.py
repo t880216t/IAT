@@ -1,8 +1,10 @@
 # -*-coding:utf-8-*-
 from flask import Blueprint, jsonify, make_response, session, request
-from app.tables.UAT import Tree,CaseInfo,CaseStep,CaseLibs,CaseKeywords,CaseProjectSetting,Task,StepIndexDesc, GlobalValues
+from app.tables.UAT import Tree,CaseInfo,CaseStep,CaseLibs,CaseKeywords,CaseProjectSetting,Task,StepIndexDesc, GlobalValues, ProjectFile
 import os, hashlib, json, base64, binascii,subprocess
 from app import db, app
+from app.tables.User import users
+from datetime import datetime
 
 case = Blueprint('case', __name__)
 
@@ -76,8 +78,19 @@ def updateKeywordInfo():
   else:
     return make_response(jsonify({'code': 10002, 'msg': 'no such word', 'content': []}))
 
+def updateCaseUser(caseId,userId):
+  rowData = CaseInfo.query.filter_by(pid=caseId)
+  if rowData.first():
+    data = {
+      'user_id': userId,
+      'update_time': datetime.now(),
+    }
+    rowData.update(data)
+    db.session.commit()
+
 @case.route('/updateCaseInfo', methods=['POST'])
 def updateCaseInfo():
+  user_id = session.get('user_id')
   id = request.json.get("id")
   caseInfo = request.json.get("caseInfo")
   rowData = CaseInfo.query.filter_by(pid=id)
@@ -90,6 +103,7 @@ def updateCaseInfo():
     }
     rowData.update(data)
     db.session.commit()
+    updateCaseUser(id, user_id)
     syncTreeName(id,caseInfo['name'])
     return make_response(jsonify({'code': 0, 'content': None, 'msg': ''}))
   else:
@@ -125,6 +139,10 @@ def caseData():
       'values': json.loads(item.values),
       'add_time': item.add_time.strftime('%Y-%m-%d %H:%M:%S'),
     })
+  user_data = users.query.filter(db.and_(users.id == caseData.user_id)).first()
+  userName = ""
+  if user_data:
+    userName = user_data.username
   setUpData = caseData.set_up if caseData.set_up else '[]'
   tearDownData = caseData.tear_down if caseData.tear_down else '[]'
   content = {
@@ -134,6 +152,7 @@ def caseData():
     'tearDown': json.loads(tearDownData),
     'caseId': caseData.pid,
     'caseStep': caseSteps,
+    'userName': userName,
     'add_time': caseData.add_time.strftime('%Y-%m-%d %H:%M:%S'),
     'update_time': caseData.add_time.strftime('%Y-%m-%d %H:%M:%S'),
   }
@@ -296,6 +315,7 @@ def insertStep():
       data = CaseStep(rowData.case_id, rowData.indexId - 0.5,json.dumps(['','','','']),user_id)
       db.session.add(data)
       db.session.commit()
+      updateCaseUser(id, user_id)
       updateStepIndex(rowData.case_id)
       return make_response(jsonify({'code': 0, 'content': None, 'msg': u'插入成功!'}))
     else:
@@ -406,6 +426,7 @@ def copyCase():
     data = Tree(rowData.project_id, rowData.pid, rowData.name, rowData.type, rowData.user_id, rowData.index_id)
     db.session.add(data)
     db.session.commit()
+    updateCaseUser(id, user_id)
 
     # 用例信息表
     caseData = CaseInfo.query.filter_by(pid=id).first()
@@ -493,16 +514,27 @@ def caseProjectConfig():
   id = request.values.get("id")
   rowData = CaseProjectSetting.query.filter_by(pid=id).first()
   treeRow = Tree.query.filter_by(id=id).first()
+  globalFiles = []
+  globalFileDatas = ProjectFile.query.filter_by(pid=id).all()
+  if globalFileDatas:
+    for globalFile in globalFileDatas:
+      globalFiles.append({
+        'id': globalFile.id,
+        'keyName': globalFile.key_name,
+        'fileName': globalFile.file_name,
+      })
   content = {
     'id': treeRow.id,
     'name': treeRow.name,
     'libs': [],
+    'globalFiles': [],
   }
   if rowData:
     content = {
       'id': treeRow.id,
       'name': treeRow.name,
       'libs': json.loads(rowData.libs),
+      'globalFiles': globalFiles,
     }
   return make_response(jsonify({'code': 0, 'content': content, 'msg': u''}))
 
@@ -554,12 +586,14 @@ def searchKeywords():
   content = []
   customKeywordResult = []
   globalValues = []
+  globalFiles = []
   queryWords = "%"+words+"%"
   # Library result
   results = CaseKeywords.query.filter(db.and_(CaseKeywords.lib_id.in_(libs),db.or_(CaseKeywords.name_en.like(queryWords),CaseKeywords.name_zh.like(queryWords)))).limit(10).all()
   # customKeyword result
   matchCustomKeywordsInTree = Tree.query.filter(db.and_(Tree.project_id == projectId, Tree.name.like(queryWords), Tree.type == 4)).limit(5).all()
   GlobalValuesData = GlobalValues.query.filter(db.and_(GlobalValues.project_id == projectId, GlobalValues.key_name.like(queryWords))).limit(5).all()
+  GlobalFilesData = ProjectFile.query.filter(db.and_(ProjectFile.pid == projectId, ProjectFile.key_name.like(queryWords))).limit(5).all()
   if len(GlobalValuesData) > 0:
     for matchKeyword in GlobalValuesData:
       globalValues.append({
@@ -570,6 +604,16 @@ def searchKeywords():
       })
     newGlobalValues = deleteDuplicate(globalValues)
     content += newGlobalValues
+
+  if len(GlobalFilesData) > 0:
+    for matchKeyword in GlobalFilesData:
+      globalFiles.append({
+        'id': 'file_'+str(matchKeyword.id),
+        'name_en': matchKeyword.key_name,
+        'name_zh': matchKeyword.key_name,
+        'valueType': 6,
+      })
+    content += globalFiles
 
   if len(matchCustomKeywordsInTree) > 0:
     for matchKeyword in matchCustomKeywordsInTree:

@@ -221,6 +221,14 @@ export default class CaseContent extends Component {
             )}
           </Form.Item>
         </Form>
+        <Form layout="inline">
+          <Form.Item label="更新用户" labelAlign="left" >
+            <span>{caseData.userName || ''}</span>
+          </Form.Item>
+          <Form.Item label="更新时间" labelAlign="left" >
+            <span>{caseData.update_time || ''}</span>
+          </Form.Item>
+        </Form>
         <Form.Item label="用例描述">
           {getFieldDecorator('doc', {
             initialValue: caseData.doc || '',

@@ -255,3 +255,23 @@ class FailCaseLog(db.Model):
   def __init__(self, case_id):
     self.case_id = case_id
     self.add_time = datetime.now()
+
+class ProjectFile(db.Model):
+  __tablename__ = 'uat_project_file'
+  id = db.Column(db.Integer, primary_key=True)
+  key_name = db.Column(db.String(500))
+  key_value = db.Column(db.String(1000))
+  file_name = db.Column(db.String(500))
+  file_path = db.Column(db.String(1000))
+  add_time = db.Column(db.DateTime)
+  pid = db.Column(db.Integer)
+  user_id = db.Column(db.Integer)
+
+  def __init__(self, key_name, key_value, file_name, file_path, pid, user_id):
+    self.key_name = key_name
+    self.key_value = key_value
+    self.file_name = file_name
+    self.file_path = file_path
+    self.pid = pid
+    self.user_id = user_id
+    self.add_time = datetime.now()

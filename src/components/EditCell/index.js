@@ -262,7 +262,7 @@ export default class EditCell extends Component {
                         <Option
                           className={styles.globaReleaselWord}
                           key={`$\{${name}\}|~|${item.valueType}`}
-                          title={item.name_zh || item.name_en}
+                          title={item.name_en || item.name_zh}
                         >
                           {`$\{${name}\}`}
                         </Option>
@@ -274,14 +274,26 @@ export default class EditCell extends Component {
                         <Option
                           className={styles.globaDebuglWord}
                           key={`$\{${name}\}|~|${item.valueType}`}
-                          title={item.name_zh || item.name_en}
+                          title={item.name_en || item.name_zh}
+                        >
+                          {`$\{${name}\}`}
+                        </Option>
+                      );
+                    }
+                    if (item.valueType === 6) {
+                      const name = item.name_zh || item.name_en
+                      return (
+                        <Option
+                          className={styles.globaReleaselWord}
+                          key={`$\{${name}\}|~|${item.valueType}`}
+                          title={item.name_en || item.name_zh}
                         >
                           {`$\{${name}\}`}
                         </Option>
                       );
                     }
                     return (
-                      <Option key={item.name_en} title={item.name_zh || item.name_en}>
+                      <Option key={item.name_en} title={item.name_en || item.name_zh}>
                         {item.name_zh || item.name_en}
                       </Option>
                     );

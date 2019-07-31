@@ -7,6 +7,8 @@ import {
   Button,
   Icon,
   Radio,
+  Modal,
+  Upload,
 } from 'antd';
 import { connect } from 'dva';
 import FormKeyValuesCell from '../../../components/FormKeyValuesCell/index';
@@ -24,6 +26,8 @@ export default class CaseProject extends Component {
     caseProjectConfig: {},
     globalValues: [],
     valueType: 1,
+    showAddFileModal: false,
+    fileList: []
   }
 
   componentWillMount() {
@@ -191,8 +195,80 @@ export default class CaseProject extends Component {
       });
   }
 
+  handleAddFile = () => {
+    this.setState({ showAddFileModal: true });
+  }
+
+  handleUploadFileChange = info => {
+    let fileList = [...info.fileList];
+
+    // 1. Limit the number of uploaded files
+    // Only to show two recent uploaded files, and old ones will be replaced by the new
+    fileList = fileList.slice(-1);
+
+    // 2. Read from response and show file link
+    fileList = fileList.map(file => {
+      if (file.response) {
+        // Component will show file.url as link
+        file.url = file.response.url;
+      }
+      return file;
+    });
+
+    this.setState({ fileList });
+  };
+
+  handleUploadOk = () => {
+    const { fileList, uploadName } = this.state;
+    if (!uploadName) {
+      message.warning('请输入参数名');
+      return;
+    }
+    const { id } = this.state.caseProjectConfig;
+    if (fileList.length > 0) {
+      const { filePath, fileName } = fileList[0].response.content;
+      this.queryAddGlobalFile(uploadName, filePath, fileName, id)
+      this.handleCancel()
+    }
+  }
+
+  handleCancel = () => {
+    this.setState({
+      uploadName: '',
+      showAddFileModal: false,
+      fileList: [],
+    })
+  }
+
+  handleDeleteFileValue = id => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'caseInfo/queryDeleteGlobalFile',
+      payload: {
+        id,
+      },
+    })
+      .then(() => {
+        this.queryCaseProjectConfig();
+      });
+  }
+
+  queryAddGlobalFile = (keyName, keyValue, fileName, projectId) => {
+    const { dispatch } = this.props;
+    const { id } = this.state.caseProjectConfig;
+    dispatch({
+      type: 'caseInfo/queryAddGlobalFile',
+      payload: {
+        keyName, keyValue, fileName, projectId,
+      },
+    })
+      .then(() => {
+        this.queryCaseProjectConfig();
+      });
+  }
+
   render() {
-    const { caseProjectConfig, globalValues, valueType } = this.state;
+    const { caseProjectConfig, globalValues, valueType, showAddFileModal, fileList, uploadName } = this.state;
     const showValues = globalValues && globalValues.filter(item => item.valueType === valueType);
     const { form } = this.props;
     const { getFieldDecorator } = form;
@@ -211,6 +287,12 @@ export default class CaseProject extends Component {
         xs: { span: 24, offset: 0 },
         sm: { span: 12, offset: 4 },
       },
+    };
+    const props = {
+      name: 'file',
+      action: '/api/UAT/project/uploadTestFile',
+      onChange: this.handleUploadFileChange,
+      multiple: false,
     };
     return (
       <Form {...formItemLayout} >
@@ -249,6 +331,45 @@ export default class CaseProject extends Component {
             <Icon type="plus" /> 添加全局参数
           </Button>
         </Form.Item>
+        <Form.Item label="文件参数" className={styles.paramsContainer}>
+          {caseProjectConfig.globalFiles && caseProjectConfig.globalFiles.map(item => (
+            <Form key={item.id} layout="inline">
+              <Form.Item labelAlign="left" >
+                <span className={styles.keyName}>{item.keyName || ''}</span>
+              </Form.Item>
+              <Form.Item labelAlign="left" >
+                <span>{item.fileName || ''}</span>
+              </Form.Item>
+              <Form.Item>
+                <Button type="link" icon="minus-square" onClick={() => this.handleDeleteFileValue(item.id)}/>
+              </Form.Item>
+            </Form>)
+          )}
+          <Button type="dashed" onClick={() => this.handleAddFile()} style={{ width: '90%' }}>
+            <Icon type="plus" /> 添加文件参数
+          </Button>
+        </Form.Item>
+        <Modal
+          title="上传文件参数"
+          visible={showAddFileModal}
+          onOk={this.handleUploadOk}
+          onCancel={this.handleCancel}
+          destroyOnClose
+          closable
+        >
+          <Form.Item label="参数名称" labelAlign="left" >
+            <Input placeholder="请输入参数名称" value={uploadName} onChange={e => this.setState({ uploadName: e.target.value })} />
+          </Form.Item>
+          <Form.Item label="上传文件" labelAlign="left" >
+            <div>
+              <Upload {...props} fileList={fileList}>
+                <Button>
+                  <Icon type="upload" /> 上传文件
+                </Button>
+              </Upload>
+            </div>
+          </Form.Item>
+        </Modal>
       </Form>
     );
   }

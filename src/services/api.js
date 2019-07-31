@@ -64,6 +64,13 @@ export async function queryDeleteGlobalValues(params) {
   });
 }
 
+export async function queryDeleteGlobalFile(params) {
+  return request('/api/UAT/project/deleteGlobalFile', {
+    method: 'POST',
+    data: params,
+  });
+}
+
 export async function queryUpdateGlobalValues(params) {
   return request('/api/UAT/project/updateGlobalValues', {
     method: 'POST',
@@ -234,6 +241,13 @@ export async function queryTaskReportByDate(params) {
 
 export async function queryAddGlobalValues(params) {
   return request('/api/UAT/project/addGlobalValues', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function queryAddGlobalFile(params) {
+  return request('/api/UAT/project/addGlobalFile', {
     method: 'POST',
     data: params,
   });

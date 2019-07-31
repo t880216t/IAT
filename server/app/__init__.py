@@ -6,6 +6,7 @@ from flask_socketio import SocketIO
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'static/uploads/'
 app.config['UPLOAD_FILE_FOLDER'] = 'static/proxy/uploads/'
+app.config['UPLOAD_TEST_FILE_FOLDER'] = 'static/file/uploads/'
 app.config['DOMAIN'] = 'http://127.0.0.1:5000/'
 app.config['ALLOWED_EXTENSIONS'] = set(['png', 'jpg', 'jpeg', 'gif','HTML','html','xlsx'])
 app.config['SECRET_KEY']= "thisisaverycooltestpalt" #设置为24位的字符,每次运行服务器都是不同的，所以服务器启动一次上次的session就清除。
