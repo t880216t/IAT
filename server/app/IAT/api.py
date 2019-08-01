@@ -1,6 +1,6 @@
 # -*-coding:utf-8-*-
 from flask import Blueprint, jsonify, make_response, session, request
-from app.tables.IAT import Project, Tree, Sample, Task, TaskCount, GlobalValues
+from app.tables.IAT import Project, Tree, Sample, Task, TaskCount, GlobalValues, iatCaseInfo
 from app.tables.User import users
 import os,hashlib,subprocess, json, time, datetime, binascii, requests
 from sqlalchemy import extract
@@ -139,8 +139,8 @@ def projectCaseList():
   listData = Tree.query.filter(db.and_(Tree.project_id == id, Tree.type == 2)).order_by(db.asc(Tree.index_id)).all()
   content = []
   for case in listData:
-    sampleData = Sample.query.filter_by(pid=case.id).first()
-    if sampleData:
+    caseData = iatCaseInfo.query.filter_by(pid=case.id).first()
+    if caseData:
       content.append({
         "key": case.id,
         "name": case.name,

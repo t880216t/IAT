@@ -587,13 +587,10 @@ def searchKeywords():
   customKeywordResult = []
   globalValues = []
   globalFiles = []
+  customKeyInputParams = []
   queryWords = "%"+words+"%"
-  # Library result
-  results = CaseKeywords.query.filter(db.and_(CaseKeywords.lib_id.in_(libs),db.or_(CaseKeywords.name_en.like(queryWords),CaseKeywords.name_zh.like(queryWords)))).limit(10).all()
-  # customKeyword result
-  matchCustomKeywordsInTree = Tree.query.filter(db.and_(Tree.project_id == projectId, Tree.name.like(queryWords), Tree.type == 4)).limit(5).all()
+  # 全局参数匹配
   GlobalValuesData = GlobalValues.query.filter(db.and_(GlobalValues.project_id == projectId, GlobalValues.key_name.like(queryWords))).limit(5).all()
-  GlobalFilesData = ProjectFile.query.filter(db.and_(ProjectFile.pid == projectId, ProjectFile.key_name.like(queryWords))).limit(5).all()
   if len(GlobalValuesData) > 0:
     for matchKeyword in GlobalValuesData:
       globalValues.append({
@@ -604,7 +601,8 @@ def searchKeywords():
       })
     newGlobalValues = deleteDuplicate(globalValues)
     content += newGlobalValues
-
+  # 全局文件参数匹配
+  GlobalFilesData = ProjectFile.query.filter(db.and_(ProjectFile.pid == projectId, ProjectFile.key_name.like(queryWords))).limit(5).all()
   if len(GlobalFilesData) > 0:
     for matchKeyword in GlobalFilesData:
       globalFiles.append({
@@ -614,7 +612,9 @@ def searchKeywords():
         'valueType': 6,
       })
     content += globalFiles
-
+  # 自定义关键匹配
+  matchCustomKeywordsInTree = Tree.query.filter(
+    db.and_(Tree.project_id == projectId, Tree.name.like(queryWords), Tree.type == 4)).limit(5).all()
   if len(matchCustomKeywordsInTree) > 0:
     for matchKeyword in matchCustomKeywordsInTree:
       matchKeywordData = CaseInfo.query.filter_by(pid=matchKeyword.id).first()
@@ -625,6 +625,23 @@ def searchKeywords():
         'valueType': 0,
       })
     content += customKeywordResult
+  # 检查是否为自定义关键词，并匹配传入参数
+  if suiteData.type == 4:
+    customCaseInfo = CaseInfo.query.filter_by(pid = caseId).first()
+    if customCaseInfo and customCaseInfo.params:
+      for index,param in enumerate(json.loads(customCaseInfo.params)):
+        if words in param:
+          customKeyInputParams.append({
+            'id': 'params_' + str(index),
+            'name_en': param,
+            'name_zh': param,
+            'valueType': 7,
+          })
+      content += customKeyInputParams
+  # 关键词词库匹配
+  results = CaseKeywords.query.filter(db.and_(CaseKeywords.lib_id.in_(libs),
+                                              db.or_(CaseKeywords.name_en.like(queryWords),
+                                                     CaseKeywords.name_zh.like(queryWords)))).limit(10).all()
   for item in results:
     content.append({
       'id': item.id,
@@ -632,6 +649,7 @@ def searchKeywords():
       'name_zh': item.name_zh,
       'valueType': 0,
     })
+
   return make_response(jsonify({'code': 0, 'content': content, 'msg': u''}))
 
 @case.route('/addDebugTask', methods=['POST'])

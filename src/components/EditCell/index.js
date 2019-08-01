@@ -256,31 +256,7 @@ export default class EditCell extends Component {
                   filterOption={false}
                 >
                   {keywordList && keywordList.map(item => {
-                    if (item.valueType === 1) {
-                      const name = item.name_zh || item.name_en
-                      return (
-                        <Option
-                          className={styles.globaReleaselWord}
-                          key={`$\{${name}\}|~|${item.valueType}`}
-                          title={item.name_en || item.name_zh}
-                        >
-                          {`$\{${name}\}`}
-                        </Option>
-                      );
-                    }
-                    if (item.valueType === 2) {
-                      const name = item.name_zh || item.name_en
-                      return (
-                        <Option
-                          className={styles.globaDebuglWord}
-                          key={`$\{${name}\}|~|${item.valueType}`}
-                          title={item.name_en || item.name_zh}
-                        >
-                          {`$\{${name}\}`}
-                        </Option>
-                      );
-                    }
-                    if (item.valueType === 6) {
+                    if ([1, 6].indexOf(item.valueType) > -1) {
                       const name = item.name_zh || item.name_en
                       return (
                         <Option
