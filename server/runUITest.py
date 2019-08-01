@@ -1,3 +1,4 @@
+#!venv/bin/python
 #-*-coding:utf-8-*-
 import os, json, binascii, hashlib, shutil, zipfile, sys, re
 from flask_script import Manager

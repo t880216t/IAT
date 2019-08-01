@@ -1,3 +1,4 @@
+#!venv/bin/python
 # -*-coding:utf-8-*-
 import schedule, subprocess, time
 from flask_script import Manager

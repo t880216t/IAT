@@ -1,3 +1,4 @@
+#!venv/bin/python
 #-*-coding:utf-8-*-
 import time,json,subprocess
 from flask_script import Manager

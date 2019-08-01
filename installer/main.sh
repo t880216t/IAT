@@ -34,13 +34,13 @@ function _switch() {
             inst_resetRepo
             ;;
         ""|"b"|"build"|"5")
-            bash "$AC_PATH_APPS/compiler/compiler.sh" $_opt
+            buildProject
             ;;
         ""|"d"|"db"|"6")
             bash "$AC_PATH_APPS/db_assembler/db_assembler.sh" $_opt
             ;;
         ""|"run"|"run"|"7")
-            inst_simple_restarter authserver
+            startService
             ;;
         ""|"quit"|"8")
             echo "再见!"

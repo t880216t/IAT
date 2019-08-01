@@ -1,3 +1,4 @@
+#!venv/bin/python
 import requests
 from bs4 import BeautifulSoup
 from app.tables.UAT import HomeBack

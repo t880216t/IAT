@@ -1,3 +1,4 @@
+#!venv/bin/python
 #-*-coding:utf-8-*-
 import sys,time,os,subprocess,json, importlib, binascii, hashlib, shutil
 import xml.etree.ElementTree as ET

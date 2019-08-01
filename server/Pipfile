@@ -1,6 +1,6 @@
 [[source]]
 name = "pypi"
-url = "https://mirrors.aliyun.com/pypi/simple"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
 verify_ssl = true
 
 [dev-packages]
@@ -30,11 +30,9 @@ pymysql = "==0.9.3"
 pypubsub = "==3.3.0"
 python-engineio = "==3.8.2.post1"
 python-socketio = "==4.2.0"
-pywin32 = "==224"
 rarfile = "==3.0"
 requests = "==2.22.0"
 robotframework = "==3.1.2"
-robotframework-ride = "==1.7.3.1"
 robotframework-seleniumlibrary = "==3.3.1"
 robotframeworklexer = "==1.1"
 schedule = "==0.6.0"
