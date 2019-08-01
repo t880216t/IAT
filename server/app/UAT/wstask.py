@@ -12,6 +12,10 @@ wstask = Blueprint('wstask', __name__)
 def get_connect():
   print('connect client sucess')
 
+@socketio.on('disconnect',namespace='/wstask')
+def get_disconnect():
+  print('disconnect client sucess')
+
 @socketio.on('taskInfo',namespace='/wstask')
 def taskInfo(message):
   taskId = message['taskId']

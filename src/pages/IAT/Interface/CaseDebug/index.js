@@ -3,8 +3,8 @@ import { Spin, Icon, Button, Form, Input, Radio, message } from 'antd';
 import io from 'socket.io-client';
 import { connect } from 'dva';
 
-import styles from './index.less';
 import JSONPretty from 'react-json-pretty';
+import styles from './index.less';
 
 @connect(({ interfaceCase, loading }) => ({
   interfaceCase,
@@ -19,6 +19,7 @@ export default class CaseDebugPage extends PureComponent {
       spinning: false,
       taskLog: [],
     };
+    this.socket = null;
   }
 
   componentWillMount() {
@@ -28,6 +29,10 @@ export default class CaseDebugPage extends PureComponent {
     this.socket.on('connect', () => {
       console.log('<= 连接调试服务器成功！');
     });
+  }
+
+  componentWillUnmount() {
+    this.socket.disconnect();
   }
 
   handleApiDebug = () => {

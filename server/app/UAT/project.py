@@ -51,7 +51,7 @@ def projectList():
   content = []
   if projectList:
     for item in projectList:
-      # caseCount = Sample.query.filter(db.and_(Sample.project_id == item.id)).count()
+      caseCount = Tree.query.filter(db.and_(Tree.project_id == item.id, Tree.type == 2)).count()
       row_data = users.query.filter(db.and_(users.id == item.user_id)).first()
       username = ""
       if row_data:
@@ -61,7 +61,7 @@ def projectList():
         "name": item.name,
         "add_time": item.add_time.strftime('%Y-%m-%d %H:%M:%S'),
         "add_user": username,
-        "count": 0,
+        "count": caseCount,
         "status": item.status,
       })
   return make_response(jsonify({'code': 0, 'msg': '', 'content': content}))

@@ -62,6 +62,7 @@ export default class CaseContent extends Component {
   }
 
   componentWillUnmount() {
+    this.socket.disconnect();
     this.socket.on('disconnect', () => {
       console.log('关闭连接');
     });

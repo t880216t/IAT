@@ -156,7 +156,7 @@ export default class CaseContent extends Component {
               getValueFromEvent: value => this.handleParamsChange(value),
             })(
               <Select
-                style={{ width: 300 }}
+                style={{ minWidth: 200, width: '100%' }}
                 mode="tags"
                 placeholder="请输入传入参数"
               />,

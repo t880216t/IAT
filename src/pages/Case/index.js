@@ -87,7 +87,9 @@ export default class CasePage extends PureComponent {
         loop(item, item.id);
       }
     });
-    loop(tree[0], tree[0].id);
+    tree.forEach(treeItem => {
+      loop(treeItem, treeItem.id)
+    });
     return listData;
   };
 
@@ -100,7 +102,7 @@ export default class CasePage extends PureComponent {
         name: '',
         type: 'case',
         noteType: 0,
-        index_id: 99,
+        indexId: 99,
         pid: clickId,
       });
       const listToTree = pid => {
@@ -110,7 +112,7 @@ export default class CasePage extends PureComponent {
             result.push({
               id: item.id,
               name: item.name,
-              index_id: item.index_id,
+              indexId: item.indexId,
               type: item.type,
               noteType: item.noteType,
               children: listToTree(item.id),
@@ -137,7 +139,7 @@ export default class CasePage extends PureComponent {
       name: '',
       type: 'folder',
       noteType: 0,
-      index_id: 99,
+      indexId: 99,
       pid: clickId,
     });
     const listToTree = pid => {
@@ -147,7 +149,7 @@ export default class CasePage extends PureComponent {
           result.push({
             id: item.id,
             name: item.name,
-            index_id: item.index_id,
+            indexId: item.indexId,
             type: item.type,
             noteType: item.noteType,
             children: listToTree(item.id),

@@ -41,7 +41,7 @@ class Immediate extends PureComponent {
   }
 
   componentWillUnMount() {
-    // clearInterval(this.timer);
+    this.socket.disconnect();
     if (this.timer) {
       clearTimeout(this.timer);
     }
