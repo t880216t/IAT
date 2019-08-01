@@ -347,7 +347,7 @@ export default class ApiCaseInfoPage extends Component {
             })(
               <Input
                 size="small"
-                placeholder="请求域名. eg: http://www.test.com:5000"
+                placeholder="请求域名. eg: http://www.test.com:5001"
                 style={{ width: 400 }}
               />,
             )}

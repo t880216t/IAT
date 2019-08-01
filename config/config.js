@@ -349,12 +349,12 @@ export default {
   },
   proxy: {
     '/api/': {
-      target: 'http://localhost:5000/',
+      target: 'http://localhost:5001/',
       changeOrigin: true,
       // pathRewrite: { '^/server': '' },
     },
     '/img/': {
-      target: 'http://localhost:5000/',
+      target: 'http://localhost:5001/',
       changeOrigin: true,
       pathRewrite: { '^/img': '' },
     },

@@ -25,7 +25,7 @@ export default class CaseDebugPage extends PureComponent {
   componentWillMount() {
     const urlParams = new URL(window.location.href);
     this.setState({ hostname: urlParams.hostname });
-    this.socket = io(`ws://${urlParams.hostname}:5000/wstask`);
+    this.socket = io(`ws://${urlParams.hostname}:5001/wstask`);
     this.socket.on('connect', () => {
       console.log('<= 连接调试服务器成功！');
     });

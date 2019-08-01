@@ -24,7 +24,7 @@ class syncRFLib2DB():
       time.sleep(0.5)
 
   def uploadLib(self,name,isDefault):
-    url = 'http://127.0.0.1:5000/api/UAT/case/uploadLib'
+    url = 'http://127.0.0.1:5001/api/UAT/case/uploadLib'
     headers = {
       'content-type': 'application/json',
     }
@@ -37,7 +37,7 @@ class syncRFLib2DB():
     return response['content']['id']
 
   def uploadKeywords(self,libId, keywords):
-    url = 'http://127.0.0.1:5000/api/UAT/case/uploadKeyword'
+    url = 'http://127.0.0.1:5001/api/UAT/case/uploadKeyword'
     for item in keywords:
       wordType = 0
       if "locator" in item['args']:

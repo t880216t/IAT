@@ -8,7 +8,7 @@ sys.setdefaultencoding("utf8")
 def addCase(projectId,name):
   data = {"id":projectId,"name":name}
   headers = {'Content-Type': 'application/json'}
-  url = 'http://127.0.0.1:5000/api/IAT/addCase'
+  url = 'http://127.0.0.1:5001/api/IAT/addCase'
   res = requests.post(url, headers=headers, data=json.dumps(data))
   response = res.json()
   if response["code"] == 0:
@@ -21,7 +21,7 @@ def addSample(caseId,info):
     "info": info
   }
   headers = {'Content-Type': 'application/json'}
-  url = 'http://127.0.0.1:5000/api/IAT/updateSample'
+  url = 'http://127.0.0.1:5001/api/IAT/updateSample'
   res = requests.post(url, headers=headers, data=json.dumps(data))
   try:
     response = res.json()
