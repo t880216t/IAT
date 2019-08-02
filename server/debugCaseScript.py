@@ -105,11 +105,11 @@ def getTaskInfo(taskId):
   globalFilesData = ProjectFile.query.filter(db.and_(ProjectFile.pid == projectId)).all()
   if globalFilesData:
     for valueData in globalFilesData:
-      if 'win' in sys.platform:
+      if 'win32' in sys.platform:
         appRootPath = app.root_path.replace('\\', '\\\\')
         fileData = appRootPath +'\\\\'+ valueData.key_value
       else:
-        fileData = app.root_path + valueData.key_value
+        fileData = app.root_path + '/' + valueData.key_value
       globalValues.append({
         'name': valueData.key_name,
         'value': fileData,

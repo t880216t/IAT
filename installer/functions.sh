@@ -35,6 +35,11 @@ function inst_cnpm() {
     fi
 }
 
+function initCheckEnv() {
+    checkJmeter
+    checkNode
+}
+
 function initNodeModules() {
     if [ -d "node_modules" ];then
         echo "文件夹存在"
@@ -78,6 +83,31 @@ function buildProject() {
     fi
 }
 
+function checkJmeter() {
+    if  command -v jmeter > /dev/null; then
+        echo -e "\033[32m Jmeter环境可用 \033[0m"
+    else
+        echo -e "\033[31m 未检查到Jmeter环境 \033[0m"
+    fi
+}
+
+function checkNode() {
+    if  command -v npm > /dev/null; then
+        echo -e "\033[32m npm环境可用 \033[0m"
+    else
+        echo -e "\033[31m 未检查到npm环境 \033[0m"
+    fi
+}
+
+function checkNode() {
+    if  command -v npm > /dev/null; then
+        echo -e "\033[32m npm环境可用 \033[0m"
+    else
+        echo -e "\033[31m 未检查到npm环境 \033[0m"
+    fi
+}
+
+
 function startFlaskServer() {
     if [ -d "server/venv" ];then
         a=`lsof -i:5001 | wc -l`
@@ -89,7 +119,7 @@ function startFlaskServer() {
             python run.py
             deactivate
         else
-            echo -e "\033[31m 5000端口被占用 \033[0m"
+            echo -e "\033[31m 5001端口被占用 \033[0m"
         fi
     else
         echo -e "\033[31m 未安装python虚拟环境 \033[0m"

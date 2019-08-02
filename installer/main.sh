@@ -25,7 +25,7 @@ function _switch() {
             inst_allInOne
             ;;
         ""|"c"|"dev-check"|"2")
-            inst_allInOne
+            initCheckEnv
             ;;
         ""|"u"|"pull"|"3")
             fetchCode

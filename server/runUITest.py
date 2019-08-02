@@ -91,7 +91,7 @@ def getTaskInfo(taskId, taskRootPath):
                 z = zipfile.ZipFile(zipPath, 'r')
                 z.extractall(taskDir+'/ff_profile')
                 z.close()
-              if 'win' in sys.platform:
+              if 'win32' in sys.platform:
                 taskDir = 'taskFile\\\\' + taskRootPath
                 appRootPath = app.root_path.replace('\\','\\\\')
                 appRootPath = appRootPath[:-3]
@@ -163,9 +163,14 @@ def getTaskInfo(taskId, taskRootPath):
   globalFilesData = ProjectFile.query.filter(db.and_(ProjectFile.pid == projectId)).all()
   if globalFilesData:
     for valueData in globalFilesData:
+      if 'win32' in sys.platform:
+        appRootPath = app.root_path.replace('\\', '\\\\')
+        fileData = appRootPath + '\\\\' + valueData.key_value
+      else:
+        fileData = app.root_path + '/' + valueData.key_value
       globalValues.append({
         'name': valueData.key_name,
-        'value': app.root_path + '/' + valueData.key_value,
+        'value': fileData,
       })
   taskInfo = {
     'project_name': projectRootData.name,
