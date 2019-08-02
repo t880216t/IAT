@@ -92,6 +92,9 @@ class Project extends PureComponent {
         title: '用例数量',
         dataIndex: 'count',
         key: 'count',
+        render: (text, record) => (
+          <a target="_blank" rel="noopener noreferrer" href={`/case/ui?id=&projectId=${record.id}`} >{text}</a>
+        ),
       },
       {
         title: '创建人',
