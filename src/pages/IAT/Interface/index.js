@@ -2,12 +2,27 @@
 /* eslint-disable no-useless-escape */
 import React, { Component } from 'react';
 import {
-  Layout, Tree, Select, Icon, Menu, message, Input, Card, Divider, Col, Button, Radio, Spin, Switch, Tooltip, Empty
+  Layout,
+  Tree,
+  Select,
+  Icon,
+  Menu,
+  message,
+  Input,
+  Card,
+  Divider,
+  Col,
+  Button,
+  Radio,
+  Spin,
+  Switch,
+  Tooltip,
+  Empty,
 } from 'antd';
 import { connect } from 'dva';
 import { Resizable } from 're-resizable';
 import { setTage, getTage } from '@/services/tags';
-import styles from './index.less'
+import styles from './index.less';
 import CaseProject from './CaseProject/index';
 import CaseInfo from './CaseInfo/index';
 import CaseDebug from './CaseDebug/index';
@@ -15,9 +30,7 @@ import CaseDebug from './CaseDebug/index';
 import 'brace/mode/java';
 import 'brace/theme/dracula';
 
-const {
-  Content, Sider,
-} = Layout;
+const { Content, Sider } = Layout;
 const { TreeNode } = Tree;
 const { Option } = Select;
 const InputGroup = Input.Group;
@@ -31,54 +44,54 @@ const { TextArea } = Input;
 }))
 class Interface extends Component {
   // 构造
-    constructor(props) {
-      super(props);
-      // 初始状态
-      this.state = {
-        projectList: [],
-        project: null,
-        clickId: null,
-        caseId: null,
-        treeList: [],
-        rightClickItem: null,
-        selectNoteType: null,
-        selectIndexId: null,
-        selectNoteId: null,
-        infoName: '',
-        autoExpandParent: true,
-        info: {
-          name: '',
-          path: '',
-          method: 'GET',
-          paramType: 1,
-          params: [],
-          asserts: {
-            assertsType: 1,
-            assertData: [],
-          },
-          extract: {
-            extractType: 0,
-            extractData: [],
-          },
-          preShellType: 0,
-          preShellData: '',
-          postShellType: 0,
-          postShellData: ''
+  constructor(props) {
+    super(props);
+    // 初始状态
+    this.state = {
+      projectList: [],
+      project: null,
+      clickId: null,
+      caseId: null,
+      treeList: [],
+      rightClickItem: null,
+      selectNoteType: null,
+      selectIndexId: null,
+      selectNoteId: null,
+      infoName: '',
+      autoExpandParent: true,
+      info: {
+        name: '',
+        path: '',
+        method: 'GET',
+        paramType: 1,
+        params: [],
+        asserts: {
+          assertsType: 1,
+          assertData: [],
         },
-      };
-      this.setDomTreeBoxRef = ref => (this.treeBox = ref);
-    }
+        extract: {
+          extractType: 0,
+          extractData: [],
+        },
+        preShellType: 0,
+        preShellData: '',
+        postShellType: 0,
+        postShellData: '',
+      },
+    };
+    this.setDomTreeBoxRef = ref => (this.treeBox = ref);
+  }
 
   componentWillMount() {
     const params = this.props.location.search;
     if (params.indexOf('?') !== -1) {
       const caseId = params.substr(1);
       if (caseId) {
-        this.setState({ caseId, selectNoteId: caseId })
+        this.setState({ caseId, selectNoteId: caseId });
       }
-      this.queryProjectList(caseId)
+      this.queryProjectList(caseId);
     } else {
-      this.queryProjectList()
+      this.queryProjectList();
     }
   }
 
@@ -121,7 +134,7 @@ class Interface extends Component {
           </Menu.Item>
         </Menu>
       );
-    return (this.state.rightClickItem && menu);
+    return this.state.rightClickItem && menu;
   }
 
   handleRightMenuClick = e => {
@@ -147,34 +160,37 @@ class Interface extends Component {
     }
   };
 
-  treeToList=tree => {
-    const listData = [{
-      id: tree[0].id,
-      name: tree[0].name,
-      noteType: tree[0].noteType,
-      index_id: tree[0].index_id,
-      pid: 0,
-    }]
-    const loop = (data, fatherPid) => data.children.forEach(item => {
-      listData.push({
-        id: item.id,
-        name: item.name,
-        noteType: item.noteType,
-        index_id: item.index_id,
-        pid: fatherPid,
-      })
-      if (item.children && item.children.length > 0) {
-        loop(item, item.id)
-      }
-    })
-    loop(tree[0], tree[0].id)
-    return listData
+  treeToList = tree => {
+    const listData = [
+      {
+        id: tree[0].id,
+        name: tree[0].name,
+        noteType: tree[0].noteType,
+        index_id: tree[0].index_id,
+        pid: 0,
+      },
+    ];
+    const loop = (data, fatherPid) =>
+      data.children.forEach(item => {
+        listData.push({
+          id: item.id,
+          name: item.name,
+          noteType: item.noteType,
+          index_id: item.index_id,
+          pid: fatherPid,
+        });
+        if (item.children && item.children.length > 0) {
+          loop(item, item.id);
+        }
+      });
+    loop(tree[0], tree[0].id);
+    return listData;
   };
 
-  handleAddCase=() => {
+  handleAddCase = () => {
     const clickId = this.state.rightClickItem.dataRef.id;
     const { treeList } = this.state;
-    const listData = this.treeToList(treeList)
+    const listData = this.treeToList(treeList);
     listData.push({
       id: null,
       name: '',
@@ -182,7 +198,7 @@ class Interface extends Component {
       noteType: 0,
       index_id: 99,
       pid: clickId,
-    })
+    });
     const listToTree = pid => {
       const result = [];
       listData.forEach(item => {
@@ -194,24 +210,27 @@ class Interface extends Component {
             type: item.type,
             noteType: item.noteType,
             children: listToTree(item.id),
-          })
+          });
         }
-      })
-      return result
-    }
-    const newTree = listToTree(0)
-    this.setState({
-      treeList: newTree,
-      expandedKeys: [clickId.toString()],
-      clickId,
-      autoExpandParent: true
-    }, () => this.clearMenu())
+      });
+      return result;
+    };
+    const newTree = listToTree(0);
+    this.setState(
+      {
+        treeList: newTree,
+        expandedKeys: [clickId.toString()],
+        clickId,
+        autoExpandParent: true,
+      },
+      () => this.clearMenu(),
+    );
   };
 
-  handleAddSubFolder=() => {
+  handleAddSubFolder = () => {
     const clickId = this.state.rightClickItem.dataRef.id;
     const { treeList } = this.state;
-    const listData = this.treeToList(treeList)
+    const listData = this.treeToList(treeList);
     listData.push({
       id: null,
       name: '',
@@ -219,7 +238,7 @@ class Interface extends Component {
       noteType: 0,
       index_id: 99,
       pid: clickId,
-    })
+    });
     const listToTree = pid => {
       const result = [];
       listData.forEach(item => {
@@ -231,211 +250,210 @@ class Interface extends Component {
             type: item.type,
             noteType: item.noteType,
             children: listToTree(item.id),
-          })
+          });
         }
-      })
-      return result
-    }
-    const newTree = listToTree(0)
-    this.setState({
-      treeList: newTree,
-      expandedKeys: [clickId.toString()],
-      clickId,
-      autoExpandParent: true
-    }, () => this.clearMenu())
+      });
+      return result;
+    };
+    const newTree = listToTree(0);
+    this.setState(
+      {
+        treeList: newTree,
+        expandedKeys: [clickId.toString()],
+        clickId,
+        autoExpandParent: true,
+      },
+      () => this.clearMenu(),
+    );
   };
 
-  handleDeleteSubFolder=() => {
-    const deleteId = this.state.rightClickItem.dataRef.id
+  handleDeleteSubFolder = () => {
+    const deleteId = this.state.rightClickItem.dataRef.id;
     const { dispatch } = this.props;
     dispatch({
       type: 'interfaceCase/queryDeleteFolder',
       payload: {
         id: this.state.rightClickItem.dataRef.id,
-      }
-    })
-      .then(() => {
-        this.queryTreeList(this.state.project)
-        this.clearMenu()
-        this.clearSelect(deleteId)
-      })
-  }
+      },
+    }).then(() => {
+      this.queryTreeList(this.state.project);
+      this.clearMenu();
+      this.clearSelect(deleteId);
+    });
+  };
 
-  hanldeDeleteCase=() => {
+  hanldeDeleteCase = () => {
     const deleteId = this.state.rightClickItem.dataRef.id;
     const { dispatch } = this.props;
     dispatch({
       type: 'interfaceCase/queryDeleteCase',
       payload: {
         id: deleteId,
-      }
-    })
-      .then(() => {
-        this.queryTreeList(this.state.project)
-        this.clearMenu()
-        this.clearSelect(deleteId)
-      })
-  }
+      },
+    }).then(() => {
+      this.queryTreeList(this.state.project);
+      this.clearMenu();
+      this.clearSelect(deleteId);
+    });
+  };
 
-  handleCopyCase=() => {
+  handleCopyCase = () => {
     const { dispatch } = this.props;
     dispatch({
       type: 'interfaceCase/queryCopyCase',
       payload: {
         id: this.state.rightClickItem.dataRef.id,
-      }
-    })
-      .then(() => {
-        this.queryTreeList(this.state.project)
-        this.clearMenu()
-      })
-  }
+      },
+    }).then(() => {
+      this.queryTreeList(this.state.project);
+      this.clearMenu();
+    });
+  };
 
-  queryProjectList=(caseId = null) => {
-    const { dispatch } = this.props
+  queryProjectList = (caseId = null) => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'iatSystem/queryProjectList',
       payload: {
         status: '1',
-      }
-    })
-      .then(() => {
-        const { projectList } = this.props.iatSystem;
-        this.setState({
+      },
+    }).then(() => {
+      const { projectList } = this.props.iatSystem;
+      this.setState(
+        {
           projectList,
-        }, () => {
+        },
+        () => {
           if (caseId) {
-            this.querySampleInfo(caseId, true)
+            this.querySampleInfo(caseId, true);
           } else {
-            const localStorage = getTage()
+            const localStorage = getTage();
             if (localStorage) {
-              const project = localStorage.projectId
+              const project = localStorage.projectId;
               this.setState({ project }, () => {
-                this.handleProjectChange(this.state.project)
-              })
+                this.handleProjectChange(this.state.project);
+              });
             }
           }
-        })
-      })
+        },
+      );
+    });
   };
 
-  queryExtractList=projectId => {
-    const { dispatch } = this.props
+  queryExtractList = projectId => {
+    const { dispatch } = this.props;
     dispatch({
       type: 'interfaceCase/queryExtractList',
       payload: {
         id: projectId,
-      }
-    })
-      .then(() => {
-        const { interfaceCase } = this.props
-        this.setState({
-          extractList: interfaceCase.extractList,
-        })
-      })
+      },
+    }).then(() => {
+      const { interfaceCase } = this.props;
+      this.setState({
+        extractList: interfaceCase.extractList,
+      });
+    });
   };
 
   handleTreeUpdate = () => {
     this.queryTreeList(this.state.project);
-  }
+  };
 
-  queryTreeList=(id, isRef = false) => {
+  queryTreeList = (id, isRef = false) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'interfaceCase/queryTreeList',
       payload: {
         id,
       },
-    })
-      .then(() => {
-        const { interfaceCase } = this.props;
-        this.setState({ treeList: interfaceCase.treeList }, () => {
-          if (isRef) {
-            this.setState({
-              selectedKeys: [this.state.caseId],
-              expandedKeys: [this.state.caseId]
-            })
-          }
-        })
-      })
+    }).then(() => {
+      const { interfaceCase } = this.props;
+      this.setState({ treeList: interfaceCase.treeList }, () => {
+        if (isRef) {
+          this.setState({
+            selectedKeys: [this.state.caseId],
+            expandedKeys: [this.state.caseId],
+          });
+        }
+      });
+    });
   };
 
-  querySampleInfo=(id, isRef = false) => {
+  querySampleInfo = (id, isRef = false) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'interfaceCase/querySampleInfo',
       payload: {
         id,
       },
-    })
-      .then(() => {
-        const { interfaceCase } = this.props;
-        if (interfaceCase.sampleInfo) {
-          this.setState({
+    }).then(() => {
+      const { interfaceCase } = this.props;
+      if (interfaceCase.sampleInfo) {
+        this.setState(
+          {
             info: interfaceCase.sampleInfo,
             selectNoteType: 2,
             infoName: interfaceCase.sampleInfo.name,
             project: interfaceCase.sampleInfo.projectId,
-          }, () => {
+          },
+          () => {
             if (isRef) {
-              setTage({ projectId: this.state.project })
-              this.queryTreeList(this.state.project, true)
-              this.queryExtractList(this.state.project)
+              setTage({ projectId: this.state.project });
+              this.queryTreeList(this.state.project, true);
+              this.queryExtractList(this.state.project);
             }
-          })
-        } else {
-          this.setState({
-            info: {
-              name: '',
-              path: '',
-              method: 'GET',
-              paramType: 1,
-              params: [],
-              asserts: {
-                assertsType: 1,
-                assertData: [],
-              },
-              extract: {
-                extractType: 0,
-                extractData: [],
-              },
-              preShellType: 0,
-              preShellData: '',
-              postShellType: 0,
-              postShellData: ''
-            }
-          })
-        }
-      })
+          },
+        );
+      } else {
+        this.setState({
+          info: {
+            name: '',
+            path: '',
+            method: 'GET',
+            paramType: 1,
+            params: [],
+            asserts: {
+              assertsType: 1,
+              assertData: [],
+            },
+            extract: {
+              extractType: 0,
+              extractData: [],
+            },
+            preShellType: 0,
+            preShellData: '',
+            postShellType: 0,
+            postShellData: '',
+          },
+        });
+      }
+    });
   };
 
-  queryTreeInfo=id => {
+  queryTreeInfo = id => {
     const { dispatch } = this.props;
     dispatch({
       type: 'interfaceCase/queryTreeInfo',
       payload: {
         id,
       },
-    })
-      .then(() => {
-        const { interfaceCase } = this.props;
-        let { info } = this.state;
-        info.name = interfaceCase.infoData.name
-        this.setState({ info, infoName: interfaceCase.infoData.name })
-      })
-  }
-
-  handleProjectChange=value => {
-    this.setState({ project: value },
-      () => {
-        setTage({ projectId: this.state.project })
-        this.queryTreeList(value)
-        this.queryExtractList(value)
-      }
-    )
+    }).then(() => {
+      const { interfaceCase } = this.props;
+      let { info } = this.state;
+      info.name = interfaceCase.infoData.name;
+      this.setState({ info, infoName: interfaceCase.infoData.name });
+    });
   };
 
-  onDrop=info => {
+  handleProjectChange = value => {
+    this.setState({ project: value }, () => {
+      setTage({ projectId: this.state.project });
+      this.queryTreeList(value);
+      this.queryExtractList(value);
+    });
+  };
+
+  onDrop = info => {
     const dropKey = info.node.props.eventKey;
     const dragKey = info.dragNode.props.eventKey;
     const { dispatch } = this.props;
@@ -443,32 +461,34 @@ class Interface extends Component {
       type: 'interfaceCase/queryUpdateTreeIndex',
       payload: {
         dropKey,
-        dragKey
-      }
-    })
-      .then(() => {
-        this.queryTreeList(this.state.project)
-      })
-  }
+        dragKey,
+      },
+    }).then(() => {
+      this.queryTreeList(this.state.project);
+    });
+  };
 
   onSelect = (selectedKeys, info) => {
     if (selectedKeys.length > 0) {
       const { noteType, id, index_id } = info.node.props.dataRef;
-      this.setState({
-        selectedKeys,
-        selectNoteId: id,
-        selectNoteType: noteType,
-        selectIndexId: index_id,
-        infoName: '',
-      }, () => {
-        this.queryTreeInfo(this.state.selectedKeys[0])
-        if (this.state.selectNoteType === 2) {
-          this.querySampleInfo(this.state.selectedKeys[0])
-          this.queryExtractList(this.state.project)
-        }
-      })
+      this.setState(
+        {
+          selectedKeys,
+          selectNoteId: id,
+          selectNoteType: noteType,
+          selectIndexId: index_id,
+          infoName: '',
+        },
+        () => {
+          this.queryTreeInfo(this.state.selectedKeys[0]);
+          if (this.state.selectNoteType === 2) {
+            this.querySampleInfo(this.state.selectedKeys[0]);
+            this.queryExtractList(this.state.project);
+          }
+        },
+      );
     }
-  }
+  };
 
   onCheck = (checkedKeys, info) => {
     console.log('onCheck', checkedKeys, info);
@@ -491,7 +511,7 @@ class Interface extends Component {
     return { x: left, y: top };
   };
 
-  handleOnRightClick=e => {
+  handleOnRightClick = e => {
     const xy = this.getXY(e.event.currentTarget);
     const x = xy.x;
     const y = xy.y;
@@ -507,57 +527,55 @@ class Interface extends Component {
     });
   };
 
-  clearMenu=() => {
-    this.setState({ rightClickItem: null })
+  clearMenu = () => {
+    this.setState({ rightClickItem: null });
   };
 
-  clearSelect=id => {
+  clearSelect = id => {
     if (this.state.selectedKeys) {
       if (this.state.selectedKeys[0] === id.toString()) {
-        this.setState({ selectedKeys: null })
+        this.setState({ selectedKeys: null });
       }
     }
-  }
+  };
 
-  submitAddFolder=value => {
+  submitAddFolder = value => {
     if (!value) {
-      message.warning('名称不可为空')
-      this.queryTreeList(this.state.project)
-      return
+      message.warning('名称不可为空');
+      this.queryTreeList(this.state.project);
+      return;
     }
     const { dispatch } = this.props;
     dispatch({
       type: 'interfaceCase/queryAddSubFolder',
       payload: {
         id: this.state.clickId,
-        name: value
-      }
-    })
-      .then(() => {
-        this.queryTreeList(this.state.project)
-      })
+        name: value,
+      },
+    }).then(() => {
+      this.queryTreeList(this.state.project);
+    });
   };
 
-  submitAddCase=value => {
+  submitAddCase = value => {
     if (!value) {
-      message.warning('名称不可为空')
-      this.queryTreeList(this.state.project)
-      return
+      message.warning('名称不可为空');
+      this.queryTreeList(this.state.project);
+      return;
     }
     const { dispatch } = this.props;
     dispatch({
       type: 'interfaceCase/queryAddCase',
       payload: {
         id: this.state.clickId,
-        name: value
-      }
-    })
-      .then(() => {
-        this.queryTreeList(this.state.project)
-      })
+        name: value,
+      },
+    }).then(() => {
+      this.queryTreeList(this.state.project);
+    });
   };
 
-  hanldeNameChange=e => {
+  hanldeNameChange = e => {
     this.setState({ infoName: e.target.value }, () => {
       const { dispatch } = this.props;
       dispatch({
@@ -566,15 +584,14 @@ class Interface extends Component {
           id: this.state.selectedKeys[0],
           name: this.state.infoName,
         },
-      })
-        .then(() => {
-          this.queryTreeList(this.state.project)
-        })
-    })
+      }).then(() => {
+        this.queryTreeList(this.state.project);
+      });
+    });
   };
 
-  onExpandTree=expandedKeys => {
-    this.setState({ expandedKeys, autoExpandParent: false })
+  onExpandTree = expandedKeys => {
+    this.setState({ expandedKeys, autoExpandParent: false });
   };
 
   handleFormValueChange = allValues => {
@@ -585,62 +602,88 @@ class Interface extends Component {
       payload: {
         caseId: selectNoteId,
         caseInfo: allValues,
-      }
-    })
-  }
+      },
+    });
+  };
 
   render() {
     const {
-      projectList, project, treeList, rightClickItem, expandedKeys, selectedKeys,
-      autoExpandParent, selectNoteType, infoName, selectNoteId, selectIndexId
+      projectList,
+      project,
+      treeList,
+      rightClickItem,
+      expandedKeys,
+      selectedKeys,
+      autoExpandParent,
+      selectNoteType,
+      infoName,
+      selectNoteId,
+      selectIndexId,
     } = this.state;
     const { loading } = this.props;
-    const loop = data => data.map(item => {
-      if (item.noteType === 1) {
+    const loop = data =>
+      data.map(item => {
+        if (item.noteType === 1) {
+          return (
+            <TreeNode
+              icon={<Icon type="folder" theme="filled" style={{ color: '#3498db' }} />}
+              key={item.id}
+              dataRef={item}
+              title={item.name}
+              noteType={item.noteType}
+            >
+              {item.children && loop(item.children)}
+            </TreeNode>
+          );
+        }
+        if (item.noteType === 0) {
+          if (item.type === 'folder') {
+            return (
+              <TreeNode
+                icon={<Icon type="folder" theme="filled" style={{ color: '#3498db' }} />}
+                selectable={false}
+                title={
+                  <Input
+                    size="small"
+                    style={{ width: 100 }}
+                    autoFocus
+                    onBlur={e => this.submitAddFolder(e.target.value)}
+                    onPressEnter={e => this.submitAddFolder(e.target.value)}
+                  />
+                }
+                key="0-0-1"
+              />
+            );
+          }
+          if (item.type === 'case') {
+            return (
+              <TreeNode
+                icon={<Icon type="api" theme="filled" />}
+                selectable={false}
+                title={
+                  <Input
+                    size="small"
+                    style={{ width: 100 }}
+                    autoFocus
+                    onBlur={e => this.submitAddCase(e.target.value)}
+                    onPressEnter={e => this.submitAddCase(e.target.value)}
+                  />
+                }
+                key="0-0-1"
+              />
+            );
+          }
+        }
         return (
           <TreeNode
-            icon={<Icon type="folder" theme="filled" style={{ color: '#3498db' }} />}
+            icon={<Icon type="api" theme="filled" />}
             key={item.id}
             dataRef={item}
             title={item.name}
             noteType={item.noteType}
-          >
-            {item.children && loop(item.children)}
-          </TreeNode>
+          />
         );
-      }
-      if (item.noteType === 0) {
-        if (item.type === 'folder') {
-          return (
-            <TreeNode
-              icon={<Icon type="folder" theme="filled" style={{ color: '#3498db' }} />}
-              selectable={false}
-              title={<Input size="small" style={{ width: 100 }} autoFocus onBlur={e => this.submitAddFolder(e.target.value)} onPressEnter={e => this.submitAddFolder(e.target.value)} />}
-              key="0-0-1"
-            />
-          )
-        }
-        if (item.type === 'case') {
-          return (
-            <TreeNode
-              icon={<Icon type="api" theme="filled" />}
-              selectable={false}
-              title={<Input size="small" style={{ width: 100 }} autoFocus onBlur={e => this.submitAddCase(e.target.value)} onPressEnter={e => this.submitAddCase(e.target.value)} />}
-              key="0-0-1"
-            />
-          )
-        }
-      }
-      return (
-        <TreeNode
-          icon={<Icon type="api" theme="filled" />}
-          key={item.id}
-          dataRef={item}
-          title={item.name}
-          noteType={item.noteType}
-        />
-      );
-    });
+      });
     const Folder = (
       <Card loading={loading} bordered={false}>
         <div className={styles.item_container}>
@@ -652,7 +695,9 @@ class Interface extends Component {
               placeholder="标题名称"
               size="small"
               value={infoName}
-              onChange={e => { this.setState({ infoName: e.target.value }) }}
+              onChange={e => {
+                this.setState({ infoName: e.target.value });
+              }}
               onBlur={e => this.hanldeNameChange(e)}
               className={styles.item_item}
             />
@@ -664,16 +709,27 @@ class Interface extends Component {
     return (
       <Content>
         <div className={styles.contentContainer}>
-          <Resizable className={styles.left_res_container} enable={{ right: true }} defaultSize={{ height: '90vh' }} size={{ height: '90vh' }}>
-            <Select placeholder="请选择项目" value={project || undefined} style={{ width: '100%' }} size="small" onChange={this.handleProjectChange}>
-              {projectList && projectList.map(item => (
-                <Option value={item.id} key={item.id}>{item.name}</Option>
-              ))}
-            </Select>
-            <div
-              className={styles.left_container}
-              ref={this.setDomTreeBoxRef}
+          <Resizable
+            className={styles.left_res_container}
+            enable={{ right: true }}
+            defaultSize={{ height: '90vh' }}
+            size={{ height: '90vh' }}
+          >
+            <Select
+              placeholder="请选择项目"
+              value={project || undefined}
+              style={{ width: '100%' }}
+              size="small"
+              onChange={this.handleProjectChange}
             >
+              {projectList &&
+                projectList.map(item => (
+                  <Option value={item.id} key={item.id}>
+                    {item.name}
+                  </Option>
+                ))}
+            </Select>
+            <div className={styles.left_container} ref={this.setDomTreeBoxRef}>
               <Tree
                 showIcon
                 draggable
@@ -692,19 +748,25 @@ class Interface extends Component {
             </div>
           </Resizable>
           <div className={styles.rightContentContainer}>
-            <Content style={{ background: '#fff', padding: 10, height: '90vh', width: '70%', borderRight: '1px solid #e8e8e8' }}>
+            <Content
+              style={{
+                background: '#fff',
+                padding: 10,
+                height: '90vh',
+                width: '70%',
+                borderRight: '1px solid #e8e8e8',
+              }}
+            >
               <div className={styles.right_container}>
                 {!(selectedKeys && selectedKeys.length > 0) && <Empty />}
-                {(selectedKeys && selectNoteType === 1 && selectIndexId === 0) && (
+                {selectedKeys && selectNoteType === 1 && selectIndexId === 0 && (
                   <CaseProject
                     selectNoteId={selectNoteId}
                     handleTreeUpdate={() => this.handleTreeUpdate()}
                   />
-                  )
-                }
-                {(selectedKeys && selectNoteType === 1 && selectIndexId !== 0) && Folder}
-                {/*{(selectedKeys && selectNoteType === 2) && Case}*/}
-                {(selectedKeys && selectNoteType === 2) && (
+                )}
+                {selectedKeys && selectNoteType === 1 && selectIndexId !== 0 && Folder}
+                {selectedKeys && selectNoteType === 2 && (
                   <CaseInfo
                     selectNoteId={selectNoteId}
                     handleTreeUpdate={() => this.handleTreeUpdate()}
@@ -715,11 +777,7 @@ class Interface extends Component {
             </Content>
             <Content style={{ background: '#fff', padding: 10, height: '90vh', width: '30%' }}>
               <div className={styles.right_container}>
-                {(selectedKeys && selectNoteType === 2) && (
-                  <CaseDebug
-                    selectNoteId={selectNoteId}
-                  />
-                )}
+                {selectedKeys && selectNoteType === 2 && <CaseDebug selectNoteId={selectNoteId} />}
               </div>
             </Content>
           </div>
@@ -730,4 +788,4 @@ class Interface extends Component {
   }
 }
 
-export default Interface
+export default Interface;
