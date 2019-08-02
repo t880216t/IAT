@@ -359,6 +359,7 @@ export default class CasePage extends PureComponent {
     this.setState({ project },
       () => {
         this.queryTreeList(project);
+        this.clearSelect();
       },
     );
   }
