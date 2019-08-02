@@ -407,7 +407,6 @@ def makeResultPath(taskRootPath):
   return taskDir
 
 def runJmeterTest(reulstPath):
-  #cmd = "jmeter -n -t %s -l %s -e -o %s "%(reulstPath+'/testData.jmx',reulstPath+'/result.csv',reulstPath+'/resultDir')
   cmd = "jmeter -n -t %s -l %s "%(reulstPath+'/testData.jmx',reulstPath+'/result.csv')
   print(cmd)
   subprocess.call(cmd, shell=True)
