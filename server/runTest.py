@@ -69,14 +69,15 @@ def configTestElement(test_domain,params=None,proxy=None):
   domain = test_domain
   protocol = ""
   port = ""
-  if "://" in test_domain:
-    protocol = test_domain.split("://")[0]
-    domain = test_domain.split("://")[1]
-    if ":" in domain:
-      domain = domain.split(":")[0]
-  formatTestDomain = test_domain.replace("://","")
-  if ":" in formatTestDomain:
-    port = formatTestDomain.split(":")[1]
+  if domain:
+    if "://" in test_domain:
+      protocol = test_domain.split("://")[0]
+      domain = test_domain.split("://")[1]
+      if ":" in domain:
+        domain = domain.split(":")[0]
+    formatTestDomain = test_domain.replace("://","")
+    if ":" in formatTestDomain:
+      port = formatTestDomain.split(":")[1]
   ConfigTestElement = ET.Element("ConfigTestElement",{
     "guiclass":"HttpDefaultsGui",
     "testclass":"ConfigTestElement",
@@ -180,14 +181,15 @@ def HTTPSamplerProxy(sample):
   domain = test_domain
   protocol = ""
   port = ""
-  if "://" in test_domain:
-    protocol = test_domain.split("://")[0]
-    domain = test_domain.split("://")[1]
-    if ":" in domain:
-      domain = domain.split(":")[0]
-  formatTestDomain = test_domain.replace("://", "")
-  if ":" in formatTestDomain:
-    port = formatTestDomain.split(":")[1]
+  if test_domain:
+    if "://" in test_domain:
+      protocol = test_domain.split("://")[0]
+      domain = test_domain.split("://")[1]
+      if ":" in domain:
+        domain = domain.split(":")[0]
+    formatTestDomain = test_domain.replace("://", "")
+    if ":" in formatTestDomain:
+      port = formatTestDomain.split(":")[1]
 
   HTTPSamplerProxy = ET.Element('HTTPSamplerProxy',{"guiclass":"HttpTestSampleGui", "testclass":"HTTPSamplerProxy", "testname":sample['name'], "enabled":"true"})
   elementProp = ET.SubElement(HTTPSamplerProxy,"elementProp",{"name": "HTTPsampler.Arguments", "elementType": "Arguments",
@@ -569,7 +571,6 @@ def runScript(task_id):
   except Exception as e:
     print(e)
     setTaskStatus(task_id, 4, "build task script fail")
-
 
 if '__main__' == __name__:
   manager.run()
