@@ -130,9 +130,10 @@ def deleteGlobalValues():
     rowData = GlobalValues.query.filter_by(id = id).first()
     if rowData:
       oldKeyName = rowData.key_name
+      projectId = rowData.project_id
       db.session.delete(rowData)
       db.session.commit()
-      otherRowData = GlobalValues.query.filter_by(key_name=oldKeyName).first()
+      otherRowData = GlobalValues.query.filter(db.and_(GlobalValues.key_name == oldKeyName,GlobalValues.project_id == projectId)).first()
       if otherRowData:
         db.session.delete(otherRowData)
         db.session.commit()
@@ -151,13 +152,16 @@ def updateGlobalValues():
   rowData = GlobalValues.query.filter_by(id=id)
   if rowData.first():
     oldKeyName = rowData.first().key_name
+    projectId = rowData.first().project_id
+
     data = {
       'key_name': keyName,
       'key_value': keyValue,
     }
     rowData.update(data)
     db.session.commit()
-    otherRowData = GlobalValues.query.filter_by(key_name = oldKeyName)
+    otherRowData = GlobalValues.query.filter(
+      db.and_(GlobalValues.key_name == oldKeyName, GlobalValues.project_id == projectId))
     if otherRowData.first():
       data = {
         'key_name': keyName,

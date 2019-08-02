@@ -527,15 +527,10 @@ def caseProjectConfig():
     'id': treeRow.id,
     'name': treeRow.name,
     'libs': [],
-    'globalFiles': [],
+    'globalFiles': globalFiles,
   }
   if rowData:
-    content = {
-      'id': treeRow.id,
-      'name': treeRow.name,
-      'libs': json.loads(rowData.libs),
-      'globalFiles': globalFiles,
-    }
+    content['libs'] = json.loads(rowData.libs)
   return make_response(jsonify({'code': 0, 'content': content, 'msg': u''}))
 
 @case.route('/updateProjectLibConfig', methods=['POST'])
