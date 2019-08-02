@@ -109,3 +109,7 @@ function copyDistToNginxRoot() {
 function restartNginx() {
     sudo nginx -s reload
 }
+
+function fetchCode() {
+    git fetch origin VictorinoxForTest
+}

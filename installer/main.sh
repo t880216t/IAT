@@ -28,7 +28,7 @@ function _switch() {
             inst_allInOne
             ;;
         ""|"u"|"pull"|"3")
-            inst_updateRepo
+            fetchCode
             ;;
         ""|"r"|"reset"|"4")
             inst_resetRepo
