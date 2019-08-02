@@ -104,7 +104,7 @@ def addGlobalValues():
   projectId = request.json.get("projectId")
   valueType = request.json.get("valueType")
   try:
-    rowData = GlobalValues.query.filter_by(key_name = keyName).first()
+    rowData = GlobalValues.query.filter(db.and_(GlobalValues.key_name == keyName,GlobalValues.project_id == projectId)).first()
     if rowData:
       return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'关键词名称重复!'}))
     data = GlobalValues(keyName, keyValue, projectId, user_id, valueType)
@@ -403,11 +403,11 @@ def addGlobalFile():
   fileName = request.json.get("fileName")
   projectId = request.json.get("projectId")
   try:
-    globalRowData = GlobalValues.query.filter_by(key_name = keyName).first()
+    globalRowData = GlobalValues.query.filter(db.and_(GlobalValues.key_name == keyName,GlobalValues.project_id == projectId)).first()
     if globalRowData:
       return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'关键词名称重复!'}))
 
-    fileRowData = ProjectFile.query.filter_by(key_name=keyName).first()
+    fileRowData = ProjectFile.query.filter(db.and_(ProjectFile.key_name == keyName,ProjectFile.pid == projectId)).first()
     if fileRowData:
       return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'关键词名称重复!'}))
 
