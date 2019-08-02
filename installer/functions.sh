@@ -111,5 +111,5 @@ function restartNginx() {
 }
 
 function fetchCode() {
-    git fetch origin VictorinoxForTest
+    git pull origin VictorinoxForTest
 }
