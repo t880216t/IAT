@@ -8,6 +8,7 @@ import {
   Tooltip,
 } from 'antd';
 import numeral from 'numeral';
+import { connect } from 'dva';
 import {
   ChartCard,
   TimelineChart,
@@ -17,7 +18,6 @@ import {
   Field,
   CurvedTwo,
 } from '@/components/Charts';
-import { connect } from 'dva';
 
 import Case from '../../assets/case.svg';
 import project from '../../assets/project.svg';
@@ -37,131 +37,7 @@ export default class Home extends PureComponent {
     caseMountAddData: [],
     failCaseData: [],
     todayExecuteTaskCount: 0,
-    "visitData2": [{
-      "x": "2019-07-23",
-      "y": 1
-    }, {
-      "x": "2019-07-24",
-      "y": 6
-    }, {
-      "x": "2019-07-25",
-      "y": 4
-    }, {
-      "x": "2019-07-26",
-      "y": 8
-    }, {
-      "x": "2019-07-27",
-      "y": 3
-    }, {
-      "x": "2019-07-28",
-      "y": 7
-    }, {
-      "x": "2019-07-29",
-      "y": 2
-    }],
-    dailyResult: [{
-      "avrageElapsed": 219,
-      "day": "20190101",
-      "failCount": 22,
-      "runTime": 1546332476000,
-      "taskCount": 23
-    }, {
-      "avrageElapsed": 233,
-      "day": "20190102",
-      "failCount": 11,
-      "runTime": 1546418876000,
-      "taskCount": 30
-    }, {
-      "avrageElapsed": 259,
-      "day": "20190103",
-      "failCount": 21,
-      "runTime": 1546505276000,
-      "taskCount": 33
-    }, {
-      "avrageElapsed": 239,
-      "day": "20190104",
-      "failCount": 3,
-      "runTime": 1546591676000,
-      "taskCount": 35
-    }, {
-      "avrageElapsed": 269,
-      "day": "20190105",
-      "failCount": 2,
-      "runTime": 1546678076000,
-      "taskCount": 34
-    }, {
-      "avrageElapsed": 239,
-      "day": "20190106",
-      "failCount": 21,
-      "runTime": 1546764476000,
-      "taskCount": 36
-    }, {
-      "avrageElapsed": 239,
-      "day": "20190107",
-      "failCount": 2,
-      "runTime": 1546850876000,
-      "taskCount": 37
-    }, {
-      "avrageElapsed": 239,
-      "day": "20190108",
-      "failCount": 25,
-      "runTime": 1546937276000,
-      "taskCount": 36
-    }, {
-      "avrageElapsed": 239,
-      "day": "20190109",
-      "failCount": 26,
-      "runTime": 1547023676000,
-      "taskCount": 37
-    }, {
-      "avrageElapsed": 239,
-      "day": "20190110",
-      "failCount": 27,
-      "runTime": 1547110076000,
-      "taskCount": 36
-    }, {
-      "avrageElapsed": 239,
-      "day": "20190111",
-      "failCount": 28,
-      "runTime": 1547196476000,
-      "taskCount": 36
-    }, {
-      "avrageElapsed": 239,
-      "day": "20190112",
-      "failCount": 23,
-      "runTime": 1547282876000,
-      "taskCount": 36
-    }, {
-      "avrageElapsed": 239,
-      "day": "20190113",
-      "failCount": 22,
-      "runTime": 1547369276000,
-      "taskCount": 36
-    }, {
-      "avrageElapsed": 239,
-      "day": "20190114",
-      "failCount": 2,
-      "runTime": 1547455676000,
-      "taskCount": 36
-    }, {
-      "avrageElapsed": 239,
-      "day": "20190115",
-      "failCount": 2,
-      "runTime": 1547542076000,
-      "taskCount": 36
-    }, {
-      "avrageElapsed": 239,
-      "day": "20190116",
-      "failCount": 2,
-      "runTime": 1547628476000,
-      "taskCount": 36
-    }, {
-      "avrageElapsed": 239,
-      "day": "20190117",
-      "failCount": 2,
-      "runTime": 1547714876000,
-      "taskCount": 36
-    }],
+    dailyResult: [],
   };
 
   componentWillMount() {
@@ -233,7 +109,7 @@ export default class Home extends PureComponent {
         key: 'name',
         width: '60%',
         render: (text, record) => (
-          <a className={styles.failCase} target="_blank" rel="noopener noreferrer" href={`/case?id=${record.id}&projectId=${record.project}`}>{text}</a>
+          <a className={styles.failCase} target="_blank" rel="noopener noreferrer" href={`case/ui?id=${record.id}&projectId=${record.project}`}>{text}</a>
         ),
       },
       {
