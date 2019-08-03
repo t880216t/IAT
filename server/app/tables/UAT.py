@@ -15,6 +15,22 @@ class Project(db.Model):
     self.add_time = datetime.now()
     self.user_id = user_id
 
+class ProjectVersion(db.Model):
+  __tablename__ = 'uat_project_version'
+  id = db.Column(db.Integer, primary_key=True)
+  name = db.Column(db.String(500))
+  add_time = db.Column(db.DateTime)
+  status = db.Column(db.SMALLINT)
+  user_id = db.Column(db.Integer)
+  project_id = db.Column(db.Integer)
+
+  def __init__(self,name,project_id, status,user_id):
+    self.name = name
+    self.project_id = project_id
+    self.status = status
+    self.add_time = datetime.now()
+    self.user_id = user_id
+
 class Tree(db.Model):
   __tablename__ = 'uat_tree'
   id = db.Column(db.Integer, primary_key=True)
@@ -68,13 +84,17 @@ class CaseStep(db.Model):
   values = db.Column(db.String(4000))
   add_time = db.Column(db.DateTime)
   user_id = db.Column(db.Integer)
+  version_id = db.Column(db.Integer)
+  delete_flag = db.Column(db.SMALLINT)
 
-  def __init__(self,case_id,indexId,values,user_id):
+  def __init__(self,case_id,indexId,values,user_id, version_id, delete_flag):
     self.case_id = case_id
     self.indexId = indexId
     self.values = values
     self.add_time = datetime.now()
     self.user_id = user_id
+    self.version_id = version_id
+    self.delete_flag = delete_flag
 
 class CaseLibs(db.Model):
   __tablename__ = 'uat_libs'
@@ -143,8 +163,9 @@ class Task(db.Model):
   value_type = db.Column(db.SMALLINT)
   browser_type = db.Column(db.SMALLINT)
   proxy_type = db.Column(db.Integer)
+  version_id = db.Column(db.Integer)
 
-  def __init__(self,name,task_type,status,case_id, run_time, user_id, project_id,value_type, browser_type, proxy_type):
+  def __init__(self,name,task_type,status,case_id, run_time, user_id, project_id,value_type, browser_type, proxy_type, version_id):
     self.name = name
     self.task_type = task_type
     self.status = status
@@ -155,6 +176,7 @@ class Task(db.Model):
     self.value_type = value_type
     self.browser_type = browser_type
     self.proxy_type = proxy_type
+    self.version_id = version_id
     self.add_time = datetime.now()
     self.update_time = datetime.now()
 

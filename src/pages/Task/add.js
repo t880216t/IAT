@@ -21,6 +21,7 @@ export default class AddTaskPage extends PureComponent {
     targetKeys: [],
     treeList: [],
     listTree: [],
+    versionList: [],
   }
 
   componentWillMount() {
@@ -120,7 +121,23 @@ export default class AddTaskPage extends PureComponent {
 
   handleProjectChange = id => {
     this.queryCaseTreeList(id);
+    this.queryProjectVersionList(id)
   }
+
+  queryProjectVersionList = (projectId) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'system/queryProjectVersionList',
+      payload: {
+        status: 1,projectId,
+      },
+    }).then(() => {
+      const { versionList } = this.props.system;
+      this.setState({
+        versionList,
+      });
+    });
+  };
 
   treeToList=tree => {
     const listData = [];
@@ -163,7 +180,7 @@ export default class AddTaskPage extends PureComponent {
   };
 
   render() {
-    const { projectList, proxyConfigList, targetKeys, treeList } = this.state;
+    const { projectList, proxyConfigList, targetKeys, treeList, versionList } = this.state;
     const {
       form: { getFieldValue, getFieldDecorator },
     } = this.props;
@@ -226,7 +243,7 @@ export default class AddTaskPage extends PureComponent {
                 rules: [
                   {
                     required: true,
-                    message: '项目名称不可为空',
+                    message: '项目不可为空',
                   },
                 ],
               })(
@@ -234,6 +251,17 @@ export default class AddTaskPage extends PureComponent {
                   {projectList && projectList.map(item => (
                       <Option value={item.id} key={item.id} title={item.name}>{item.name}</Option>
                     ))}
+                </Select>,
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="用例版本">
+              {getFieldDecorator('version', {
+              })(
+                <Select placeholder="请先选择项目" style={{ width: 280 }}>
+                  <Option value={null} key={null}>主分支</Option>
+                  {versionList && versionList.map(item => (
+                    <Option value={item.id} key={item.id} title={item.name}>{item.name}</Option>
+                  ))}
                 </Select>,
               )}
             </FormItem>

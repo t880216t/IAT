@@ -15,12 +15,17 @@ import {
   queryUserList,
   querySetUserStatus,
   querySetUserType,
+  queryProjectVersionList,
+  queryAddProjectVersion,
+  querySetVersionStatus,
+  queryUpdateVersion,
 } from '@/services/api';
 
 const SytemModel = {
   namespace: 'system',
   state: {
     projectList: [],
+    versionList: [],
     proxyConfigList: [],
     globalValues: [],
     allLibs: [],
@@ -39,6 +44,13 @@ const SytemModel = {
       const response = yield call(queryProjectList, payload);
       if (response) {
         yield put({ type: 'updateState', payload: { projectList: response.content } });
+      }
+    },
+    *queryProjectVersionList({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { versionList: [] } });
+      const response = yield call(queryProjectVersionList, payload);
+      if (response) {
+        yield put({ type: 'updateState', payload: { versionList: response.content } });
       }
     },
     *queryProjectGlobalValues({ payload }, { call, put }) {
@@ -71,6 +83,15 @@ const SytemModel = {
     },
     *queryAddProject({ payload }, { call, put }) {
       yield call(queryAddProject, payload);
+    },
+    *queryAddProjectVersion({ payload }, { call, put }) {
+      yield call(queryAddProjectVersion, payload);
+    },
+    *querySetVersionStatus({ payload }, { call, put }) {
+      yield call(querySetVersionStatus, payload);
+    },
+    *queryUpdateVersion({ payload }, { call, put }) {
+      yield call(queryUpdateVersion, payload);
     },
     *queryUpdateKeywords({ payload }, { call, put }) {
       yield call(queryUpdateKeywords, payload);

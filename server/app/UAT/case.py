@@ -112,8 +112,16 @@ def updateCaseInfo():
 @case.route('/caseData', methods=['GET'])
 def caseData():
   id = request.values.get("caseId")
+  versionId = request.values.get("versionId")
   caseData = CaseInfo.query.filter_by(pid=id).first()
-  caseStepDatas = CaseStep.query.filter_by(case_id=id).order_by(db.asc(CaseStep.indexId)).all()
+  if versionId:
+    caseStepDatas = CaseStep.query.filter(
+      db.and_(
+        CaseStep.case_id == id, CaseStep.delete_flag == 0, db.or_(CaseStep.version_id == versionId, CaseStep.version_id == None)
+      ),
+    ).order_by(db.asc(CaseStep.indexId)).all()
+  else:
+    caseStepDatas = CaseStep.query.filter(db.and_(CaseStep.case_id ==id,CaseStep.version_id == None)).order_by(db.asc(CaseStep.indexId)).all()
   caseSteps = []
   for item in caseStepDatas:
     # imageUrl = ('img/'+item.element_cap) if item.element_cap else ''
@@ -136,6 +144,7 @@ def caseData():
     caseSteps.append({
       'id': item.id,
       'indexId': item.indexId,
+      'versionId': item.version_id,
       'values': json.loads(item.values),
       'add_time': item.add_time.strftime('%Y-%m-%d %H:%M:%S'),
     })
@@ -199,7 +208,7 @@ def caseTreeList():
 
 @case.route('/addCase', methods=['POST'])
 def addCase():
-  
+
   user_id = session.get('user_id')
   id = request.json.get("id")
   name = request.json.get("name")
@@ -222,7 +231,7 @@ def addCase():
 
 @case.route('/addSubFolder', methods=['POST'])
 def addSubFolder():
-  
+
   user_id = session.get('user_id')
   id = request.json.get("id")
   name = request.json.get("name")
@@ -239,7 +248,7 @@ def addSubFolder():
 
 @case.route('/addCustomKeyword', methods=['POST'])
 def addCustomKeyword():
-  
+
   user_id = session.get('user_id')
   id = request.json.get("id")
   name = request.json.get("name")
@@ -264,9 +273,10 @@ def addCustomKeyword():
 
 @case.route('/addCaseStep', methods=['POST'])
 def addCaseStep():
-  
+
   user_id = session.get('user_id')
   caseId = request.json.get("caseId")
+  versionId = request.json.get("versionId")
   caseStepData = request.json.get("caseStep")
   try:
     hadStep = CaseStep.query.filter(db.and_(CaseStep.case_id == caseId, )).order_by(
@@ -274,11 +284,10 @@ def addCaseStep():
     newIndex = 1
     if hadStep:
       newIndex += hadStep.indexId
-    # elementCapPath = ''
-    # if caseStepData['elementCap']:
-    #   elementCapPath = saveBase64ToImage(caseStepData['elementCap'])
-    # case_id,indexId,values,user_id
-    data = CaseStep(caseId,newIndex,json.dumps(caseStepData),user_id)
+    # versionIdInt = 0
+    # if versionId:
+    #   versionIdInt = versionId
+    data = CaseStep(caseId,newIndex,json.dumps(caseStepData),user_id,versionId,0)
     db.session.add(data)
     db.session.commit()
     return make_response(jsonify({'code': 0, 'content': {'id': data.id}, 'msg': u'新建成功!'}))
@@ -286,33 +295,65 @@ def addCaseStep():
     print(e)
     return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'新建失败!'}))
 
+def makeReleaseCaseIso(changeStepId, versionId, user_id, values):
+  rowData = CaseStep.query.filter_by(id=changeStepId)
+  if rowData.first():
+    caseVersionId = rowData.first().version_id
+    if not versionId or caseVersionId == versionId:
+      data = {
+        'values': values,
+      }
+      rowData.update(data)
+      db.session.commit()
+    else:
+      data = {
+        'delete_flag': 1
+      }
+      rowData.update(data)
+      db.session.commit()
+      addData = CaseStep(
+        rowData.first().case_id,
+        rowData.first().indexId,
+        values,
+        user_id,
+        versionId,
+        0
+      )
+      db.session.add(addData)
+      db.session.commit()
+
 @case.route('/updateCaseStep', methods=['POST'])
 def updateCaseStep():
-  
   user_id = session.get('user_id')
   changeSteps = request.json.get("changeSteps")
+  versionId = request.json.get("versionId")
+  changeStepId = request.json.get("changeStepId")
   if changeSteps:
     for changeStep in changeSteps:
       row_data = CaseStep.query.filter_by(id=changeStep['id'])
       if row_data.first():
-        data = {
-          'values': json.dumps(changeStep['values']),
-        }
-        row_data.update(data)
-        db.session.commit()
+        if changeStep['id'] == changeStepId:
+          makeReleaseCaseIso(changeStepId, versionId, user_id, json.dumps(changeStep['values']))
+        else:
+          data = {
+            'values': json.dumps(changeStep['values']),
+          }
+          row_data.update(data)
+          db.session.commit()
     return make_response(jsonify({'code': 0, 'msg': 'sucess', 'content': []}))
   else:
     return make_response(jsonify({'code': 10001, 'msg': 'no such step', 'content': []}))
 
 @case.route('/insertStep', methods=['POST'])
 def insertStep():
-  
+
   user_id = session.get('user_id')
   id = request.json.get("id")
+  versionId = request.json.get("versionId")
   try:
     rowData = CaseStep.query.filter_by(id = id).first()
     if rowData:
-      data = CaseStep(rowData.case_id, rowData.indexId - 0.5,json.dumps(['','','','']),user_id)
+      data = CaseStep(rowData.case_id, rowData.indexId - 0.5,json.dumps(['','','','']),user_id, versionId,0)
       db.session.add(data)
       db.session.commit()
       updateCaseUser(id, user_id)
@@ -338,16 +379,27 @@ def updateStepIndex(caseId):
 @case.route('/deleteStep', methods=['POST'])
 def deleteStep():
   id = request.json.get("id")
+  versionId = request.json.get("versionId")
   try:
-    rowData = CaseStep.query.filter_by(id = id).first()
-    if rowData:
-      caseId = rowData.case_id
-      db.session.delete(rowData)
+    if versionId:
+      rowData = CaseStep.query.filter_by(id=id)
+      data = {
+        'version_id': versionId,
+        'delete_flag': 1,
+      }
+      rowData.update(data)
       db.session.commit()
-      updateStepIndex(caseId)
       return make_response(jsonify({'code': 0, 'content': None, 'msg': u'删除成功!'}))
     else:
-      return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'删除失败!'}))
+      rowData = CaseStep.query.filter_by(id = id).first()
+      if rowData:
+        caseId = rowData.case_id
+        db.session.delete(rowData)
+        db.session.commit()
+        updateStepIndex(caseId)
+        return make_response(jsonify({'code': 0, 'content': None, 'msg': u'删除成功!'}))
+      else:
+        return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'删除失败!'}))
   except Exception as e:
     print(e)
     return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'删除失败!'}))
@@ -415,9 +467,10 @@ def deleteCase():
 
 @case.route('/copyCase', methods=['POST'])
 def copyCase():
-  
+
   user_id = session.get('user_id')
   id = request.json.get("id")
+  versionId = request.json.get("versionId")
   try:
     rowData = Tree.query.filter(db.and_(Tree.id == id)).first()
     # sampleData = Sample.query.filter_by(pid=id).first()
@@ -436,7 +489,7 @@ def copyCase():
 
     if len(stepDatas) > 0:
       for stepData in stepDatas:
-        addData = CaseStep(data.id, stepData.indexId, stepData.values,user_id)
+        addData = CaseStep(data.id, stepData.indexId, stepData.values,user_id,versionId,0)
         db.session.add(addData)
         db.session.commit()
     return make_response(jsonify({'code': 0, 'content': None, 'msg': u'复制成功!'}))
@@ -649,9 +702,10 @@ def searchKeywords():
 
 @case.route('/addDebugTask', methods=['POST'])
 def addDebugTask():
-  
+
   user_id = session.get('user_id')
   caseId = request.json.get("caseId")
+  versionId = request.json.get("versionId")
   valueTypeData = request.json.get("valueType")
   # 任务全局参数类型，默认是正式版参数
   valueType = 1
@@ -662,7 +716,7 @@ def addDebugTask():
     return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'用例异常'}))
   caseData = Tree.query.filter_by(id=caseId).first()
   projectId = caseData.project_id
-  data = Task(u'调试任务', 1, 0, json.dumps([caseId]), '', user_id, projectId, valueType, 1, 0)
+  data = Task(u'调试任务', 1, 0, json.dumps([caseId]), '', user_id, projectId, valueType, 1, 0, versionId)
   db.session.add(data)
   db.session.commit()
   subprocess.Popen("python debugCaseScript.py runScript -i %s"%data.id, shell=True)

@@ -10,7 +10,7 @@ import EditCell from '../../../components/EditCell/index';
   global,
   loading: loading.effects['caseInfo/queryCaseData'],
 }))
-export default class CaseContent extends Component {
+export default class CaseStep extends Component {
   // 构造
   constructor(props) {
     super(props);
@@ -84,11 +84,12 @@ export default class CaseContent extends Component {
 
   queryDeleteStep=id => {
     this.setState({ rightClickItem: null });
-    const { dispatch } = this.props;
+    const { dispatch, versionId } = this.props;
     dispatch({
       type: 'caseInfo/queryDeleteStep',
       payload: {
         id,
+        versionId,
       },
     })
       .then(() => {
@@ -98,11 +99,12 @@ export default class CaseContent extends Component {
 
   queryInsertStep=id => {
     this.setState({ rightClickItem: null });
-    const { dispatch } = this.props;
+    const { dispatch, versionId } = this.props;
     dispatch({
       type: 'caseInfo/queryInsertStep',
       payload: {
         id,
+        versionId,
       },
     })
       .then(() => {
@@ -112,11 +114,13 @@ export default class CaseContent extends Component {
 
   queryListData=caseId => {
     this.refuesPage();
-    const { dispatch } = this.props;
+    const { dispatch, versionId } = this.props;
+    console.log('versionId', versionId)
     dispatch({
       type: 'caseInfo/queryCaseData',
       payload: {
         caseId,
+        versionId,
       },
     })
       .then(() => {
@@ -133,11 +137,12 @@ export default class CaseContent extends Component {
 
   queryCaseDataWihtOutLoading=caseId => {
     this.refuesPage();
-    const { dispatch } = this.props;
+    const { dispatch,versionId } = this.props;
     dispatch({
       type: 'caseInfo/queryCaseDataWihtOutLoading',
       payload: {
         caseId,
+        versionId,
       },
     })
       .then(() => {
@@ -154,7 +159,7 @@ export default class CaseContent extends Component {
 
   handleSave = (record, changeIndex, value, newStepIndexId) => {
     const intIndex = parseInt(changeIndex);
-    const { caseId } = this.props;
+    const { caseId, versionId } = this.props;
     const { values } = record;
     const { caseSteps } = this.state;
     if (value) {
@@ -166,7 +171,7 @@ export default class CaseContent extends Component {
       }
       values.splice(intIndex, 1, value);
       if (record.id === 'empty') {
-        this.queryAddCaseStep(caseId, values, newStepIndexId);
+        this.queryAddCaseStep(caseId, values, newStepIndexId, versionId);
       } else {
         const changeSteps = [record];
         caseSteps.forEach(item => {
@@ -175,7 +180,7 @@ export default class CaseContent extends Component {
             changeSteps.push(item);
           }
         })
-        this.queryUpdateCaseStep(changeSteps);
+        this.queryUpdateCaseStep(record.id, changeSteps, versionId);
       }
     } else {
       if ((intIndex + 1) === values.length) {
@@ -190,17 +195,18 @@ export default class CaseContent extends Component {
           changeSteps.push(item);
         }
       })
-      this.queryUpdateCaseStep(changeSteps);
+      this.queryUpdateCaseStep(record.id, changeSteps, versionId);
     }
   }
 
-  queryAddCaseStep = (caseId, values, newStepIndexId = null) => {
+  queryAddCaseStep = (caseId, values, newStepIndexId = null, versionId = null) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'caseInfo/queryAddCaseStep',
       payload: {
         caseStep: values,
         caseId,
+        versionId,
       },
     })
       .then(() => {
@@ -226,12 +232,12 @@ export default class CaseContent extends Component {
       });
   }
 
-  queryUpdateCaseStep=changeSteps => {
+  queryUpdateCaseStep = (changeStepId, changeSteps, versionId = null) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'caseInfo/queryUpdateCaseStep',
       payload: {
-        changeSteps,
+        changeStepId, changeSteps, versionId
       },
     })
       .then(() => {
@@ -344,7 +350,7 @@ export default class CaseContent extends Component {
           rowKey="id"
           dataSource={caseSteps}
           columns={columns}
-          rowClassName={() => 'editable-row'}
+          rowClassName={(record) => (record.versionId ? styles.versionRow :'editable-row')}
           bordered
           showHeader={false}
           pagination={false}

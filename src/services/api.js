@@ -259,6 +259,24 @@ export async function querySetProjectStatus(params) {
     data: params,
   });
 }
+export async function queryAddProjectVersion(params) {
+  return request('/api/UAT/project/addProjectVersion', {
+    method: 'POST',
+    data: params,
+  });
+}
+export async function querySetVersionStatus(params) {
+  return request('/api/UAT/project/setProjectVersionStatus', {
+    method: 'POST',
+    data: params,
+  });
+}
+export async function queryUpdateVersion(params) {
+  return request('/api/UAT/project/updateVersion', {
+    method: 'POST',
+    data: params,
+  });
+}
 
 export async function querySetUserStatus(params) {
   return request('/api/UAT/project/setUserStatus', {
@@ -296,7 +314,7 @@ export async function queryRegister(params) {
 }
 
 export async function queryCaseData(params) {
-  return request(`/api/UAT/case/caseData?caseId=${params.caseId.toString()}&_=${new Date().getTime().toString()}`);
+  return request(`/api/UAT/case/caseData?caseId=${params.caseId.toString()}&versionId=${params.versionId ? params.versionId.toString() : ''}&_=${new Date().getTime().toString()}`);
 }
 
 export async function queryProxyConfigList() {
@@ -357,6 +375,9 @@ export async function queryCaseProjectConfig(params) {
 
 export async function queryProjectList(params) {
   return request(`/api/UAT/project/projectList?status=${params.status.toString()}&_=${new Date().getTime().toString()}`);
+}
+export async function queryProjectVersionList(params) {
+  return request(`/api/UAT/project/projectVersionList?status=${params.status.toString()}&projectId=${params.projectId.toString()}&_=${new Date().getTime().toString()}`);
 }
 
 export async function queryGetLibs(params) {

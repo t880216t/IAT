@@ -26,8 +26,10 @@ export default class CasePage extends PureComponent {
     project: null,
     treeList: [],
     projectList: [],
+    versionList: [],
     selectNoteType: null,
     selectNoteId: null,
+    selectVersion: null,
   }
 
   componentWillMount() {
@@ -356,13 +358,37 @@ export default class CasePage extends PureComponent {
   });
 
   handleProjectChange=project => {
-    this.setState({ project },
+    this.setState({ project, selectVersion: null },
       () => {
         this.queryTreeList(project);
+        this.queryProjectVersionList(project);
         this.clearSelect();
       },
     );
   }
+
+  handleVersionChange=selectVersion => {
+    this.setState({ selectVersion },
+      () => {
+
+      },
+    );
+  }
+
+  queryProjectVersionList = (projectId) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'system/queryProjectVersionList',
+      payload: {
+        status: 1,projectId,
+      },
+    }).then(() => {
+      const { versionList } = this.props.system;
+      this.setState({
+        versionList,
+      });
+    });
+  };
 
   onExpandTree=expandedKeys => {
     this.setState({ expandedKeys, autoExpandParent: false });
@@ -389,6 +415,7 @@ export default class CasePage extends PureComponent {
   render() {
     const {
       treeList,
+      versionList,
       clickId,
       autoExpandParent,
       expandedKeys,
@@ -398,6 +425,7 @@ export default class CasePage extends PureComponent {
       selectNoteType,
       selectNoteId,
       selectIndexId,
+      selectVersion,
     } = this.state;
     return (
       <div className={styles.container}>
@@ -414,6 +442,14 @@ export default class CasePage extends PureComponent {
               <Option value={item.id} key={item.id}>{item.name}</Option>
             ))}
           </Select>
+          {project && (
+            <Select placeholder="请选择版本" value={selectVersion || undefined} className={styles.version_select_container} size="small" onChange={e => this.handleVersionChange(e)}>
+              <Option value={null} key={null}>主分支</Option>
+              {versionList && versionList.map(item => (
+                <Option value={item.id} key={item.id}>{item.name}</Option>
+              ))}
+            </Select>
+          )}
           <CaseTree
             treeList={treeList}
             handleAddCase={item => this.handleAddCase(item)}
@@ -449,6 +485,7 @@ export default class CasePage extends PureComponent {
           {selectNoteType === 2 && (
             <CaseContent
               selectNoteId={selectNoteId}
+              selectVersion={selectVersion}
               handleTreeUpdate={() => this.handleTreeUpdate()}
             />)}
           {selectNoteType === 3 && (
@@ -460,6 +497,7 @@ export default class CasePage extends PureComponent {
           {(selectNoteType === 4) && (
             <CustomKeyword
               selectNoteId={selectNoteId}
+              selectVersion={selectVersion}
               handleTreeUpdate={() => this.handleTreeUpdate()}
             />)}
         </Card>

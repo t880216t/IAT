@@ -295,6 +295,11 @@ export default {
                   component: './Config/project',
                 },
                 {
+                  path: '/config/ui/projectVersion',
+                  name: 'projectVersion',
+                  component: './Config/projectVersion',
+                },
+                {
                   path: '/config/ui/proxy',
                   name: 'proxy',
                   component: './Config/proxy',

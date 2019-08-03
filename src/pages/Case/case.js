@@ -103,11 +103,12 @@ export default class CaseContent extends Component {
   }
 
   queryAddDebugTask = caseId => {
-    const { dispatch } = this.props;
+    const { dispatch, selectVersion } = this.props;
     dispatch({
       type: 'caseInfo/queryAddDebugTask',
       payload: {
         caseId,
+        versionId: selectVersion,
       },
     })
       .then(() => {
@@ -242,7 +243,7 @@ export default class CaseContent extends Component {
           )}
         </Form.Item>
         <Form.Item label="操作步骤">
-          <StepList caseId={this.props.selectNoteId} />
+          <StepList caseId={this.props.selectNoteId} versionId={this.props.selectVersion} />
         </Form.Item>
         <Form.Item label="后置处理" labelAlign="left" >
           {getFieldDecorator('tearDown', {

@@ -63,6 +63,7 @@ export default {
   'menu.task.timing.detail': '任务详情',
   'menu.system': '系统管理',
   'menu.system.project': '项目管理',
+  'menu.config.ui.projectVersion': '版本管理',
   'menu.system.proxy': '代理配置',
   'menu.system.keywords': '关键词管理',
   'menu.task.ui.immediate': '即时任务',

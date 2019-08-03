@@ -11,7 +11,7 @@ task = Blueprint('task', __name__)
 
 @task.route('/taskList', methods=['POST'])
 def taskList():
-  
+
   user_id = session.get('user_id')
   taskType = request.json.get("taskType")
   listData = Task.query.filter(db.and_(Task.task_type == taskType, )).order_by(db.desc(Task.add_time)).all()
@@ -38,7 +38,7 @@ def taskList():
 
 @task.route('/addTask', methods=['POST'])
 def addDebugTask():
-  
+
   user_id = session.get('user_id')
   browserType = request.json.get("browserType")
   name = request.json.get("name")
@@ -48,8 +48,9 @@ def addDebugTask():
   taskCase = request.json.get("taskCase")
   taskType = request.json.get("taskType")
   valueType = request.json.get("valueType")
+  versionId = request.json.get("version")
   try:
-    data = Task(name, taskType, 0, json.dumps(taskCase), runTime, user_id, project, valueType, browserType, proxyType)
+    data = Task(name, taskType, 0, json.dumps(taskCase), runTime, user_id, project, valueType, browserType, proxyType, versionId)
     db.session.add(data)
     db.session.commit()
     return make_response(jsonify({'code': 0, 'content': {'taskid': data.id}, 'msg': u'新建成功'}))
@@ -85,7 +86,7 @@ def updateTaskStatus():
 
 @task.route('/taskExcute', methods=['POST'])
 def taskExcute():
-  
+
   user_id = session.get('user_id')
   id = request.json.get("id")
   data = {'status': 1}

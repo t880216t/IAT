@@ -1,8 +1,7 @@
 # -*-coding:utf-8-*-
 from flask import Blueprint, jsonify, make_response, session, request
-from app.tables.UAT import Project,Tree, GlobalValues, ProxyConfig, CaseLibs, CaseKeywords, ProjectFile
+from app.tables.UAT import Project,Tree, GlobalValues, ProxyConfig, CaseLibs, CaseKeywords, ProjectFile, ProjectVersion
 from app.tables.User import users
-from datetime import datetime
 import os, hashlib, json, base64, binascii
 from app import db, app
 
@@ -66,6 +65,30 @@ def projectList():
       })
   return make_response(jsonify({'code': 0, 'msg': '', 'content': content}))
 
+@project.route('/projectVersionList', methods=['GET'])
+def projectVersionList():
+  status = request.values.get("status")
+  projectId = request.values.get("projectId")
+  projectVersionList = ProjectVersion.query.filter(db.and_(ProjectVersion.status == status,ProjectVersion.project_id == projectId)).order_by(
+    db.desc(ProjectVersion.add_time)).all()
+  content = []
+  if projectVersionList:
+    for item in projectVersionList:
+      # caseCount = Tree.query.filter(db.and_(Tree.project_id == item.id, Tree.type == 2)).count()
+      row_data = users.query.filter(db.and_(users.id == item.user_id)).first()
+      username = ""
+      if row_data:
+        username = row_data.username
+      content.append({
+        "id": item.id,
+        "name": item.name,
+        "addTime": item.add_time.strftime('%Y-%m-%d %H:%M:%S'),
+        "addUser": username,
+        "count": 0,
+        "status": item.status,
+      })
+  return make_response(jsonify({'code': 0, 'msg': '', 'content': content}))
+
 @project.route('/addProject', methods=['POST'])
 def addProject():
   user_id = session.get('user_id')
@@ -80,6 +103,48 @@ def addProject():
   except Exception as e:
     print(e)
     return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'新建失败!'}))
+
+@project.route('/addProjectVersion', methods=['POST'])
+def addProjectVersion():
+  user_id = session.get('user_id')
+  projectId = request.json.get("projectId")
+  name = request.json.get("name")
+  try:
+    data = ProjectVersion(name,projectId, 1, user_id)
+    db.session.add(data)
+    db.session.commit()
+    return make_response(jsonify({'code': 0, 'content': None, 'msg': u'新建成功!'}))
+  except Exception as e:
+    print(e)
+    return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'新建失败!'}))
+
+@project.route('/setProjectVersionStatus', methods=['POST'])
+def setProjectVersionStatus():
+  user_id = session.get('user_id')
+  id = request.json.get("id")
+  status = request.json.get("status")
+  data = {'status': status}
+  row_data = ProjectVersion.query.filter(db.and_(ProjectVersion.id == id))
+  if row_data.first():
+    row_data.update(data)
+    db.session.commit()
+    return make_response(jsonify({'code': 0, 'msg': 'sucess', 'content': []}))
+  else:
+    return make_response(jsonify({'code': 10001, 'msg': 'no such Project', 'content': []}))
+
+@project.route('/updateVersion', methods=['POST'])
+def updateVersion():
+  user_id = session.get('user_id')
+  id = request.json.get("id")
+  name = request.json.get("name")
+  data = {'name': name, 'user_id': user_id }
+  row_data = ProjectVersion.query.filter(db.and_(ProjectVersion.id == id))
+  if row_data.first():
+    row_data.update(data)
+    db.session.commit()
+    return make_response(jsonify({'code': 0, 'msg': 'sucess', 'content': []}))
+  else:
+    return make_response(jsonify({'code': 10001, 'msg': 'no such Project', 'content': []}))
 
 @project.route('/projectGlobalValues', methods=['GET'])
 def projectGlobalValues():
