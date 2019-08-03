@@ -42,6 +42,7 @@ def getTaskInfo(taskId, taskRootPath):
   rowData = Task.query.filter_by(id=taskId).first()
   caseIds = json.loads(rowData.case_id)
   valueType = rowData.value_type
+  versionId = rowData.version_id
   browserType = rowData.browser_type
   proxyType = rowData.proxy_type
   taskName = rowData.name
@@ -61,7 +62,16 @@ def getTaskInfo(taskId, taskRootPath):
     caseInfo = Tree.query.filter_by(id=caseId).first()
     caseDetailData = CaseInfo.query.filter_by(pid=caseId).first()
     caseSteps = []
-    caseStepDatas = CaseStep.query.filter_by(case_id=caseId).order_by(db.asc(CaseStep.indexId)).all()
+    if versionId:
+      caseStepDatas = CaseStep.query.filter(
+        db.and_(
+          CaseStep.case_id == caseId, CaseStep.delete_flag == 0,
+          db.or_(CaseStep.version_id == versionId, CaseStep.version_id == None)
+        ),
+      ).order_by(db.asc(CaseStep.indexId)).all()
+    else:
+      caseStepDatas = CaseStep.query.filter(db.and_(CaseStep.case_id == caseId, CaseStep.version_id == None)).order_by(
+        db.asc(CaseStep.indexId)).all()
     for caseStep in caseStepDatas:
       stepData = json.loads(caseStep.values)
       if stepData[0] == 'Open Browser':
