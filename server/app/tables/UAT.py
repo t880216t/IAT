@@ -85,15 +85,17 @@ class CaseStep(db.Model):
   add_time = db.Column(db.DateTime)
   user_id = db.Column(db.Integer)
   version_id = db.Column(db.Integer)
+  pid = db.Column(db.Integer)
   delete_flag = db.Column(db.SMALLINT)
 
-  def __init__(self,case_id,indexId,values,user_id, version_id, delete_flag):
+  def __init__(self,case_id,indexId,values,user_id, version_id, delete_flag, pid=None):
     self.case_id = case_id
     self.indexId = indexId
     self.values = values
     self.add_time = datetime.now()
     self.user_id = user_id
     self.version_id = version_id
+    self.pid = pid
     self.delete_flag = delete_flag
 
 class CaseLibs(db.Model):

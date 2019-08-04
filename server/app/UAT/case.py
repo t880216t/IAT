@@ -317,7 +317,8 @@ def makeReleaseCaseIso(changeStepId, versionId, user_id, values):
         values,
         user_id,
         versionId,
-        0
+        0,
+        changeStepId,
       )
       db.session.add(addData)
       db.session.commit()
