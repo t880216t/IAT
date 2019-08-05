@@ -78,6 +78,13 @@ export async function queryUpdateGlobalValues(params) {
   });
 }
 
+export async function queryReleaseVersion(params) {
+  return request('/api/UAT/project/releaseVersion', {
+    method: 'POST',
+    data: params,
+  });
+}
+
 export async function queryAddProxyConfig(params) {
   return request('/api/UAT/project/addProxyConfig', {
     method: 'POST',

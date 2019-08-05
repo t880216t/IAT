@@ -19,6 +19,7 @@ import {
   queryAddProjectVersion,
   querySetVersionStatus,
   queryUpdateVersion,
+  queryReleaseVersion,
 } from '@/services/api';
 
 const SytemModel = {
@@ -86,6 +87,9 @@ const SytemModel = {
     },
     *queryAddProjectVersion({ payload }, { call, put }) {
       yield call(queryAddProjectVersion, payload);
+    },
+    *queryReleaseVersion({ payload }, { call, put }) {
+      yield call(queryReleaseVersion, payload);
     },
     *querySetVersionStatus({ payload }, { call, put }) {
       yield call(querySetVersionStatus, payload);

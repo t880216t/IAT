@@ -1,6 +1,6 @@
 # -*-coding:utf-8-*-
 from flask import Blueprint, jsonify, make_response, session, request
-from app.tables.UAT import Project,Tree, GlobalValues, ProxyConfig, CaseLibs, CaseKeywords, ProjectFile, ProjectVersion
+from app.tables.UAT import Project,Tree, GlobalValues, ProxyConfig, CaseLibs, CaseKeywords, ProjectFile, ProjectVersion, CaseStep
 from app.tables.User import users
 import os, hashlib, json, base64, binascii
 from app import db, app
@@ -503,3 +503,40 @@ def deleteGlobalFile():
   except Exception as e:
     print(e)
     return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'删除失败!'}))
+
+@project.route('/releaseVersion', methods=['POST'])
+def releaseVersion():
+  id = request.json.get("id")
+  versionStepDatas = CaseStep.query.filter_by(version_id=id).all()
+  if versionStepDatas:
+    for stepData in versionStepDatas:
+      if stepData.delete_flag == 1:
+        releaseData = CaseStep.query.filter_by(id=stepData.pid).first()
+        if releaseData:
+          db.session.delete(releaseData)
+          db.session.commit()
+      else:
+        if stepData.pid:
+          releaseData = CaseStep.query.filter_by(id=stepData.pid)
+          if releaseData:
+            data = {
+              'values': stepData.values,
+              'user_id': stepData.user_id,
+            }
+            releaseData.update(data)
+            db.session.commit()
+        else:
+          versionStepData = CaseStep.query.filter_by(id=stepData.id)
+          if versionStepData:
+            data = {
+              'version_id': None,
+            }
+            versionStepData.update(data)
+            db.session.commit()
+  versionRow = ProjectVersion.query.filter_by(id=id)
+  versionData = {
+    'status': 2,
+  }
+  versionRow.update(versionData)
+  db.session.commit()
+  return make_response(jsonify({'code': 0, 'content': None, 'msg': u'合并成功'}))

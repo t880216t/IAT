@@ -117,13 +117,15 @@ def caseData():
   if versionId:
     caseStepDatas = CaseStep.query.filter(
       db.and_(
-        CaseStep.case_id == id, CaseStep.delete_flag == 0, db.or_(CaseStep.version_id == versionId, CaseStep.version_id == None)
-      ),
+        CaseStep.case_id == id,
+        CaseStep.delete_flag == 0,
+        db.or_(CaseStep.version_id == versionId, CaseStep.version_id == None),
+      )
     ).order_by(db.asc(CaseStep.indexId)).all()
   else:
     caseStepDatas = CaseStep.query.filter(db.and_(CaseStep.case_id ==id,CaseStep.version_id == None)).order_by(db.asc(CaseStep.indexId)).all()
   caseSteps = []
-  for item in caseStepDatas:
+  for index,item in enumerate(caseStepDatas):
     # imageUrl = ('img/'+item.element_cap) if item.element_cap else ''
     # eventType = 'empty'
     # eventDoc = {}
@@ -143,11 +145,17 @@ def caseData():
     #   }
     caseSteps.append({
       'id': item.id,
-      'indexId': item.indexId,
+      'indexId': index+1,
       'versionId': item.version_id,
       'values': json.loads(item.values),
       'add_time': item.add_time.strftime('%Y-%m-%d %H:%M:%S'),
     })
+  deleteStepIds = CaseStep.query.filter(db.and_(CaseStep.delete_flag == 1, CaseStep.version_id == versionId)).all()
+  if deleteStepIds:
+    for deleteStep in deleteStepIds:
+      for caseStep in caseSteps:
+        if deleteStep.pid == caseStep['id']:
+          caseSteps.remove(caseStep)
   user_data = users.query.filter(db.and_(users.id == caseData.user_id)).first()
   userName = ""
   if user_data:
@@ -379,20 +387,25 @@ def updateStepIndex(caseId):
 
 @case.route('/deleteStep', methods=['POST'])
 def deleteStep():
+  user_id = session.get('user_id')
   id = request.json.get("id")
   versionId = request.json.get("versionId")
   try:
+    rowData = CaseStep.query.filter_by(id=id).first()
     if versionId:
-      rowData = CaseStep.query.filter_by(id=id)
-      data = {
-        'version_id': versionId,
-        'delete_flag': 1,
-      }
-      rowData.update(data)
+      addData = CaseStep(
+        rowData.case_id,
+        rowData.indexId,
+        json.dumps([]),
+        user_id,
+        versionId,
+        1,
+        id,
+      )
+      db.session.add(addData)
       db.session.commit()
       return make_response(jsonify({'code': 0, 'content': None, 'msg': u'删除成功!'}))
     else:
-      rowData = CaseStep.query.filter_by(id = id).first()
       if rowData:
         caseId = rowData.case_id
         db.session.delete(rowData)

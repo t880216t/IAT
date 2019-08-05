@@ -1,5 +1,4 @@
 import React, { PureComponent } from 'react';
-import { Editor } from '@tinymce/tinymce-react';
 import {
   Card,
   Table,
@@ -11,6 +10,7 @@ import {
   Icon,
   message,
   Divider,
+  Popconfirm,
 } from 'antd';
 import { connect } from 'dva';
 import styles from './keywords.less';
@@ -32,9 +32,7 @@ export default class KeywordList extends PureComponent {
       versionList: [],
       visibleAddVersion: false,
       editRecord: {},
-      selectedLib: null,
     };
-    this.setDomRef = ref => (this.domEditor = ref);
   }
 
   componentWillMount() {
@@ -58,19 +56,19 @@ export default class KeywordList extends PureComponent {
         this.setState({
           projectList,
         }, () => {
-          if (projectList.length>0) {
+          if (projectList.length > 0) {
             this.queryProjectVersionList(projectList[0].id);
           }
         });
       });
   };
 
-  queryProjectVersionList = (projectId) => {
+  queryProjectVersionList = projectId => {
     const { dispatch } = this.props;
     dispatch({
       type: 'system/queryProjectVersionList',
       payload: {
-        status: 1,projectId,
+        status: 1, projectId,
       },
     }).then(() => {
       const { versionList } = this.props.system;
@@ -94,11 +92,13 @@ export default class KeywordList extends PureComponent {
 
   handleEditOk = () => {
     const { form } = this.props;
-    const { editRecord: { id }} = this.state;
+    const { editRecord: { id } } = this.state;
     this.queryUpdateVersion(id, form.getFieldsValue());
   }
 
   queryAddProjectVersion = (projectId, values) => {
+    console.log('projectId', projectId);
+    console.log('values', values);
     const { dispatch } = this.props;
     dispatch({
       type: 'system/queryAddProjectVersion',
@@ -113,7 +113,7 @@ export default class KeywordList extends PureComponent {
       });
   }
 
-  queryUpdateVersion = (id,values) => {
+  queryUpdateVersion = (id, values) => {
     const { dispatch } = this.props;
     const { selectedProject } = this.state;
     dispatch({
@@ -129,7 +129,7 @@ export default class KeywordList extends PureComponent {
       });
   }
 
-  handleDeleteVersion = (id) => {
+  handleDeleteVersion = id => {
     const { dispatch } = this.props;
     const { selectedProject } = this.state;
     dispatch({
@@ -150,6 +150,24 @@ export default class KeywordList extends PureComponent {
   handleShowEdit = record => {
     this.setState({ editRecord: record, visibleAddVersion: true });
   };
+
+  handleReleaseBranch = record => {
+    this.queryReleaseVersion(record.id);
+  }
+
+  queryReleaseVersion = id => {
+    const { dispatch } = this.props;
+    const { selectedProject } = this.state;
+    dispatch({
+      type: 'system/queryReleaseVersion',
+      payload: {
+        id,
+      },
+    })
+      .then(() => {
+        this.queryProjectVersionList(selectedProject);
+      });
+  }
 
   handleAddButton = () => {
     const { selectedProject } = this.state;
@@ -199,13 +217,22 @@ export default class KeywordList extends PureComponent {
         key: 'action',
         render: (text, record) => (
           <div>
-            {record.status === 1 && (
-              <a onClick={() => this.handleDeleteVersion(record.id)}>删除</a>
-            )}
+            <Popconfirm
+              title="确认合并当前版本用例至主分支？"
+              onConfirm={() => this.handleReleaseBranch(record)}
+              okText="确定"
+              cancelText="取消"
+            >
+              <a>发布版本</a>
+            </Popconfirm>
+            <Divider type="vertical" />
+            <a onClick={() => this.handleShowEdit(record)}>编辑</a>
             {record.status === 1 && (
               <Divider type="vertical" />
             )}
-            <a onClick={() => this.handleShowEdit(record)}>编辑</a>
+            {record.status === 1 && (
+              <a onClick={() => this.handleDeleteVersion(record.id)}>删除</a>
+            )}
           </div>
         ),
       },
@@ -241,9 +268,9 @@ export default class KeywordList extends PureComponent {
         </div>
         <Table loading={loading} rowKey="id" dataSource={versionList} columns={columns} pagination={{ pageSize: 20 }} />
         <Modal
-          title={editRecord? '编辑版本标记': '新建版本标记'}
+          title={editRecord.id ? '编辑版本标记' : '新建版本标记'}
           visible={visibleAddVersion}
-          onOk={editRecord? this.handleEditOk: this.handleAddOk}
+          onOk={editRecord.id ? this.handleEditOk : this.handleAddOk}
           width={500}
           onCancel={this.handleCancel}
           destroyOnClose

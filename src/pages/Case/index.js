@@ -370,7 +370,7 @@ export default class CasePage extends PureComponent {
   handleVersionChange=selectVersion => {
     this.setState({ selectVersion },
       () => {
-
+        this.clearSelect();
       },
     );
   }

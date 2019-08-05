@@ -60,7 +60,8 @@ def getTaskInfo(taskId):
     if versionId:
       caseStepDatas = CaseStep.query.filter(
         db.and_(
-          CaseStep.case_id == caseId, CaseStep.delete_flag == 0,
+          CaseStep.case_id == caseId,
+          CaseStep.delete_flag == 0,
           db.or_(CaseStep.version_id == versionId, CaseStep.version_id == None)
         ),
       ).order_by(db.asc(CaseStep.indexId)).all()
@@ -69,8 +70,15 @@ def getTaskInfo(taskId):
         db.asc(CaseStep.indexId)).all()
     for caseStep in caseStepDatas:
       caseSteps.append({
-        'values': json.loads(caseStep.values)
+        'values': json.loads(caseStep.values),
+        'id': caseStep.id,
       })
+    deleteStepIds = CaseStep.query.filter(db.and_(CaseStep.delete_flag == 1, CaseStep.version_id == versionId)).all()
+    if deleteStepIds:
+      for deleteStep in deleteStepIds:
+        for caseStep in caseSteps:
+          if deleteStep.pid == caseStep['id']:
+            caseSteps.remove(caseStep)
     setUpData = caseDetailData.set_up if caseDetailData.set_up else '[]'
     tearDownData = caseDetailData.tear_down if caseDetailData.tear_down else '[]'
     caseDatas.append({
