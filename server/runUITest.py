@@ -138,6 +138,13 @@ def getTaskInfo(taskId, taskRootPath):
         for caseStep in caseSteps:
           if deleteStep.pid == caseStep['id']:
             caseSteps.remove(caseStep)
+    releaseIsoStepIds = CaseStep.query.filter(
+      db.and_(CaseStep.delete_flag == 0, CaseStep.version_id == versionId)).all()
+    if releaseIsoStepIds:
+      for releaseIsoStep in releaseIsoStepIds:
+        for caseStep in caseSteps:
+          if releaseIsoStep.pid == caseStep['id']:
+            caseSteps.remove(caseStep)
     setUpData = caseDetailData.set_up if caseDetailData.set_up else '[]'
     tearDownData = caseDetailData.tear_down if caseDetailData.tear_down else '[]'
     caseDatas.append({

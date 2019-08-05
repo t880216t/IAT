@@ -74,7 +74,7 @@ def projectVersionList():
   content = []
   if projectVersionList:
     for item in projectVersionList:
-      # caseCount = Tree.query.filter(db.and_(Tree.project_id == item.id, Tree.type == 2)).count()
+      caseCount = CaseStep.query.filter(db.and_(CaseStep.version_id == item.id)).with_entities(CaseStep.case_id).distinct().count()
       row_data = users.query.filter(db.and_(users.id == item.user_id)).first()
       username = ""
       if row_data:
@@ -84,7 +84,7 @@ def projectVersionList():
         "name": item.name,
         "addTime": item.add_time.strftime('%Y-%m-%d %H:%M:%S'),
         "addUser": username,
-        "count": 0,
+        "count": caseCount,
         "status": item.status,
       })
   return make_response(jsonify({'code': 0, 'msg': '', 'content': content}))

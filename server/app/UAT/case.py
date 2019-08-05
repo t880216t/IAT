@@ -156,6 +156,12 @@ def caseData():
       for caseStep in caseSteps:
         if deleteStep.pid == caseStep['id']:
           caseSteps.remove(caseStep)
+  releaseIsoStepIds = CaseStep.query.filter(db.and_(CaseStep.delete_flag == 0, CaseStep.version_id == versionId)).all()
+  if releaseIsoStepIds:
+    for releaseIsoStep in releaseIsoStepIds:
+      for caseStep in caseSteps:
+        if releaseIsoStep.pid == caseStep['id']:
+          caseSteps.remove(caseStep)
   user_data = users.query.filter(db.and_(users.id == caseData.user_id)).first()
   userName = ""
   if user_data:
@@ -314,11 +320,11 @@ def makeReleaseCaseIso(changeStepId, versionId, user_id, values):
       rowData.update(data)
       db.session.commit()
     else:
-      data = {
-        'delete_flag': 1
-      }
-      rowData.update(data)
-      db.session.commit()
+      # data = {
+      #   'delete_flag': 1
+      # }
+      # rowData.update(data)
+      # db.session.commit()
       addData = CaseStep(
         rowData.first().case_id,
         rowData.first().indexId,
