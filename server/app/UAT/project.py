@@ -534,9 +534,10 @@ def releaseVersion():
             versionStepData.update(data)
             db.session.commit()
   versionRow = ProjectVersion.query.filter_by(id=id)
-  versionData = {
-    'status': 2,
-  }
-  versionRow.update(versionData)
-  db.session.commit()
+  if versionRow:
+    versionData = {
+      'status': 2,
+    }
+    versionRow.update(versionData)
+    db.session.commit()
   return make_response(jsonify({'code': 0, 'content': None, 'msg': u'合并成功'}))
