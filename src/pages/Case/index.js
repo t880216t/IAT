@@ -409,6 +409,7 @@ export default class CasePage extends PureComponent {
       selectNoteType: null,
       selectNoteId: null,
       selectIndexId: null,
+      selectedKeys: [],
     });
   }
 

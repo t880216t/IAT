@@ -258,6 +258,29 @@ def excuteScript(projectDir):
   cmd = 'robot --outputdir {projectDir} {projectDir}'.format(projectDir=projectDir)
   os.system(cmd)
 
+def getKWDomResult(inputNode):
+  stepInfo = {}
+  status = ''
+  msg = ''
+  msgLevel = ''
+  children = []
+  for stepNode in inputNode.childNodes:
+    if stepNode.nodeName == 'status':
+      status = stepNode.getAttribute("status")
+    if stepNode.nodeName == 'msg':
+      msg = stepNode.firstChild.data
+      msgLevel = stepNode.getAttribute("level")
+    if stepNode.nodeName == 'kw':
+      children.append(getKWDomResult(stepNode))
+
+  stepInfo['name'] = inputNode.getAttribute("name")
+  stepInfo['status'] = status
+  stepInfo['msgLevel'] = msgLevel
+  stepInfo['msg'] = msg
+  stepInfo['children'] = children
+
+  return stepInfo
+
 def alasyRootLog(projectDir):
   logFile = projectDir + '/output.xml'
   # 使用Minidom解析器打开xml文档
@@ -273,23 +296,9 @@ def alasyRootLog(projectDir):
       for case in suite.childNodes:
         if case.nodeName == 'test':
           steps = []
-          for step in case.childNodes:
-            if step.nodeName == 'kw':
-              status = ''
-              msg = ''
-              msgLevel = ''
-              for stepNode in step.childNodes:
-                if stepNode.nodeName == 'status':
-                  status = stepNode.getAttribute("status")
-                if stepNode.nodeName == 'msg':
-                  msg = stepNode.firstChild.data
-                  msgLevel = stepNode.getAttribute("level")
-              steps.append({
-                'name': step.getAttribute("name"),
-                'status': status,
-                'msgLevel': msgLevel,
-                'msg': msg,
-              })
+          for stepData in case.childNodes:
+            if stepData.nodeName == 'kw':
+              steps.append(getKWDomResult(stepData))
           cases.append({
             'name': case.getAttribute("name"),
             'id': case.getAttribute("id"),
@@ -333,7 +342,7 @@ def runScript(task_id):
     logs = alasyRootLog(projectDir)
     saveLogToDB(task_id,logs)
     setTaskStatus(task_id, 3)
-    # clear_project_file('taskFile/'+taskRootPath)
+    clear_project_file('taskFile/'+taskRootPath)
   except Exception as e:
     print(e)
     setTaskStatus(task_id, 4)

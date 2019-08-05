@@ -4,6 +4,7 @@ import io from 'socket.io-client';
 import { connect } from 'dva';
 import styles from './index.less';
 import StepList from './CaseStepNew/index';
+import Zmage from 'react-zmage';
 
 const { Search, TextArea } = Input;
 const { Step } = Steps;
@@ -185,6 +186,46 @@ export default class CaseContent extends Component {
   render() {
     const { showDebugModal, runing, taskLog, caseData } = this.state;
     const { getFieldDecorator } = this.props.form;
+    const stepLog = data => (
+      <Steps direction="vertical" size="small">
+        {data.map((item, index) => {
+          if (item.status === 'PASS') {
+            return (
+              <Step
+                key={`${item.name}_${index}`}
+                icon={<Icon type="check-circle" theme="filled" style={{ color: '#2ecc71' }} />}
+                status="finish"
+                title={
+                  <div className={styles.stepInfoContainer}>
+                    <span className={styles.name}>{item.name}</span>
+                    <span className={styles.msg}>{item.msg}</span>
+                    {item.capture && (
+                      <div>
+                        <Zmage key={item.capture} src={`/img/${item.capture}`} alt="" className={styles.pre_image} />
+                      </div>
+                    )}
+                  </div>
+                }
+                description={stepLog(item.children)}
+              />
+            );
+          }
+          return (
+            <Step
+              key={`${item.name}_${index}`}
+              icon={<Icon type="close-circle" theme="filled" />}
+              status="error"
+              title={
+                <div className={styles.stepInfoContainer}>
+                  <span className={styles.name}>{item.name}</span>
+                  <span className={styles.msg}>{item.msg}</span>
+                </div>
+              }
+              description={stepLog(item.children)}
+            />);
+        })}
+      </Steps>
+    )
     return (
       <div className={styles.content_container}>
         <div className={styles.header_container}>
@@ -273,24 +314,19 @@ export default class CaseContent extends Component {
             </Button>,
           ]}
         >
-          <div className={styles.debug_start_container}>
-            {runing && <Spin tip="正在执行任务..."/>}
-            {(!runing && !taskLog) && (
-              <Button type="primary" icon="play-circle" onClick={this.handleAddDebugTask}>
-                开始调试
-              </Button>
+          <div className={styles.stepLogContainer}>
+            <div className={styles.debug_start_container}>
+              {runing && <Spin tip="正在执行任务..."/>}
+              {(!runing && !taskLog) && (
+                <Button type="primary" icon="play-circle" onClick={this.handleAddDebugTask}>
+                  开始调试
+                </Button>
+              )}
+            </div>
+            {taskLog && (
+              stepLog(taskLog[0].cases[0].steps)
             )}
           </div>
-          {taskLog && (
-             <Steps direction="vertical" size="small">
-               {taskLog[0].cases[0].steps.map((item, index) => {
-                 if (item.status === 'PASS') {
-                   return (<Step key={`${item.name}_${index}`} icon={<Icon type="check-circle" theme="filled" style={{ color: '#2ecc71' }} />} status="finish" title={item.name} description={item.msg} />);
-                 }
-                   return (<Step key={`${item.name}_${index}`} icon={<Icon type="close-circle" theme="filled" />} status="error" title={item.name} description={item.msg} />);
-               })}
-             </Steps>
-          )}
         </Modal>
       </div>
     );
