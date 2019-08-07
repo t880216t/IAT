@@ -1,13 +1,21 @@
 site_name: VFT自动化平台
 theme:
-  name: readthedocs
-  language: 'zh'
+  name: material
+  palette:
+    primary: 'Blue Grey'
+    accent: 'Pink'
+  feature:
+    tabs: true
+
+extra:
+  search:
+    language: 'jp'
 
 markdown_extensions:
   - admonition
   - codehilite:
       guess_lang: false
-      linenums: false
+      linenums: true
   - toc:
       permalink: true
   - footnotes
@@ -33,8 +41,7 @@ markdown_extensions:
   - pymdownx.superfences
   - pymdownx.tasklist
   - pymdownx.tilde
-plugins:
-  - search
+
 nav:
   - '简介': 'index.md'
   - '快速开始': 'install.md'
@@ -50,3 +57,4 @@ nav:
       - 'api-task.md'
       - 'api-plugin.md'
   - '关于': 'about.md'
+copyright: '@2019, orion-c'
