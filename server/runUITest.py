@@ -1,6 +1,6 @@
 #!venv/bin/python
 #-*-coding:utf-8-*-
-import os, json, binascii, hashlib, shutil, zipfile, sys, re
+import os, json, binascii, hashlib, shutil, zipfile, sys, re, time
 from flask_script import Manager
 from app.tables.UAT import TimTaskLog,Tree,CaseInfo,CaseStep,CaseLibs,HomeDayExcuteCount,CaseProjectSetting,Task, GlobalValues, ProxyConfig, FailCaseLog, ProjectFile
 from app import app,db
@@ -115,7 +115,8 @@ def getTaskInfo(taskId, taskRootPath):
               else:
                 stepData.append('ff_profile_dir=${FF_PROFILE}')
               caseSteps.append({
-                'values': proxySetting
+                'values': proxySetting,
+                'id': str(round(time.time()))
               })
           if browserType == 2:
             if proxyRow:
@@ -126,12 +127,25 @@ def getTaskInfo(taskId, taskRootPath):
               else:
                 stepData.append('desired_capabilities=${desired capabilities}')
               caseSteps.append({
-                'values': proxySetting
+                'values': proxySetting,
+                'id': str(round(time.time()))
               })
+        if valueType == 2:
+          stepData[2] = 'headlesschrome'
+          caseSteps.append({
+            'values': stepData,
+            'id': caseStep.id,
+          })
+          caseSteps.append({
+            'values': ['Set Window Size','1920','1080'],
+            'id': str(round(time.time()))
+          })
+          continue
       caseSteps.append({
         'values': stepData,
         'id': caseStep.id,
       })
+
     deleteStepIds = CaseStep.query.filter(db.and_(CaseStep.delete_flag == 1, CaseStep.version_id == versionId)).all()
     if deleteStepIds:
       for deleteStep in deleteStepIds:
@@ -205,6 +219,7 @@ def getTaskInfo(taskId, taskRootPath):
     'browserType': browserType,
     'proxyType': proxyType,
     'taskType': taskType,
+    'valueType': valueType,
     'globalValues': globalValues,
   }
   return taskInfo
@@ -264,6 +279,7 @@ def buildTaskProject(taskInfo,taskRootPath):
   for testSuite in taskInfo['test_suites']:
     with open(projectDir + '/'+testSuite['name']+'.robot', 'w', encoding='utf-8') as suiteFile:
       suiteFile.writelines('*** Settings ***\n')
+      suiteFile.writelines('Suite Setup    Set Selenium Implicit Wait    20\n')
       suiteFile.writelines('Suite Teardown    close_all\n')
       suiteFile.writelines('Resource    customKeyword.robot\n')
       for lib in testSuite['libs']:
@@ -314,8 +330,23 @@ def buildCustomKeywordFile(projectDir,customKeywords, keywordRootlibs):
         keywordFile.writelines('    [Return]    {returns}\n'.format(returns=returns))
       keywordFile.writelines('\n')
 
+def dockerExcuteScript(projectDir,taskRootPath):
+  time.sleep(2)
+  taskFilePath = app.root_path.replace('app', '') + projectDir
+  cmd = 'docker run -t -i -d -v {taskFilePath}:/root/data --name={taskRootPath} vft_docker:latest'.format(
+    taskFilePath=taskFilePath, taskRootPath=taskRootPath)
+  os.system(cmd)
+  while True:
+    containStatuscmd = r"docker inspect --format '{{.State.Running}}' %s" % taskRootPath
+    containStatus = os.popen(containStatuscmd, "r").read()
+    if containStatus == 'false\n':
+      deleteContain = 'docker rm {taskRootPath}'.format(taskRootPath=taskRootPath)
+      os.system(deleteContain)
+      break
+    time.sleep(1)
+
 def excuteScript(projectDir):
-  cmd = 'robot --outputdir {projectDir} {projectDir} > {projectDir}/log.txt'.format(projectDir=projectDir)
+  cmd = 'robot --outputdir {projectDir} {projectDir}'.format(projectDir=projectDir)
   os.system(cmd)
 
 def GetMiddleStr(content, startStr, endStr):
@@ -444,12 +475,15 @@ def runScript(task_id):
     customKeywords, keywordRootlibs = getCustomKeywords(task_id)
     projectDir = buildTaskProject(taskInfo,taskRootPath)
     buildCustomKeywordFile(projectDir,customKeywords, keywordRootlibs)
-    excuteScript(projectDir)
+    if taskInfo['valueType'] == 2:
+      dockerExcuteScript(projectDir,taskRootPath)
+    else:
+      excuteScript(projectDir)
     logs = alasyRootLog(taskInfo, projectDir, taskRootPath)
     saveLogToDB(task_id,logs)
     saveTimLogToDB(taskInfo,task_id,logs)
     setTaskStatus(task_id, 3)
-    clear_project_file('taskFile/' + taskRootPath)
+    # clear_project_file('taskFile/' + taskRootPath)
   except Exception as e:
     print(e)
     setTaskStatus(task_id, 4)
