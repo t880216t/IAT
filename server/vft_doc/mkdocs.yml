@@ -15,7 +15,7 @@ markdown_extensions:
   - admonition
   - codehilite:
       guess_lang: false
-      linenums: true
+      linenums: false
   - toc:
       permalink: true
   - footnotes
