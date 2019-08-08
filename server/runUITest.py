@@ -495,7 +495,7 @@ def runScript(task_id):
     saveLogToDB(task_id,logs)
     saveTimLogToDB(taskInfo,task_id,logs)
     setTaskStatus(task_id, 3)
-    # clear_project_file('taskFile/' + taskRootPath)
+    clear_project_file('taskFile/' + taskRootPath)
   except Exception as e:
     print(e)
     setTaskStatus(task_id, 4)
