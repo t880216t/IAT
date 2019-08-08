@@ -125,7 +125,7 @@ export default class DetailPage extends PureComponent {
         if (taskCase) {
           taskCase.forEach(key => {
             listTree.forEach(item => {
-              if (item.id === parseInt(key) && item.noteType === 2) {
+              if (item.id === parseInt(key) && item.noteType === 2 && newTargetKeys.indexOf(parseInt(item.id)) === -1) {
                 newTargetKeys.push(parseInt(key));
               }
             });
@@ -177,7 +177,7 @@ export default class DetailPage extends PureComponent {
     const newTargetKeys = [];
     targetKeys.forEach(key => {
       listTree.forEach(item => {
-        if (item.id === parseInt(key) && item.noteType === 2) {
+        if (item.id === parseInt(key) && item.noteType === 2 && newTargetKeys.indexOf(parseInt(item.id)) === -1) {
           newTargetKeys.push(parseInt(key));
         }
       });
