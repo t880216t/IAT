@@ -281,7 +281,7 @@ def buildTaskProject(taskInfo,taskRootPath):
   for testSuite in taskInfo['test_suites']:
     with open(projectDir + '/'+testSuite['name']+'.robot', 'w', encoding='utf-8') as suiteFile:
       suiteFile.writelines('*** Settings ***\n')
-      suiteFile.writelines('Suite Setup    Set Selenium Implicit Wait    20\n')
+      suiteFile.writelines('Suite Setup    Set Selenium Implicit Wait    5\n')
       suiteFile.writelines('Suite Teardown    close_all\n')
       suiteFile.writelines('Resource    customKeyword.robot\n')
       for lib in testSuite['libs']:
@@ -336,11 +336,15 @@ def buildCustomKeywordFile(projectDir,customKeywords, keywordRootlibs):
         keywordFile.writelines('    [Return]    {returns}\n'.format(returns=returns))
       keywordFile.writelines('\n')
 
-def dockerExcuteScript(projectDir,taskRootPath):
+def dockerExcuteScript(projectDir, taskRootPath, host):
   time.sleep(2)
   taskFilePath = app.root_path.replace('app', '') + projectDir
-  cmd = 'docker run -t -i -d -v {taskFilePath}:/root/data -v {taskFilePath}/hosts:/root/hosts --name={taskRootPath} vft_docker:latest'.format(
-    taskFilePath=taskFilePath, taskRootPath=taskRootPath)
+  if host:
+    cmd = 'docker run -t -i -d -v {taskFilePath}:/root/data -v {taskFilePath}/hosts:/etc/hosts -m 2048M --memory-swap=2048M --name={taskRootPath} vft_docker:latest'.format(
+      taskFilePath=taskFilePath, taskRootPath=taskRootPath)
+  else:
+    cmd = 'docker run -t -i -d -v {taskFilePath}:/root/data -m 2048M --memory-swap=2048M --name={taskRootPath} vft_docker:latest'.format(
+      taskFilePath=taskFilePath, taskRootPath=taskRootPath)
   os.system(cmd)
   while True:
     containStatuscmd = r"docker inspect --format '{{.State.Running}}' %s" % taskRootPath
@@ -484,7 +488,7 @@ def runScript(task_id):
       buildHostFile(projectDir, taskInfo['host'])
     buildCustomKeywordFile(projectDir,customKeywords, keywordRootlibs)
     if taskInfo['valueType'] == 2:
-      dockerExcuteScript(projectDir,taskRootPath)
+      dockerExcuteScript(projectDir,taskRootPath, taskInfo['host'])
     else:
       excuteScript(projectDir)
     logs = alasyRootLog(taskInfo, projectDir, taskRootPath)
