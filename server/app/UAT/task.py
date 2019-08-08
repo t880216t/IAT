@@ -49,8 +49,9 @@ def addDebugTask():
   taskType = request.json.get("taskType")
   valueType = request.json.get("valueType")
   versionId = request.json.get("version")
+  host = request.json.get("host")
   try:
-    data = Task(name, taskType, 0, json.dumps(taskCase), runTime, user_id, project, valueType, browserType, proxyType, versionId)
+    data = Task(name, taskType, 0, json.dumps(taskCase), runTime, user_id, project, valueType, browserType, proxyType, versionId, host)
     db.session.add(data)
     db.session.commit()
     return make_response(jsonify({'code': 0, 'content': {'taskid': data.id}, 'msg': u'新建成功'}))
@@ -140,6 +141,7 @@ def taskInfo():
       'valueType': rowData.value_type,
       'browserType': rowData.browser_type,
       'proxyType': rowData.proxy_type,
+      'host': rowData.host,
       'taskCase': json.loads(rowData.case_id),
     }
   return make_response(jsonify({'code': 0, 'content': content, 'msg': u'操作成功'}))

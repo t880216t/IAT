@@ -736,7 +736,7 @@ def addDebugTask():
     return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'用例异常'}))
   caseData = Tree.query.filter_by(id=caseId).first()
   projectId = caseData.project_id
-  data = Task(u'调试任务', 1, 0, json.dumps([caseId]), '', user_id, projectId, valueType, 1, 0, versionId)
+  data = Task(u'调试任务', 1, 0, json.dumps([caseId]), '', user_id, projectId, valueType, 1, 0, versionId, '')
   db.session.add(data)
   db.session.commit()
   subprocess.Popen("python debugCaseScript.py runScript -i %s"%data.id, shell=True)

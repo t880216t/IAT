@@ -8,6 +8,7 @@ import TreeTransfer from '../../components/TreeTransfer/index';
 
 const FormItem = Form.Item;
 const { Option } = Select;
+const { TextArea } = Input;
 
 @connect(({ system, task }) => ({
   system,
@@ -20,8 +21,7 @@ export default class AddTaskPage extends PureComponent {
     proxyConfigList: [],
     targetKeys: [],
     treeList: [],
-    listTree: [],
-    versionList: [],
+    listTree: [],versionList: [],
   }
 
   componentWillMount() {
@@ -286,7 +286,7 @@ export default class AddTaskPage extends PureComponent {
               })(
                 <Radio.Group>
                   <Radio value={1}>正式版</Radio>
-                  <Radio value={2} disabled>测试版</Radio>
+                  <Radio value={2}>测试版</Radio>
                 </Radio.Group>,
               )}
             </FormItem>
@@ -297,24 +297,30 @@ export default class AddTaskPage extends PureComponent {
                     required: true,
                   },
                 ],
-                initialValue: 1,
+                initialValue: 2,
               })(
                 <Radio.Group buttonStyle="solid">
-                  <Radio.Button value={1}>Firefox</Radio.Button>
                   <Radio.Button value={2}>Chrome</Radio.Button>
+                  <Radio.Button value={1} disabled={getFieldValue('valueType') === 2}>Firefox</Radio.Button>
                   <Radio.Button value={3} disabled>Safari</Radio.Button>
                   <Radio.Button value={4} disabled>Internet Explorer</Radio.Button>
                 </Radio.Group>,
               )}
             </FormItem>
-            <FormItem {...formItemLayout} label="全局代理">
+            <FormItem {...formItemLayout} label="全局代理" style={{ display: getFieldValue('valueType') === 2 ? 'none' : '' }}>
               {getFieldDecorator('proxyType', {
               })(
-                <Select placeholder="请先选择代理" style={{ width: 280 }}>
+                <Select placeholder="请先选择代理" style={{ width: 280}}>
                   {proxyList && proxyList.map(item => (
                     <Option value={item.id} key={item.id} title={item.name}>{item.name}</Option>
                   ))}
                 </Select>,
+              )}
+            </FormItem>
+            <FormItem {...formItemLayout} label="内网Host" style={{ display: getFieldValue('valueType') === 2 ? '' : 'none' }}>
+              {getFieldDecorator('host', {
+              })(
+                <TextArea placeholder="请输入host" autosize={{ minRows: 4, maxRows: 8 }} />,
               )}
             </FormItem>
             <FormItem {...formItemLayout} label="用例数据">

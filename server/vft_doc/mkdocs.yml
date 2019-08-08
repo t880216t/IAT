@@ -2,8 +2,8 @@ site_name: VFT自动化平台
 theme:
   name: material
   palette:
-    primary: 'Blue Grey'
-    accent: 'Pink'
+    primary: 'Indigo'
+    accent: 'Green'
   feature:
     tabs: true
 

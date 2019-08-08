@@ -42,6 +42,7 @@ def getTaskInfo(taskId, taskRootPath):
   rowData = Task.query.filter_by(id=taskId).first()
   caseIds = json.loads(rowData.case_id)
   valueType = rowData.value_type
+  host = rowData.host
   versionId = rowData.version_id
   browserType = rowData.browser_type
   proxyType = rowData.proxy_type
@@ -220,6 +221,7 @@ def getTaskInfo(taskId, taskRootPath):
     'proxyType': proxyType,
     'taskType': taskType,
     'valueType': valueType,
+    'host': host,
     'globalValues': globalValues,
   }
   return taskInfo
@@ -304,6 +306,10 @@ def buildTaskProject(taskInfo,taskRootPath):
         suiteFile.writelines('\n')
   return projectDir
 
+def buildHostFile(projectDir, host):
+  with open(projectDir + '/hosts', 'w', encoding='utf-8') as hostFile:
+    hostFile.write(host)
+
 def buildCustomKeywordFile(projectDir,customKeywords, keywordRootlibs):
   with open(projectDir + '/customKeyword.robot', 'w', encoding='utf-8') as keywordFile:
     if len(keywordRootlibs) > 0:
@@ -333,7 +339,7 @@ def buildCustomKeywordFile(projectDir,customKeywords, keywordRootlibs):
 def dockerExcuteScript(projectDir,taskRootPath):
   time.sleep(2)
   taskFilePath = app.root_path.replace('app', '') + projectDir
-  cmd = 'docker run -t -i -d -v {taskFilePath}:/root/data --name={taskRootPath} vft_docker:latest'.format(
+  cmd = 'docker run -t -i -d -v {taskFilePath}:/root/data -v {taskFilePath}/hosts:/root/hosts --name={taskRootPath} vft_docker:latest'.format(
     taskFilePath=taskFilePath, taskRootPath=taskRootPath)
   os.system(cmd)
   while True:
@@ -474,6 +480,8 @@ def runScript(task_id):
     taskInfo = getTaskInfo(task_id,taskRootPath)
     customKeywords, keywordRootlibs = getCustomKeywords(task_id)
     projectDir = buildTaskProject(taskInfo,taskRootPath)
+    if taskInfo['host'] and taskInfo['valueType'] == 2:
+      buildHostFile(projectDir, taskInfo['host'])
     buildCustomKeywordFile(projectDir,customKeywords, keywordRootlibs)
     if taskInfo['valueType'] == 2:
       dockerExcuteScript(projectDir,taskRootPath)

@@ -159,6 +159,7 @@ class Task(db.Model):
   add_time = db.Column(db.DateTime)
   update_time = db.Column(db.DateTime)
   task_log = db.Column(db.TEXT)
+  host = db.Column(db.TEXT)
   run_time = db.Column(db.String(255))
   user_id = db.Column(db.Integer)
   project_id = db.Column(db.Integer)
@@ -167,7 +168,7 @@ class Task(db.Model):
   proxy_type = db.Column(db.Integer)
   version_id = db.Column(db.Integer)
 
-  def __init__(self,name,task_type,status,case_id, run_time, user_id, project_id,value_type, browser_type, proxy_type, version_id):
+  def __init__(self,name,task_type,status,case_id, run_time, user_id, project_id,value_type, browser_type, proxy_type, version_id, host):
     self.name = name
     self.task_type = task_type
     self.status = status
@@ -179,6 +180,7 @@ class Task(db.Model):
     self.browser_type = browser_type
     self.proxy_type = proxy_type
     self.version_id = version_id
+    self.host = host
     self.add_time = datetime.now()
     self.update_time = datetime.now()
 
