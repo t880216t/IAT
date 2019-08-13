@@ -80,9 +80,47 @@ $ cp -r server/webDrivers/mac/* server/venv/xxx/Scripts
 ## **部署**
 由于本项目是前后端分离的架构，你需要用nginx等web容器来完成反向代理部署。
 ### 打包前端
-
+``` bash
+$ npm run build
+```
+打包后生成的dist文件夹，即是前端应用，需要部署到web容器中渲染。
 
 ### 启动后端服务
+``` bash
+$ cd server
+$ python run.py
+```
+默认是5001端口，可以在server/run.py中自已改下。
 
-
+??? note "线上部署建议用gunicorn"
+    ```bash
+    $ source server/venv/bin/activate
+    $ pip install gunicorn -i https://pypi.tuna.tsinghua.edu.cn/simple
+    $ gunicorn -w 4 -b 127.0.0.1:5001 run:app
+    ```
+    
 ### 配置Nginx反向代理
+
+```bash
+server {
+  listen       80; # 端口根据自已的需要自定义
+  server_name  www.xxxxx.test;
+
+  location / {
+		root   VFT; # 这里是指前端打包后的应用文件
+		index  index.html index.htm;
+		try_files $uri $uri/ /index.html =404;
+        }
+		
+	location /api/ { 
+		proxy_pass http://127.0.0.1:5001;  
+		proxy_set_header Host $host:$server_port;
+	}
+		
+	location /img/ { 
+		proxy_pass http://127.0.0.1:5001/;  
+		proxy_set_header Host $host:$server_port;
+	}
+}
+```
+如果前后端配置正确，此时你可以访问 http://127.0.0.1 访问应用了。
