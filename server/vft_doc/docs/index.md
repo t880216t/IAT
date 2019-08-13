@@ -13,10 +13,10 @@ Web自动化底层通过RobotFramework执行用例，API自动化底层通过Jme
 虽然是一个系统，但其实接口自动化和UI自动化采取的两套独立的框架设计。
 Jmeter本身对于接口自动化来说，还可以有更多的扩展。
 ### web ui自动化设计架构
-![ui](/img/ui.png)
+![ui](/img/ui.png){.img-fluid tag=1}
 
 ### api接口自动化设计架构
-![api](/img/api.png)
+![api](/img/api.png){.img-fluid tag=2}
 
 # 功能模块
 目前平台集成了原来的IAT，以及新的UI自动化功能，涉及的模块较多。

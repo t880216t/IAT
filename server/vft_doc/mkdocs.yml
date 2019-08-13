@@ -1,6 +1,7 @@
 site_name: VFT自动化平台
 theme:
   name: material
+  language: 'zh'
   palette:
     primary: 'Indigo'
     accent: 'Green'
@@ -11,7 +12,20 @@ extra:
   search:
     language: 'jp'
 
+# 自定义css
+extra_css:
+  - 'assets/css/custom.css'
+  - 'assets/css/simpleLightbox.min.css'
+  - 'assets/css/simpleLightbox.css'
+# 自定义js
+extra_javascript:
+  - 'assets/js/jquery-3.2.1.min.js'
+  - 'assets/js/simpleLightbox.min.js'
+  - 'assets/js/simpleLightbox.js'
+  - 'assets/js/custom.js'
+# 一些扩展
 markdown_extensions:
+  - markdown.extensions.attr_list
   - admonition
   - codehilite:
       guess_lang: false
@@ -47,9 +61,10 @@ nav:
   - '快速开始': 'install.md'
   - 'WEB UI自动化':
       - 'chromeExtension.md'
-      - 'ui_case.md'
       - 'ui_project.md'
+      - 'ui_case.md'
       - 'ui_task.md'
+      - 'ui_version.md'
       - 'ui_library.md'
   - 'Api 接口自动化':
       - 'api-case.md'

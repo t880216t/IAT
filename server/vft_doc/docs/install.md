@@ -29,7 +29,9 @@ $ git clone -b VictorinoxForTest https://github.com/t880216t/IAT my-project
 这里我假设你上面环境要求里的软件都已经正确安装，并配置完成环境变量。
 
 ### 方法一：一键安装
-项目提供了个简单的shell脚本去安装相关依赖，但前提是你已经有了npm、python，本工具建议部署在有可视化界面的MAC/Linux机器上。windows可以用gitbash执行该脚本。
+库表导入且配置可用，参考[库表导入](http://127.0.0.1:8000/install/#_9)
+
+项目提供了个简单的shell脚本去安装相关依赖，但前提是你已经有了npm、python、mysql，本工具建议部署在有可视化界面的MAC/Linux机器上。windows可以用gitbash执行该脚本。
 ``` bash
 $ cd my-project
 $ chmod +x install.sh
@@ -84,6 +86,22 @@ $ cp -r server/webDrivers/mac/* server/venv/xxx/Scripts
 $ npm run build
 ```
 打包后生成的dist文件夹，即是前端应用，需要部署到web容器中渲染。
+
+### 库表导入
+创建一个库，默认
+```text
+数据库名：vft 
+字符集：utf8mb4 -- UTF-8 Unicode
+排序规则：utf8mb4_general_ci
+```
+所需的库表结构在 server/db/vft.sql 中，可以通过其它数据库工具或者mysqldump命令行导入。
+```text
+$ mysqldump -u root -p vft < vft.sql
+```
+数据库连接配置在 server/app/\__init\__.py 的
+```text
+app.config["SQLALCHEMY_DATABASE_URI"] = "xxxxxxxxxxx"
+```
 
 ### 启动后端服务
 ``` bash
