@@ -24,13 +24,6 @@ db = SQLAlchemy(app)
 socketio = SocketIO(app)
 
 '''
-入口路由配置
-'''
-# @app.route('/')
-# def hello_world():
-#     return 'Hello!'
-
-'''
 注册蓝图
 '''
 from .build.login import auth
