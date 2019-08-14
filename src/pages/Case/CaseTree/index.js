@@ -103,7 +103,7 @@ export default class CaseTree extends PureComponent {
   checkClickElement=event => {
     if (this.state.rightClickItem !== null) {
       try {
-        if (document.getElementById('right_menu')){
+        if (document.getElementById('right_menu')) {
           if (event.target.compareDocumentPosition(document.getElementById('right_menu')) !== 10) {
             this.setState({ rightClickItem: null });
           }
@@ -155,8 +155,8 @@ export default class CaseTree extends PureComponent {
 
   getXY = ele => {
     const { scrollTop } = this.treeBox;
-    let top = ele.offsetTop - scrollTop;
-    let left = ele.offsetLeft;
+    const top = ele.offsetTop - scrollTop;
+    const left = ele.offsetLeft;
     // while (ele.offsetParent) {
     //   ele = ele.offsetParent;
     //   if (window.navigator.userAgent.indexOf('MSTE 8') > -1) {

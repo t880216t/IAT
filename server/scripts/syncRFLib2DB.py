@@ -34,6 +34,7 @@ class syncRFLib2DB():
     }
     res = requests.post(url, headers=headers,data=json.dumps(data))
     response = res.json()
+    print(response)
     return response['content']['id']
 
   def uploadKeywords(self,libId, keywords):
@@ -65,7 +66,7 @@ if __name__ == '__main__':
   # python -m robot.libdoc SeleniumLibrary SeleniumLibrary.html
   # isDefault定义是否为RF的默认库，默认库不需要引入项目
   # 1.默认库 2.自定义库
-  isDefault = 2
+  isDefault = 1
   syncRFLib2DB = syncRFLib2DB()
   libId = syncRFLib2DB.uploadLib(libdoc['name'],isDefault)
   syncRFLib2DB.uploadKeywords(libId,libdoc['keywords'])

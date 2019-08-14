@@ -17,9 +17,17 @@ def encrypt_name(name, salt=None, encryptlop=30):
 
 @case.before_request
 def is_login():  # 判断是否登录
+  url = request.path
+  white_list = [
+    u'/api/UAT/case/uploadLib',
+    u'/api/UAT/case/uploadKeyword',
+  ]
+  if url not in white_list:
     if not session.get("user_id"):
-        # 重定向到登录页面
-        return make_response(jsonify({'code': 99999, 'content': None, 'msg': u'请先登录!'}))
+      # 重定向到登录页面
+      return make_response(jsonify({'code': 99999, 'content': None, 'msg': u'请先登录!'}))
+  else:
+    pass
 
 def saveBase64ToImage(base64Byte):
   fileHash = encrypt_name('testestest')

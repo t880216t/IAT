@@ -93,6 +93,25 @@ class Interface extends Component {
     } else {
       this.queryProjectList();
     }
+    document.addEventListener('mouseup', event => this.checkClickElement(event), false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('mouseup', event => this.checkClickElement(event), false);
+  }
+
+  checkClickElement=event => {
+    if (this.state.rightClickItem !== null) {
+      try {
+        if (document.getElementById('right_menu')) {
+          if (event.target.compareDocumentPosition(document.getElementById('right_menu')) !== 10) {
+            this.setState({ rightClickItem: null });
+          }
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    }
   }
 
   getNodeTreeMenu() {
@@ -108,7 +127,7 @@ class Interface extends Component {
 
     const menu =
       noteType === 1 ? (
-        <Menu onClick={this.handleRightMenuClick} style={tmpStyle} className={styles.RightMenu}>
+        <Menu id="right_menu" onClick={this.handleRightMenuClick} style={tmpStyle} className={styles.RightMenu}>
           <Menu.Item key="1">
             <Icon type="plus-circle" />
             {'添加用例'}
@@ -123,7 +142,7 @@ class Interface extends Component {
           </Menu.Item>
         </Menu>
       ) : (
-        <Menu onClick={this.handleRightMenuClick} style={tmpStyle} className={styles.RightMenu}>
+        <Menu id="right_menu" onClick={this.handleRightMenuClick} style={tmpStyle} className={styles.RightMenu}>
           <Menu.Item key="5">
             <Icon type="copy" />
             {'复制用例'}
