@@ -65,6 +65,7 @@ nav:
       - 'ui_case.md'
       - 'ui_task.md'
       - 'ui_version.md'
+      - 'ui_proxy.md'
       - 'ui_library.md'
   - 'Api 接口自动化':
       - 'api-case.md'
