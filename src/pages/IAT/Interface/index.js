@@ -40,7 +40,6 @@ const { TextArea } = Input;
   iatSystem,
   interfaceCase,
   loading: loading.effects['interfaceCase/queryTreeInfo'],
-  debugLoading: loading.effects['interfaceCase/queryDebugSample'],
 }))
 class Interface extends Component {
   // 构造
@@ -344,7 +343,7 @@ class Interface extends Component {
         },
         () => {
           if (caseId) {
-            this.querySampleInfo(caseId, true);
+            // this.querySampleInfo(caseId, true);
           } else {
             const localStorage = getTage();
             if (localStorage) {
@@ -356,21 +355,6 @@ class Interface extends Component {
           }
         },
       );
-    });
-  };
-
-  queryExtractList = projectId => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'interfaceCase/queryExtractList',
-      payload: {
-        id: projectId,
-      },
-    }).then(() => {
-      const { interfaceCase } = this.props;
-      this.setState({
-        extractList: interfaceCase.extractList,
-      });
     });
   };
 
@@ -398,57 +382,6 @@ class Interface extends Component {
     });
   };
 
-  querySampleInfo = (id, isRef = false) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'interfaceCase/querySampleInfo',
-      payload: {
-        id,
-      },
-    }).then(() => {
-      const { interfaceCase } = this.props;
-      if (interfaceCase.sampleInfo) {
-        this.setState(
-          {
-            info: interfaceCase.sampleInfo,
-            selectNoteType: 2,
-            infoName: interfaceCase.sampleInfo.name,
-            project: interfaceCase.sampleInfo.projectId,
-          },
-          () => {
-            if (isRef) {
-              setTage({ projectId: this.state.project });
-              this.queryTreeList(this.state.project, true);
-              this.queryExtractList(this.state.project);
-            }
-          },
-        );
-      } else {
-        this.setState({
-          info: {
-            name: '',
-            path: '',
-            method: 'GET',
-            paramType: 1,
-            params: [],
-            asserts: {
-              assertsType: 1,
-              assertData: [],
-            },
-            extract: {
-              extractType: 0,
-              extractData: [],
-            },
-            preShellType: 0,
-            preShellData: '',
-            postShellType: 0,
-            postShellData: '',
-          },
-        });
-      }
-    });
-  };
-
   queryTreeInfo = id => {
     const { dispatch } = this.props;
     dispatch({
@@ -468,7 +401,6 @@ class Interface extends Component {
     this.setState({ project: value }, () => {
       setTage({ projectId: this.state.project });
       this.queryTreeList(value);
-      this.queryExtractList(value);
     });
   };
 
@@ -500,10 +432,6 @@ class Interface extends Component {
         },
         () => {
           this.queryTreeInfo(this.state.selectedKeys[0]);
-          if (this.state.selectNoteType === 2) {
-            this.querySampleInfo(this.state.selectedKeys[0]);
-            this.queryExtractList(this.state.project);
-          }
         },
       );
     }
