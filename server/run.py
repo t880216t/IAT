@@ -6,4 +6,4 @@ def runTimingCheck():
 
 if __name__ == '__main__':
   runTimingCheck()
-  socketio.run(app, debug=False, use_reloader=False)
+  socketio.run(app,host='0.0.0.0',port=5001, debug=False, use_reloader=False)

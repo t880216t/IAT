@@ -109,13 +109,6 @@ $ cd server
 $ python run.py
 ```
 默认是5001端口，可以在server/run.py中自已改下。
-
-??? note "线上部署建议用gunicorn"
-    ```bash
-    $ source server/venv/bin/activate
-    $ pip install gunicorn -i https://pypi.tuna.tsinghua.edu.cn/simple
-    $ gunicorn -w 4 -b 127.0.0.1:5001 run:app
-    ```
     
 ### 配置Nginx反向代理
 
