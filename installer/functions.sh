@@ -116,7 +116,7 @@ function startFlaskServer() {
             echo "启动服务端"
             source server/venv/bin/activate
             cd server
-            python run.py
+            gunicorn -b 0.0.0.0:5001 run:app
             deactivate
         else
             echo -e "\033[31m 5001端口被占用 \033[0m"
