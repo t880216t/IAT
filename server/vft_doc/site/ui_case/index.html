@@ -1,0 +1,756 @@
+
+
+
+
+<!doctype html>
+<html lang="zh" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+      
+      
+      
+        <meta name="lang:clipboard.copy" content="复制">
+      
+        <meta name="lang:clipboard.copied" content="已复制">
+      
+        <meta name="lang:search.language" content="jp">
+      
+        <meta name="lang:search.pipeline.stopwords" content="True">
+      
+        <meta name="lang:search.pipeline.trimmer" content="True">
+      
+        <meta name="lang:search.result.none" content="没有找到符合条件的结果">
+      
+        <meta name="lang:search.result.one" content="找到 1 个符合条件的结果">
+      
+        <meta name="lang:search.result.other" content="# 个符合条件的结果">
+      
+        <meta name="lang:search.tokenizer" content="[\uff0c\u3002]+">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.0.4, mkdocs-material-4.4.0">
+    
+    
+      
+        <title>WEB UI自动化用例 - VFT自动化平台</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application.0284f74d.css">
+      
+        <link rel="stylesheet" href="../assets/stylesheets/application-palette.01803549.css">
+      
+      
+        
+        
+        <meta name="theme-color" content="#3f51b5">
+      
+    
+    
+      <script src="../assets/javascripts/modernizr.74668098.js"></script>
+    
+    
+      
+        <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono&display=fallback">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+    
+    <link rel="stylesheet" href="../assets/fonts/material-icons.css">
+    
+    
+      <link rel="stylesheet" href="../assets/css/custom.css">
+    
+      <link rel="stylesheet" href="../assets/css/simpleLightbox.min.css">
+    
+      <link rel="stylesheet" href="../assets/css/simpleLightbox.css">
+    
+    
+      
+    
+    
+  </head>
+  
+    
+    
+    <body dir="ltr" data-md-color-primary="indigo" data-md-color-accent="green">
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" data-md-component="overlay" for="__drawer"></label>
+    
+      <a href="#web-ui" tabindex="1" class="md-skip">
+        跳转至
+      </a>
+    
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href=".." title="VFT自动化平台" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="__drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            <span class="md-header-nav__topic">
+              VFT自动化平台
+            </span>
+            <span class="md-header-nav__topic">
+              
+                WEB UI自动化用例
+              
+            </span>
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          <label class="md-icon md-icon--search md-header-nav__button" for="__search"></label>
+          
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" placeholder="搜索" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query" data-md-state="active">
+      <label class="md-icon md-search__icon" for="__search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset" tabindex="-1">
+        &#xE5CD;
+      </button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            键入以开始搜索
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+        
+      </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+        
+
+  
+
+<nav class="md-tabs md-tabs--active" data-md-component="tabs">
+  <div class="md-tabs__inner md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  <li class="md-tabs__item">
+    
+      <a href=".." title="简介" class="md-tabs__link">
+        简介
+      </a>
+    
+  </li>
+
+      
+        
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../chromeExtension/" title="WEB UI自动化" class="md-tabs__link md-tabs__link--active">
+          WEB UI自动化
+        </a>
+      
+    </li>
+  
+
+      
+        
+  
+  
+    <li class="md-tabs__item">
+      
+        <a href="../api-case/" title="Api 接口自动化" class="md-tabs__link">
+          Api 接口自动化
+        </a>
+      
+    </li>
+  
+
+      
+        
+      
+    </ul>
+  </div>
+</nav>
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="__drawer">
+    <a href=".." title="VFT自动化平台" class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </a>
+    VFT自动化平台
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="简介" class="md-nav__link">
+      简介
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../install/" title="快速开始" class="md-nav__link">
+      快速开始
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-3" type="checkbox" id="nav-3" checked>
+    
+    <label class="md-nav__link" for="nav-3">
+      WEB UI自动化
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-3">
+        WEB UI自动化
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../chromeExtension/" title="谷歌插件" class="md-nav__link">
+      谷歌插件
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ui_project/" title="WEB UI项目配置" class="md-nav__link">
+      WEB UI项目配置
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="__toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="__toc">
+        WEB UI自动化用例
+      </label>
+    
+    <a href="./" title="WEB UI自动化用例" class="md-nav__link md-nav__link--active">
+      WEB UI自动化用例
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">目录</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" title="用例树结构" class="md-nav__link">
+    用例树结构
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" title="项目全局参数设置" class="md-nav__link">
+    项目全局参数设置
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" title="全局参数" class="md-nav__link">
+    全局参数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" title="全局文件参数" class="md-nav__link">
+    全局文件参数
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" title="新建测试集" class="md-nav__link">
+    新建测试集
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" title="新建用例" class="md-nav__link">
+    新建用例
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ui_task/" title="WEB UI任务配置" class="md-nav__link">
+      WEB UI任务配置
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ui_version/" title="WEB UI用例版本控制" class="md-nav__link">
+      WEB UI用例版本控制
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ui_proxy/" title="WEB UI代理配置管理" class="md-nav__link">
+      WEB UI代理配置管理
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../ui_library/" title="WEB UI自定义库扩展" class="md-nav__link">
+      WEB UI自定义库扩展
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item md-nav__item--nested">
+    
+      <input class="md-toggle md-nav__toggle" data-md-toggle="nav-4" type="checkbox" id="nav-4">
+    
+    <label class="md-nav__link" for="nav-4">
+      Api 接口自动化
+    </label>
+    <nav class="md-nav" data-md-component="collapsible" data-md-level="1">
+      <label class="md-nav__title" for="nav-4">
+        Api 接口自动化
+      </label>
+      <ul class="md-nav__list" data-md-scrollfix>
+        
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../api-case/" title="接口自动化用例" class="md-nav__link">
+      接口自动化用例
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../api-project/" title="接口自动化项目配置" class="md-nav__link">
+      接口自动化项目配置
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../api-task/" title="接口自动化任务配置" class="md-nav__link">
+      接口自动化任务配置
+    </a>
+  </li>
+
+        
+          
+          
+          
+
+
+  <li class="md-nav__item">
+    <a href="../api-plugin/" title="接口自动化扩展" class="md-nav__link">
+      接口自动化扩展
+    </a>
+  </li>
+
+        
+      </ul>
+    </nav>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../about/" title="关于" class="md-nav__link">
+      关于
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">目录</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#_1" title="用例树结构" class="md-nav__link">
+    用例树结构
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_2" title="项目全局参数设置" class="md-nav__link">
+    项目全局参数设置
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#_3" title="全局参数" class="md-nav__link">
+    全局参数
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#_4" title="全局文件参数" class="md-nav__link">
+    全局文件参数
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_5" title="新建测试集" class="md-nav__link">
+    新建测试集
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#_6" title="新建用例" class="md-nav__link">
+    新建用例
+  </a>
+  
+</li>
+      
+      
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="web-ui">WEB UI自动化用例<a class="headerlink" href="#web-ui" title="Permanent link">&para;</a></h1>
+<h2 id="_1">用例树结构<a class="headerlink" href="#_1" title="Permanent link">&para;</a></h2>
+<p><div style="display:flex;flex-direction:row;">
+<img alt="ui" src="../img/tree.png" /></p>
+<ul>
+<li>用例树分为3层，鼠标右键出操作菜单：项目、测试集、测试用例</li>
+<li>默认会有该项目的一个自定义关键词库，可以直接在用例中自动联想</li>
+<li><strong>项目</strong>：可以设置全局参数设置</li>
+<li><strong>测试集</strong>：这里有一点要注意，测试用例中库关键词的搜索联想，是根据这里设置了库来的。比如：这里我指定了seleniumLibrary，用例才会联想到click xxxx关键词。</li>
+<li><strong>测试用例</strong>：用例是业务的最小单元，可以设置关键词的前置、后置处理。语法上和Robotframework没有区别。</li>
+<li><strong>自定义关键词</strong>：可以理解为RF中Keyword，支持入参和返回值。</li>
+</ul>
+</div>
+
+<h2 id="_2">项目全局参数设置<a class="headerlink" href="#_2" title="Permanent link">&para;</a></h2>
+<h3 id="_3">全局参数<a class="headerlink" href="#_3" title="Permanent link">&para;</a></h3>
+<p><img alt="ui" class="img-fluid" src="../img/globalvalue.png" tag="1" /></p>
+<p>全局参数在当前项目下，用例编辑中可以自动联想搜索。</p>
+<p>这里可以看到参数分为2个类型：正式版、测试版</p>
+<p><img alt="ui" class="img-fluid" src="../img/globalsearch.gif" tag="2" /></p>
+<h3 id="_4">全局文件参数<a class="headerlink" href="#_4" title="Permanent link">&para;</a></h3>
+<p>测试流程中，上传图片是我们常见需求。这里我们通过上传测试文件到服务端，在生成用例时把服务端的文件路径写入全局参数中，通过“<strong>Choose File</strong>”关键词使用。</p>
+<p><img alt="ui" src="../img/globalFileUp.png" />
+<img alt="ui" class="img-fluid" src="../img/globalFile.png" tag="3" /></p>
+<p>用例示范：
+<img alt="ui" class="img-fluid" src="../img/upfileCase.png" tag="4" /></p>
+<h2 id="_5">新建测试集<a class="headerlink" href="#_5" title="Permanent link">&para;</a></h2>
+<p>右键项目节点，可以为其新建测试集。<br />
+<img alt="ui" src="../img/treeProject.png" /></p>
+<p>右键测试集，可对其进行删除等操作。<br />
+<img alt="ui" src="../img/treeSuite.png" /></p>
+<blockquote>
+<p>测试集有用例时，无法直接删除。</p>
+</blockquote>
+<h2 id="_6">新建用例<a class="headerlink" href="#_6" title="Permanent link">&para;</a></h2>
+<p>右键测试集，可以为其生成测试用例。<br />
+右键测试用例，可对其进行删除等操作。<br />
+<img alt="ui" src="../img/treeCase.png" /></p>
+<blockquote>
+<p>同一个测试集的测试用例，最终会生成一个xxx.robot的测试文件。<br />建议分清业务模块，不要集中在一个测试集里。</p>
+</blockquote>
+                
+                  
+                
+              
+              
+                
+
+
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../ui_project/" title="WEB UI项目配置" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  上一页
+                </span>
+                WEB UI项目配置
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../ui_task/" title="WEB UI任务配置" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  下一页
+                </span>
+                WEB UI任务配置
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright © 2019 Orion-c
+          </div>
+        
+        powered by
+        <a href="https://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application.245445c6.js"></script>
+      
+        
+        
+          
+          <script src="../assets/javascripts/lunr/lunr.stemmer.support.js"></script>
+          
+            
+              
+              
+            
+          
+          
+        
+      
+      <script>app.initialize({version:"1.0.4",url:{base:".."}})</script>
+      
+        <script src="../assets/js/jquery-3.2.1.min.js"></script>
+      
+        <script src="../assets/js/simpleLightbox.min.js"></script>
+      
+        <script src="../assets/js/simpleLightbox.js"></script>
+      
+        <script src="../assets/js/custom.js"></script>
+      
+    
+  </body>
+</html>

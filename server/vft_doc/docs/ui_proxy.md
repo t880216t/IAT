@@ -9,7 +9,7 @@
 
 点击“添加代理”<br />
 
-![ui](/img/proxyadd.png)
+![ui](img/proxyadd.png)
 
 这里目前是开放了2个浏览器：火狐、谷歌。根据浏览器需要制定不同的配置。
 

@@ -19,6 +19,6 @@
 访问时，如果起的有端口，需要有域名加端口。
 
 ## **快捷使用**
-![chromeExtension](/img/chromeExtension.gif){.img-fluid tag=1}
+![chromeExtension](img/chromeExtension.gif){.img-fluid tag=1}
 
 插件不是必须的，只是为了更加简化用例编写，看个人需要使用。

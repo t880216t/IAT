@@ -6,7 +6,7 @@
 
 流程图如下：
 
-![ui](/img/versionProcess.png){.img-fluid tag=1}
+![ui](img/versionProcess.png){.img-fluid tag=1}
 
 ## 操作示例
-![ui](/img/version.gif){.img-fluid tag=2}
+![ui](img/version.gif){.img-fluid tag=2}

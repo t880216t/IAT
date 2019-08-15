@@ -4,7 +4,7 @@
 ## 新建项目
 点击“新建项目”，输入项目名称创建项目。
 
-![addproject](/img/addproject.png)
+![addproject](img/addproject.png)
 
 ## 项目信息
 

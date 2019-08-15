@@ -2,7 +2,7 @@
 
 ## 用例树结构
 <div style="display:flex;flex-direction:row;">
-![ui](/img/apitree.png)
+![ui](img/apitree.png)
 
 - 用例树分为3层，鼠标右键出操作菜单：项目、模块分类、测试用例
 - **项目**：在此设置[**全局参数设置**](/api-case/#_3)
@@ -14,12 +14,12 @@
 ## 项目全局参数设置
 ### 全局参数
 
-![ui](/img/globalvalue.png){.img-fluid tag=1}
+![ui](img/globalvalue.png){.img-fluid tag=1}
 
 全局参数在当前项目下，用例编辑中可以自动联想搜索。<br/>
 这里参数分为2个类型：正式版、测试版
 
-![ui](/img/values.gif){.img-fluid tag=2}
+![ui](img/values.gif){.img-fluid tag=2}
 
 ## 请求设置
 
@@ -41,20 +41,20 @@
 
 **响应断言**：<br/>对应Jmeter中的响应文本断言，断言响应的文本中是否存在指定字符。支持多组文本断言。
 
-**JSON断言**：<br/> ![ui](/img/assertjson.png) <br/>键值对形势，支持多组断言，注意返回值需为json格式数据。 <br/>key: 要校验的返回值路径，如：`data[0].name`  <br/>value: 值应该是什么，如：`test1`
+**JSON断言**：<br/> ![ui](img/assertjson.png) <br/>键值对形势，支持多组断言，注意返回值需为json格式数据。 <br/>key: 要校验的返回值路径，如：`data[0].name`  <br/>value: 值应该是什么，如：`test1`
 
 ## 参数化设置
 
 默认不提取当前返回值做参数化，支持JSON路径提取、正则提取：
 
 ### **JSON提取**
-<br/>如果是列表根据下标获取，支持多组数据提取。<br/> ![ui](/img/jsonExt.png) <br/>
+<br/>如果是列表根据下标获取，支持多组数据提取。<br/> ![ui](img/jsonExt.png) <br/>
 
 ### **正则提取**
-<br/>如果有多个匹配结果，默认取的第一个，支持多组数据提取。<br/> ![ui](/img/reExt.png)
+<br/>如果有多个匹配结果，默认取的第一个，支持多组数据提取。<br/> ![ui](img/reExt.png)
 
 ## 调试用例
 
 这个功能主要是为了写用例时，对当前用例进行调试验证用的，改变了原来用request模拟的方式，现在调试也用的Jmeter执行用例。
 
-![ui](/img/debug.gif){.img-fluid tag=3}
+![ui](img/debug.gif){.img-fluid tag=3}
