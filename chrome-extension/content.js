@@ -1,6 +1,9 @@
 /* global document chrome scanner */
 const strategyList = ['for', 'name', 'id', 'title', 'href', 'class', 'index'];
 let clickedEl = null;
+const MOUSE_VISITED_CLASSNAME = 'crx_mouse_visited';
+let prevDOM = null;
+
 
 function getTime() {
     return new Date().getTime();
@@ -34,6 +37,17 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
         // right click
         if (event.button === 2) {
           needGetElement(request.sendTabId, event);
+        }
+      }, false);
+      // 注入鼠标元素事件
+      document.addEventListener('mousemove', (e) => {
+        let srcElement = e.srcElement;
+        if (srcElement.nodeName) {
+          if (prevDOM != null) {
+            prevDOM.setAttribute('style', 'outline: none;background-clip: none;');
+          }
+          srcElement.setAttribute('style', 'outline: 1px dashed #e9af6e!important;background-clip: #bcd5eb!important;');
+          prevDOM = srcElement;
         }
       }, false);
     }

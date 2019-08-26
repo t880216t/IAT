@@ -126,7 +126,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       });
       request.uniqueXPaths.forEach((item, index) => {
         chrome.contextMenus.create({
-          title: beautySub(item.path, 20),
+          title: beautySub(item.path, 30),
           parentId: 'get-element',
           id: `get-sub-id-${index}`,
           contexts: ['all'],

@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Web元素捕手",
   "description": "一款配合UI Auto Test的元素获取插件，请注意这个插件无法单独使用，需配合UAT网页端使用。",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "icons": {
     "16": "image/icon-16.png",
     "128": "image/icon-128.png"
