@@ -29,7 +29,7 @@ $ git clone -b VictorinoxForTest https://github.com/t880216t/IAT my-project
 这里我假设你上面环境要求里的软件都已经正确安装，并配置完成环境变量。
 
 ### 方法一：一键安装
-库表导入且配置可用，参考[库表导入](http://127.0.0.1:8000/install/#_9)
+库表导入且配置可用，参考[库表导入](#_9)
 
 项目提供了个简单的shell脚本去安装相关依赖，但前提是你已经有了npm、python、mysql，本工具建议部署在有可视化界面的MAC/Linux机器上。windows可以用gitbash执行该脚本。
 ``` bash
