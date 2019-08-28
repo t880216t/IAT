@@ -7,7 +7,7 @@ import StepList from './CustomKeyword/index';
 const { Search } = Input;
 const { TextArea } = Input;
 
-const targetExtensionId = 'podifkoefcjppjkokchkannclebaeoek'; // 插件的ID
+const targetExtensionId = 'kiboiklhboklmnpblbkaandgcjbccpdg'; // 插件的ID
 
 @connect(({ caseInfo, loading }) => ({
   caseInfo,
@@ -147,7 +147,7 @@ export default class CaseContent extends Component {
             {getFieldDecorator('name', {
               initialValue: keywordInfo.name || undefined,
             })(
-              <Input onBlur={() => this.handleValueChange()}/>,
+              <Input style={{ width: 400 }} onBlur={() => this.handleValueChange()}/>,
             )}
           </Form.Item>
           <Form.Item label="传入参数" labelAlign="left" >

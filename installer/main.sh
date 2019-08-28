@@ -9,11 +9,10 @@ options=(
     "init (i): 初始化完整安装启动项目"        # 1
     "dev-check (c): 开发环境检查配置"        # 2
     "pull (u): 更新当前项目"                # 3
-    "reset (r): 重置 & 清理当前项目"         # 4
-    "build (b): 编译当前项目"               # 5
-    "db (d): 自动导入数据结构"              # 6
-    "run (run): 启动或重启当前服务"          # 7
-    "quit: 退出此菜单"                      # 8
+    "build (b): 编译当前项目"               # 4
+    "db (d): 自动导入数据结构"              # 5
+    "run (run): 启动或重启当前服务"          # 6
+    "quit: 退出此菜单"                      # 7
     )
 
 function _switch() {
@@ -30,19 +29,16 @@ function _switch() {
         ""|"u"|"pull"|"3")
             fetchCode
             ;;
-        ""|"r"|"reset"|"4")
-            inst_resetRepo
-            ;;
-        ""|"b"|"build"|"5")
+        ""|"b"|"build"|"4")
             buildProject
             ;;
-        ""|"d"|"db"|"6")
-            bash "$AC_PATH_APPS/db_assembler/db_assembler.sh" $_opt
+        ""|"d"|"db"|"5")
+            importDB
             ;;
-        ""|"run"|"run"|"7")
+        ""|"run"|"run"|"6")
             startService
             ;;
-        ""|"quit"|"8")
+        ""|"quit"|"7")
             echo "再见!"
             exit
             ;;

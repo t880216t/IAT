@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
 function inst_allInOne() {
-    inst_configureOS
-    inst_cnpm
+#    inst_configureOS
+#    inst_cnpm
 #    initNodeModules
-    initPythonEnv
+#    initPythonEnv
+#    configMysql
+    checkMysqlClient
 }
 
 function startService() {
@@ -67,7 +69,6 @@ function initPythonEnv() {
     else
         echo "文件夹不存在"
     fi
-#    pip3 install pyvenv -i https://pypi.tuna.tsinghua.edu.cn/simple
     pyvenv server/venv
     source server/venv/bin/activate
     pip install -r server/requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
@@ -91,11 +92,11 @@ function checkJmeter() {
     fi
 }
 
-function checkNode() {
-    if  command -v npm > /dev/null; then
-        echo -e "\033[32m npm环境可用 \033[0m"
+function checkMysqlClient() {
+    if  command -v mysql > /dev/null; then
+        echo -e "\033[32m mysql命令可用 \033[0m"
     else
-        echo -e "\033[31m 未检查到npm环境 \033[0m"
+        echo -e "\033[31m 未检查到mysql命令可用 \033[0m"
     fi
 }
 
@@ -107,6 +108,50 @@ function checkNode() {
     fi
 }
 
+function configMysql() {
+  read -p "mysql host (default:127.0.0.1):" host
+  if [ -z "${host}" ];then
+    host="127.0.0.1"
+  fi
+  read -p "mysql port (default:3306):" port
+  if [ -z "${port}" ];then
+    port="3306"
+  fi
+  read -p "mysql user:" user
+  read -p "mysql password:" password
+  read -p "db name :" db_name
+  echo "########## mysql config ############"
+  echo "# host: ${host}"
+  echo "# port: ${port}"
+  echo "# user: ${user}"
+  echo "# password: ${password}"
+  echo "# db name: ${db_name}"
+  echo "####################################"
+  config="${user}:${password}@${host}:${port}/${db_name}"
+  sed -i "s|root:root@127.0.0.1:3306\/IAT|$config|g" server/app/__init__.py
+}
+
+function importDB(){
+  read -p "mysql host (default:127.0.0.1):" host
+  if [ -z "${host}" ];then
+    host="127.0.0.1"
+  fi
+  read -p "mysql port (default:3306):" port
+  if [ -z "${port}" ];then
+    port="3306"
+  fi
+  read -p "mysql user:" user
+  read -p "mysql password:" password
+  read -p "db name :" db_name
+  echo "########## mysql config ############"
+  echo "# host: ${host}"
+  echo "# port: ${port}"
+  echo "# user: ${user}"
+  echo "# password: ${password}"
+  echo "# db name: ${db_name}"
+  echo "####################################"
+  mysql -u ${user} -p ${password} -h ${host} -P ${port} vvv < server/db/vft.sql
+}
 
 function startFlaskServer() {
     if [ -d "server/venv" ];then

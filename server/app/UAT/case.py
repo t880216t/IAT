@@ -193,7 +193,7 @@ def caseData():
 @case.route('/treeList', methods=['GET'])
 def treeList():
   id = request.values.get("id")
-  listData = Tree.query.filter(db.and_(Tree.project_id == id)).order_by(db.asc(Tree.index_id)).all()
+  listData = Tree.query.filter(db.and_(Tree.project_id == id)).order_by(db.asc(Tree.name)).all()
   def getChild(pid):
     result = []
     for obj in listData:
@@ -212,7 +212,7 @@ def treeList():
 @case.route('/caseTreeList', methods=['GET'])
 def caseTreeList():
   id = request.values.get("id")
-  listData = Tree.query.filter(db.and_(Tree.project_id == id, Tree.type.notin_([3,4]))).order_by(db.asc(Tree.index_id)).all()
+  listData = Tree.query.filter(db.and_(Tree.project_id == id, Tree.type.notin_([3,4]))).order_by(db.asc(Tree.name)).all()
   def getChild(pid):
     result = []
     for obj in listData:

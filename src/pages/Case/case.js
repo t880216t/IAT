@@ -9,7 +9,7 @@ import Zmage from 'react-zmage';
 const { Search, TextArea } = Input;
 const { Step } = Steps;
 
-const targetExtensionId = 'podifkoefcjppjkokchkannclebaeoek'; // 插件的ID
+const targetExtensionId = 'kiboiklhboklmnpblbkaandgcjbccpdg'; // 插件的ID
 
 @connect(({ caseInfo, loading }) => ({
   caseInfo,
@@ -62,12 +62,13 @@ export default class CaseContent extends Component {
     return false;
   }
 
-  componentWillUnmount() {
+  componentDidUnMount() {
     this.socket.disconnect();
     this.socket.on('disconnect', () => {
       console.log('关闭连接');
     });
   }
+
 
   handleTestWebSite=url => {
     if (!url) {
@@ -248,7 +249,7 @@ export default class CaseContent extends Component {
             {getFieldDecorator('name', {
               initialValue: caseData.name || undefined,
             })(
-              <Input onBlur={() => this.handleValueChange()} />,
+              <Input style={{ width: 400 }} onBlur={() => this.handleValueChange()} />,
             )}
           </Form.Item>
           <Form.Item label="前置处理" labelAlign="left" >
