@@ -92,6 +92,17 @@ export default class EditCell extends Component {
     }
   }
 
+  beautySub = (str, len) => {
+    if (str) {
+      const cnReg = /[\u4e00-\u9fa5]/g; // 匹配中文
+      const slice = str.substring(0, len);
+      const chineseCharNum = (~~(slice.match(cnReg) && slice.match(cnReg).length));
+      const realen = slice.length * 2 - chineseCharNum;
+      return str.substr(0, realen) + (realen < str.length ? '...' : '');
+    }
+    return ''
+  }
+
   queryGetStepIndexDesc = (stepId, stepIndex) => {
     const { dispatch } = this.props;
     dispatch({
@@ -281,10 +292,10 @@ export default class EditCell extends Component {
             <div
               onMouseOver={() => this.handleMouseOver(record.id, dataIndex)}
             >
-              <Popover placement="bottomLeft" title={record[dataIndex]} content={fetchingDesc ? <Spin size="small" /> : this.getStepDesc(stepDoc)} trigger="hover">
+              <Popover placement="bottomLeft" title={this.beautySub(record[dataIndex], 30)} content={fetchingDesc ? <Spin size="small" /> : this.getStepDesc(stepDoc)} trigger="hover">
                 <div
                   className={styles['editable-cell-value-wrap']}
-                  style={{ minWidth: 50 }}
+                  style={{ minWidth: 50, wordWrap: 'break-word', wordBreak: 'break-all' }}
                   onClick={this.toggleEdit}
                 >
                   {record[dataIndex]}
