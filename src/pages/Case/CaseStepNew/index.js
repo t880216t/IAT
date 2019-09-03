@@ -115,7 +115,6 @@ export default class CaseStep extends Component {
   queryListData=caseId => {
     this.refuesPage();
     const { dispatch, versionId } = this.props;
-    console.log('versionId', versionId)
     dispatch({
       type: 'caseInfo/queryCaseData',
       payload: {
@@ -126,7 +125,7 @@ export default class CaseStep extends Component {
       .then(() => {
         const { caseData } = this.props.caseInfo;
         this.setState({
-          caseSteps: caseData.caseStep,
+          caseSteps: caseData ? caseData.caseStep :[],
         }, () => {
           this.setState({ caseSteps: caseData.caseStep.concat([{ id: 'empty', values: ['', '', ''] }]) }, () => [
             this.dsyncColumns(),

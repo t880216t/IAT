@@ -394,7 +394,7 @@ CREATE TABLE `uat_task` (
   `value_type` smallint(6) DEFAULT NULL COMMENT '1.正式版 2.测试版',
   `browser_type` smallint(6) DEFAULT NULL COMMENT '1.firefox 2.chrome',
   `proxy_type` int(11) DEFAULT NULL,
-  `task_log` text,
+  `task_log` longtext,
   `version_id` int(11) DEFAULT NULL,
   `host` text,
   PRIMARY KEY (`id`)
@@ -407,7 +407,7 @@ DROP TABLE IF EXISTS `uat_tim_task_log`;
 CREATE TABLE `uat_tim_task_log` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `task_id` int(11) DEFAULT NULL,
-  `task_log` text,
+  `task_log` longtext,
   `excute_date` varchar(500) DEFAULT NULL,
   `add_time` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)

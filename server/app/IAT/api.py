@@ -953,7 +953,7 @@ def addGlobalValues():
   try:
     projectId = Tree.query.filter_by(id = projectTreeId).first().project_id
     rowData = GlobalValues.query.filter(db.and_(GlobalValues.key_name == keyName,GlobalValues.project_id == projectId)).first()
-    if rowData:
+    if rowData and keyName:
       return make_response(jsonify({'code': 10002, 'content': None, 'msg': u'关键词名称重复!'}))
     data = GlobalValues(keyName, keyValue, projectId, user_id, valueType, caseId)
     db.session.add(data)
