@@ -333,9 +333,10 @@ def set_data(tree,data, isDebug=False, taskRootDir=None):
   ThreadGroup.set('testname', data["testname"])
 
   # 全局参数设置
-  UserParameters = UserParametersSet(data["globalValues"])
-  ThreadGroupHashTree.append(UserParameters)
-  ET.SubElement(ThreadGroupHashTree, 'hashTree')
+  if data["globalValues"]:
+    UserParameters = UserParametersSet(data["globalValues"])
+    ThreadGroupHashTree.append(UserParameters)
+    ET.SubElement(ThreadGroupHashTree, 'hashTree')
 
   # 设置请求headers默认参数
   HeaderManager = headerManager(data["headers"])
@@ -564,7 +565,7 @@ def runScript(task_id):
     try:
       resultContent = readResult(reulstPath, isDebug=True)
       updateTaskResult(task_id, resultContent, "upload result")
-      clear_project_file('taskFile/' + taskRootPath)
+      # clear_project_file('taskFile/' + taskRootPath)
     except Exception as e:
       print(e)
       setTaskStatus(task_id, 5, "task fail,please check jmeter env")

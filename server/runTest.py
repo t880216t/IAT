@@ -333,9 +333,10 @@ def set_data(tree,data, isDebug=False, taskRootDir=None):
   ThreadGroup.set('testname', data["testname"])
 
   # 全局参数设置
-  UserParameters = UserParametersSet(data["globalValues"])
-  ThreadGroupHashTree.append(UserParameters)
-  ET.SubElement(ThreadGroupHashTree, 'hashTree')
+  if data["globalValues"]:
+    UserParameters = UserParametersSet(data["globalValues"])
+    ThreadGroupHashTree.append(UserParameters)
+    ET.SubElement(ThreadGroupHashTree, 'hashTree')
 
   # 设置请求headers默认参数
   HeaderManager = headerManager(data["headers"])
