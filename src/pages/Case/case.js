@@ -9,7 +9,7 @@ import Zmage from 'react-zmage';
 const { Search, TextArea } = Input;
 const { Step } = Steps;
 
-const targetExtensionId = 'kiboiklhboklmnpblbkaandgcjbccpdg'; // 插件的ID
+const targetExtensionId = 'podifkoefcjppjkokchkannclebaeoek'; // 插件的ID
 
 @connect(({ caseInfo, loading }) => ({
   caseInfo,
