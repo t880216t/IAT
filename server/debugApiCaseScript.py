@@ -565,7 +565,7 @@ def runScript(task_id):
     try:
       resultContent = readResult(reulstPath, isDebug=True)
       updateTaskResult(task_id, resultContent, "upload result")
-      # clear_project_file('taskFile/' + taskRootPath)
+      clear_project_file('taskFile/' + taskRootPath)
     except Exception as e:
       print(e)
       setTaskStatus(task_id, 5, "task fail,please check jmeter env")
