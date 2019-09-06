@@ -68,7 +68,7 @@ def iatTaskList(message):
   listData = IATTask.query.filter(db.and_(IATTask.task_type == taskType, )).order_by(db.desc(IATTask.add_time)).all()
   content = []
   for task in listData:
-    row_data = users.query.filter(db.and_(users.id == IATTask.user_id)).first()
+    row_data = users.query.filter(db.and_(users.id == task.user_id)).first()
     username = ""
     if row_data:
       username = row_data.username

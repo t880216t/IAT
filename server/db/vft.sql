@@ -46,7 +46,7 @@ CREATE TABLE `iat_case_info` (
   `extract_type` smallint(6) DEFAULT NULL,
   `add_time` timestamp NULL DEFAULT NULL,
   `user_id` int(11) DEFAULT NULL,
-  `body_data` varchar(4000) DEFAULT NULL,
+  `body_data` longtext,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
