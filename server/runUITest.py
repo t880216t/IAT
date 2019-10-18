@@ -356,7 +356,7 @@ def dockerExcuteScript(projectDir, taskRootPath, host):
     time.sleep(1)
 
 def excuteScript(projectDir):
-  cmd = 'robot --outputdir {projectDir} {projectDir}'.format(projectDir=projectDir)
+  cmd = 'pabot --processes 10 --outputdir {projectDir} {projectDir}'.format(projectDir=projectDir)
   os.system(cmd)
 
 def GetMiddleStr(content, startStr, endStr):

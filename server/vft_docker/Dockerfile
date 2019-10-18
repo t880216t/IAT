@@ -39,7 +39,7 @@ wait $ff' > /usr/bin/headless-firefox \
  && chmod a+x /usr/bin/headless-chrome \
  && chmod a+x /usr/bin/headless-firefox \
  ## Install robotFramework and deps
- && pip install robotframework robotframework-seleniumlibrary robotframework-faker webdrivermanager \
+ && pip install robotframework robotframework-seleniumlibrary robotframework-pabot robotframework-faker webdrivermanager \
  ## Download Browser Drivers
  && webdrivermanager firefox chrome --linkpath /usr/bin
 

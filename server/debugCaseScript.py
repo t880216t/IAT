@@ -255,7 +255,7 @@ def buildCustomKeywordFile(projectDir,customKeywords, keywordRootlibs):
       keywordFile.writelines('\n')
 
 def excuteScript(projectDir):
-  cmd = 'robot --outputdir {projectDir} {projectDir}'.format(projectDir=projectDir)
+  cmd = 'pabot --processes 10 --outputdir {projectDir} {projectDir}'.format(projectDir=projectDir)
   os.system(cmd)
 
 def getKWDomResult(inputNode):
