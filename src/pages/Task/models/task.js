@@ -16,7 +16,7 @@ import { routerRedux } from 'dva/router';
 const TaskModel = {
   namespace: 'task',
   state: {
-    taskList: [],
+    taskList: {},
     treeList: [],
     taskResult: {},
     taskInfo: {},
@@ -44,7 +44,7 @@ const TaskModel = {
       yield put(routerRedux.push(`/task/ui/timing/report?${payload.id}`));
     },
     *queryTaskList({ payload }, { call, put }) {
-      yield put({ type: 'updateState', payload: { taskList: [] } });
+      yield put({ type: 'updateState', payload: { taskList: {} } });
       const response = yield call(queryTaskList, payload);
       if (response) {
         yield put({ type: 'updateState', payload: { taskList: response.content } });

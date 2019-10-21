@@ -84,6 +84,7 @@ class Interface extends Component {
   componentWillMount() {
     const params = this.props.location.search;
     if (params.indexOf('?') !== -1) {
+      console.log('xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx')
       const caseId = params.substr(1);
       if (caseId) {
         this.setState({ caseId, selectNoteId: caseId });

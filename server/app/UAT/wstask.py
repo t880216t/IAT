@@ -41,8 +41,17 @@ def iatTaskInfo(message):
 @socketio.on('taskList',namespace='/wstask')
 def get_connect(message):
   taskType = message['taskType']
-  listData = Task.query.filter(db.and_(Task.task_type == taskType, )).order_by(db.desc(Task.add_time)).all()
-  content = []
+  pageNum = message['pageNum']
+  dataCount = Task.query.filter(db.and_(Task.task_type == taskType, )).count()
+  if pageNum:
+    listData = Task.query.filter(db.and_(Task.task_type == taskType, )).order_by(db.desc(Task.add_time)).slice(
+      (pageNum - 1) * 20, pageNum * 20).all()
+  else:
+    listData = Task.query.filter(db.and_(Task.task_type == taskType, )).order_by(db.desc(Task.add_time)).all()
+  content = {
+    'taskContent': [],
+    'total': dataCount,
+  }
   for task in listData:
     row_data = users.query.filter(db.and_(users.id == task.user_id)).first()
     username = ""
@@ -51,7 +60,7 @@ def get_connect(message):
     update_time = ""
     if task.update_time:
       update_time = task.update_time.strftime('%Y-%m-%d %H:%M:%S')
-    content.append({
+    content['taskContent'].append({
       "id": task.id,
       "name": task.name,
       "runTime": task.run_time,
@@ -65,8 +74,17 @@ def get_connect(message):
 @socketio.on('iatTaskList',namespace='/wstask')
 def iatTaskList(message):
   taskType = message['taskType']
-  listData = IATTask.query.filter(db.and_(IATTask.task_type == taskType, )).order_by(db.desc(IATTask.add_time)).all()
-  content = []
+  pageNum = message['pageNum']
+  dataCount = IATTask.query.filter(db.and_(IATTask.task_type == taskType, )).count()
+  if pageNum:
+    listData = IATTask.query.filter(db.and_(IATTask.task_type == taskType, )).order_by(db.desc(IATTask.add_time)).slice(
+      (pageNum - 1) * 20, pageNum * 20).all()
+  else:
+    listData = IATTask.query.filter(db.and_(IATTask.task_type == taskType, )).order_by(db.desc(IATTask.add_time)).all()
+  content = {
+    'taskContent': [],
+    'total': dataCount,
+  }
   for task in listData:
     row_data = users.query.filter(db.and_(users.id == task.user_id)).first()
     username = ""
@@ -75,7 +93,7 @@ def iatTaskList(message):
     update_time = ""
     if task.update_time:
       update_time = task.update_time.strftime('%Y-%m-%d %H:%M:%S')
-    content.append({
+    content['taskContent'].append({
       "id": task.id,
       "name": task.name,
       "runTime": task.run_time,

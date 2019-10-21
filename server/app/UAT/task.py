@@ -11,11 +11,18 @@ task = Blueprint('task', __name__)
 
 @task.route('/taskList', methods=['POST'])
 def taskList():
-
   user_id = session.get('user_id')
   taskType = request.json.get("taskType")
-  listData = Task.query.filter(db.and_(Task.task_type == taskType, )).order_by(db.desc(Task.add_time)).all()
-  content = []
+  pageNum = request.json.get("pageNum")
+  dataCount = Task.query.filter(db.and_(Task.task_type == taskType, )).count()
+  if pageNum:
+    listData = Task.query.filter(db.and_(Task.task_type == taskType, )).order_by(db.desc(Task.add_time)).slice((pageNum - 1) * 20, pageNum * 20).all()
+  else:
+    listData = Task.query.filter(db.and_(Task.task_type == taskType, )).order_by(db.desc(Task.add_time)).all()
+  content = {
+    'taskContent': [],
+    'total': dataCount,
+  }
   for task in listData:
     row_data = users.query.filter(db.and_(users.id == task.user_id)).first()
     username = ""
@@ -24,7 +31,7 @@ def taskList():
     update_time = ""
     if task.update_time:
       update_time = task.update_time.strftime('%Y-%m-%d %H:%M:%S')
-    content.append({
+    content['taskContent'].append({
       "id": task.id,
       "name": task.name,
       "runTime": task.run_time,

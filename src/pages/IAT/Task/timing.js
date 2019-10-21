@@ -17,7 +17,9 @@ const { Option } = Select;
 }))
 class Timing extends PureComponent {
   state={
-    taskList: [],
+    taskList: {
+      taskContent: []
+    },
   };
 
   componentWillMount() {
@@ -177,7 +179,7 @@ class Timing extends PureComponent {
             loading={loading}
             rowKey="id"
             grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
-            dataSource={[...this.state.taskList, '']}
+            dataSource={[...this.state.taskList.taskContent, '']}
             renderItem={item =>
               (item ? (
                 <List.Item key={item.id}>

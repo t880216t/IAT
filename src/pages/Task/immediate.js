@@ -19,6 +19,7 @@ class Immediate extends PureComponent {
     // 初始状态
     this.state = {
       taskList: [],
+      currentPage: 1,
     };
     this.socket = null;
   }
@@ -56,6 +57,7 @@ class Immediate extends PureComponent {
       type: 'task/queryTaskList',
       payload: {
         taskType: 2,
+        pageNum: this.state.currentPage,
       },
     })
       .then(() => {
@@ -102,7 +104,7 @@ class Immediate extends PureComponent {
       clearTimeout(this.timer);
     }
     this.timer = setInterval(() => {
-      this.socket.emit('taskList', { taskType: 2 }, taskList => {
+      this.socket.emit('taskList', { taskType: 2,pageNum: this.state.currentPage, }, taskList => {
         this.setState({ taskList });
       });
     }, 2000);
@@ -132,8 +134,16 @@ class Immediate extends PureComponent {
     return result;
   };
 
+  handlePageChange = e => {
+    this.setState({
+      currentPage: e.current,
+    },()=>{
+      this.queryTaskList();
+    })
+  }
+
   render() {
-    const { taskList } = this.state;
+    const { taskList, currentPage } = this.state;
     const { loading } = this.props;
     const columns = [{
       title: '任务名称',
@@ -182,7 +192,18 @@ class Immediate extends PureComponent {
               新建任务
             </Button>
           </div>
-          <Table rowKey="id" dataSource={taskList} columns={columns} loading={loading} />
+          <Table
+            rowKey="id"
+            dataSource={taskList.taskContent}
+            columns={columns}
+            loading={loading}
+            pagination={{
+              pageSize: 20,
+              current: currentPage,
+              total: taskList.total,
+            }}
+            onChange={this.handlePageChange}
+          />
         </Card>
       </PageHeaderWrapper>
     );

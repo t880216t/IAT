@@ -17,7 +17,9 @@ const { Option } = Select;
 }))
 class Timing extends PureComponent {
   state={
-    taskList: [],
+    taskList: {
+      taskContent: []
+    },
   };
 
   componentWillMount() {
@@ -147,6 +149,7 @@ class Timing extends PureComponent {
           <span><Icon type="file-done" />  暂无报告</span>
         );
     };
+    const { taskContent } = this.state.taskList;
     return (
       <PageHeaderWrapper title="每日任务列表" content={content}>
         <div className={styles.cardList}>
@@ -154,7 +157,7 @@ class Timing extends PureComponent {
             loading={loading}
             rowKey="id"
             grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
-            dataSource={[...this.state.taskList, '']}
+            dataSource={[...taskContent, '']}
             renderItem={item =>
               (item ? (
                 <List.Item key={item.id}>
