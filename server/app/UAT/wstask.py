@@ -74,7 +74,10 @@ def get_connect(message):
 @socketio.on('iatTaskList',namespace='/wstask')
 def iatTaskList(message):
   taskType = message['taskType']
-  pageNum = message['pageNum']
+  try:
+    pageNum = message['pageNum']
+  except:
+    pageNum = None
   dataCount = IATTask.query.filter(db.and_(IATTask.task_type == taskType, )).count()
   if pageNum:
     listData = IATTask.query.filter(db.and_(IATTask.task_type == taskType, )).order_by(db.desc(IATTask.add_time)).slice(
