@@ -1,12 +1,12 @@
 #!venv/bin/python
 #-*-coding:utf-8-*-
-import os, json, binascii, hashlib, shutil, zipfile, sys, re, time
+import os, json, binascii, hashlib, shutil, zipfile, sys, re, time, random
 from flask_script import Manager
 from app.tables.UAT import TimTaskLog,Tree,CaseInfo,CaseStep,CaseLibs,HomeDayExcuteCount,CaseProjectSetting,Task, GlobalValues, ProxyConfig, FailCaseLog, ProjectFile
 from app import app,db
-from datetime import datetime
 from xml.dom.minidom import parse
 import xml.dom.minidom
+from datetime import datetime
 
 manager = Manager(app)
 
@@ -16,6 +16,9 @@ def encrypt_name(name, salt=None, encryptlop=30):
   for i in range(encryptlop):
     name = hashlib.sha1(str(name + salt).encode('utf-8')).hexdigest()
   return name
+
+def tid_maker():
+	return '{0:%Y%m%d%H%M%S%f}'.format(datetime.now())+''.join([str(random.randint(1,10)) for i in range(5)])
 
 #清除文件
 def clear_project_file(project_path):
@@ -413,10 +416,11 @@ def alasyRootLog(taskInfo, projectDir, taskRootPath):
                           capture = GetMiddleStr(capture, 'href="', '"><img')
                           if capture:
                             taskOutCapPath = app.root_path + '/static/output/' + taskRootPath
+                            newCapPaht = tid_maker() + ".png"
                             if not os.path.exists(taskOutCapPath):
                               os.makedirs(taskOutCapPath)
-                            shutil.copy(projectDir + '/' + capture, taskOutCapPath + '/' +capture)
-                            stepInfo['capture'] = 'static/output/' + taskRootPath + '/' + capture
+                            shutil.copy(projectDir + '/' + capture, taskOutCapPath + '/' +newCapPaht)
+                            stepInfo['capture'] = 'static/output/' + taskRootPath + '/' + newCapPaht
                   caseSteps.append(stepInfo)
                 case['caseSteps'] = caseSteps
               testCase.append(case)
