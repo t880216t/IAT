@@ -30,5 +30,8 @@ def saveListToDB(imgList):
       print('添加：%s' % img)
 
 if __name__ == '__main__':
-  imgList = getImageList()
-  saveListToDB(imgList)
+  try:
+    imgList = getImageList()
+    saveListToDB(imgList)
+  except:
+    print("get back fail")
