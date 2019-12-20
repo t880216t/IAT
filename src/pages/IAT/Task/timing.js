@@ -1,103 +1,111 @@
 import React, { PureComponent } from 'react';
 import {
-  List, Tree, Select, Icon, Popconfirm, message, Input, Card, Divider, TimePicker, Button, Switch, Spin
+  List,
+  Tree,
+  Select,
+  Icon,
+  Popconfirm,
+  message,
+  Input,
+  Card,
+  Divider,
+  TimePicker,
+  Button,
+  Switch,
+  Spin,
 } from 'antd';
 import { connect } from 'dva';
 import moment from 'moment';
 
 import { PageHeaderWrapper } from '@ant-design/pro-layout';
-import styles from './index.less'
+import styles from './index.less';
 
 const { Option } = Select;
 
 @connect(({ iatSystem, iatTask, loading }) => ({
   iatSystem,
   iatTask,
-  loading: loading.effects['task/queryTaskList']
+  loading: loading.effects['task/queryTaskList'],
 }))
 class Timing extends PureComponent {
-  state={
+  state = {
     taskList: {
-      taskContent: []
+      taskContent: [],
     },
   };
 
   componentWillMount() {
-    this.queryTaskList()
+    this.queryTaskList();
   }
 
-  queryTaskList=() => {
+  queryTaskList = () => {
     const { dispatch } = this.props;
     dispatch({
       type: 'iatTask/queryTaskList',
       payload: {
         taskType: 2,
-      }
-    })
-      .then(() => {
-        const { taskList } = this.props.iatTask;
-        this.setState({ taskList })
-      })
+      },
+    }).then(() => {
+      const { taskList } = this.props.iatTask;
+      this.setState({ taskList });
+    });
   };
 
-  handleAddTask=() => {
+  handleAddTask = () => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'iatTask/goTimAddPage'
-    })
+      type: 'iatTask/goTimAddPage',
+    });
   };
 
-  handleStateChange=(checked, id) => {
+  handleStateChange = (checked, id) => {
     if (checked) {
-      this.handleRunTask(id)
+      this.handleRunTask(id);
     } else {
-      this.querySetTaskStatus(id, 4)
+      this.querySetTaskStatus(id, 4);
     }
   };
 
-  handleRunTask=id => {
+  handleRunTask = id => {
     const { dispatch } = this.props;
     dispatch({
       type: 'iatTask/queryTaskExcute',
       payload: {
         id,
-      }
-    })
-      .then(() => {
-        this.queryTaskList()
-      })
+      },
+    }).then(() => {
+      this.queryTaskList();
+    });
   };
 
-  handleTimeChange=(id, e) => {
-    const runTime = moment(e).format('HH:mm')
+  handleTimeChange = (id, e) => {
+    const runTime = moment(e).format('HH:mm');
     const { dispatch } = this.props;
     dispatch({
       type: 'iatTask/queryUpdateRunTime',
       payload: {
         id,
         runTime,
-      }
-    })
-      .then(() => {
-        this.queryTaskList()
-      })
-  }
+      },
+    }).then(() => {
+      this.queryTaskList();
+    });
+  };
 
-  querySetTaskStatus=(id, status) => {
+  querySetTaskStatus = (id, status) => {
     const { dispatch } = this.props;
     dispatch({
       type: 'iatTask/querySetTaskStatus',
       payload: {
         id,
         status,
-      }
-    })
-      .then(() => {
-        this.queryTaskList()
-      })
+      },
+    }).then(() => {
+      this.queryTaskList();
+    });
   };
 
-  handleGoReport= id => {
+  handleGoReport = id => {
     const { dispatch } = this.props;
     dispatch({
       type: 'iatTask/goTimReportPage',
@@ -105,26 +113,23 @@ class Timing extends PureComponent {
     });
   };
 
-  handleDelTask=id => {
+  handleDelTask = id => {
     const { dispatch } = this.props;
     dispatch({
       type: 'iatTask/queryTaskDelete',
       payload: {
         id,
       },
-    })
-      .then(() => {
-        this.queryTaskList();
-      });
+    }).then(() => {
+      this.queryTaskList();
+    });
   };
 
   render() {
     const { loading } = this.props;
     const content = (
       <div className={styles.pageHeaderContent}>
-        <p>
-          功能简介：每日任务定时执行， 并邮件通知，若要修改请先关闭任务。
-        </p>
+        <p>功能简介：每日任务定时执行， 并邮件通知，若要修改请先关闭任务。</p>
       </div>
     );
     const description = item => (
@@ -148,29 +153,34 @@ class Timing extends PureComponent {
       </div>
     );
     const cardTitle = item => (
-        <div className={styles.switchContainer}>
-          <a target="_blank" rel="noopener noreferrer" href={`/task/api/timing/detail?${item.id}`} style={{ color: '#40a9ff', fontWeight: 'bold' }}>
-            {item.name}
-          </a>
-          <div className={styles.switchButton}>
-            <Switch
-              checkedChildren="开"
-              unCheckedChildren="关"
-              checked={!(item.status === 0 || item.status === 4)}
-              onChange={checked => this.handleStateChange(checked, item.id)}
-            />
-          </div>
+      <div className={styles.switchContainer}>
+        <a
+          target="_blank"
+          rel="noopener noreferrer"
+          href={`/task/api/timing/detail?${item.id}`}
+          style={{ color: '#40a9ff', fontWeight: 'bold' }}
+        >
+          {item.name}
+        </a>
+        <div className={styles.switchButton}>
+          <Switch
+            checkedChildren="开"
+            unCheckedChildren="关"
+            checked={!(item.status === 0 || item.status === 4)}
+            onChange={checked => this.handleStateChange(checked, item.id)}
+          />
         </div>
-      );
+      </div>
+    );
     const reportLink = item => {
       if (item.status === 3) {
         return (
-          <Button type="link" icon="file-done" onClick={() => this.handleGoReport(item.id)}>查看报告</Button>
+          <Button type="link" onClick={() => this.handleGoReport(item.id)}>
+            查看报告
+          </Button>
         );
       }
-      return (
-        <span><Icon type="file-done" />  暂无报告</span>
-      );
+      return <span>暂无报告</span>;
     };
     return (
       <PageHeaderWrapper title="每日任务列表" content={content}>
@@ -181,7 +191,7 @@ class Timing extends PureComponent {
             grid={{ gutter: 24, lg: 3, md: 2, sm: 1, xs: 1 }}
             dataSource={[...this.state.taskList.taskContent, '']}
             renderItem={item =>
-              (item ? (
+              item ? (
                 <List.Item key={item.id}>
                   <Card
                     hoverable
@@ -211,7 +221,7 @@ class Timing extends PureComponent {
                     <Icon type="plus" /> 新增任务
                   </Button>
                 </List.Item>
-              ))
+              )
             }
           />
         </div>
@@ -219,4 +229,4 @@ class Timing extends PureComponent {
     );
   }
 }
-export default Timing
+export default Timing;
