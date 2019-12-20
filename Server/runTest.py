@@ -3,7 +3,7 @@
 import sys,time,os,subprocess,json, importlib, binascii, hashlib, shutil
 import xml.etree.ElementTree as ET
 from flask_script import Manager
-from app.tables.IAT import Project, Tree, TaskCount, Task, iatShellData, GlobalValues, iatCaseInfo, iatKeyValues
+from app.tables.IAT import *
 from app import app,db
 from datetime import datetime
 import pandas as pd
@@ -42,6 +42,16 @@ def encrypt_name(name, salt=None, encryptlop=30):
     name = hashlib.sha1(str(name + salt).encode('utf-8')).hexdigest()
   return name
 
+#状态设置请求
+def setTaskStatus(taskId,status, msg):
+  data = {
+    'status': status
+  }
+  rowData = Task.query.filter_by(id=taskId)
+  rowData.update(data)
+  db.session.commit()
+  print(msg)
+
 def setTaskCount(result):
   failCount = 0
   sucessCount = 0
@@ -56,24 +66,40 @@ def setTaskCount(result):
   db.session.add(addData)
   db.session.commit()
 
-#状态设置请求
-def setTaskStatus(taskId,status, msg):
-  data = {
-    'status': status
-  }
-  rowData = Task.query.filter_by(id=taskId)
-  rowData.update(data)
-  db.session.commit()
-  print(msg)
-
 def updateTaskResult(taskId,result,msg):
-  setTaskCount(json.dumps(result))
-  data = {
-    'result': json.dumps(result)
-  }
-  rowData = Task.query.filter_by(id=taskId)
-  rowData.update(data)
-  db.session.commit()
+  result = json.dumps(result)
+  taskData = Task.query.filter_by(id=taskId)
+  setTaskCount(result)
+  if taskData.first().task_type == 1:
+    data = {'result': result}
+  else:
+    try:
+      oldDailyResult = json.loads(taskData.first().daily_result)
+      if not oldDailyResult:
+        oldDailyResult = []
+    except:
+      oldDailyResult = []
+    failCount = 0
+    Elapsed = 0
+    jsonResult = json.loads(result)
+    for item in jsonResult:
+      Elapsed += int(item["elapsed"])
+      if item["success"] == "False":
+        failCount += 1
+
+    avrageElapsed = Elapsed / len(jsonResult)
+    oldDailyResult.append({
+      "day": time.strftime("%Y%m%d", time.localtime(float(int(jsonResult[0]["timeStamp"]) / 1000))),
+      "taskCount": len(jsonResult),
+      "runTime": int(jsonResult[0]["timeStamp"]),
+      "failCount": failCount,
+      "avrageElapsed": avrageElapsed,
+    })
+    dailyResult = json.dumps(oldDailyResult)
+    data = {'result': result, 'daily_result': dailyResult}
+  if taskData.first():
+    taskData.update(data)
+    db.session.commit()
   print(msg)
 
 def read_demo(demo_path):

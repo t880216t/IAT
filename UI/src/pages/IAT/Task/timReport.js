@@ -87,10 +87,10 @@ class timReport extends PureComponent {
     const content = (
       <div className={styles.pageHeaderContent}>
         <p>
-          开始时间：{moment(taskResult.startTime).format('YYYY-MM-DD HH:mm:ss')}
+          开始时间：{moment(parseInt(taskResult.startTime)).format('YYYY-MM-DD HH:mm:ss')}
         </p>
         <p>
-          结束时间：{moment(taskResult.endTime).format('YYYY-MM-DD HH:mm:ss')}
+          结束时间：{moment(parseInt(taskResult.endTime)).format('YYYY-MM-DD HH:mm:ss')}
         </p>
         <p>
           用例统计：<span className={styles.total}>{taskResult.total}</span> 总数<span className={styles.sucess}>{taskResult.sucess}</span> 成功<span className={styles.fail}>{taskResult.fail}</span> 失败

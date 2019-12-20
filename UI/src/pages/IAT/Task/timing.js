@@ -165,11 +165,11 @@ class Timing extends PureComponent {
     const reportLink = item => {
       if (item.status === 3) {
         return (
-          <Button type="link" icon="file-done" onClick={() => this.handleGoReport(item.id)}>查看报告</Button>
+          <Button type="link" onClick={() => this.handleGoReport(item.id)}>查看报告</Button>
         );
       }
       return (
-        <span><Icon type="file-done" />  暂无报告</span>
+        <span>暂无报告</span>
       );
     };
     return (
