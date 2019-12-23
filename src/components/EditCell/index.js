@@ -47,7 +47,6 @@ export default class EditCell extends Component {
       return;
     }
     if (this.state.editing) {
-      console.log(event);
       const { record, dataIndex } = this.props;
       this.form.setFieldsValue({
         [dataIndex]: event.data.path,
@@ -210,6 +209,9 @@ export default class EditCell extends Component {
   }
 
   queryAddStepIndexDesc = (stepId, stepIndex, indexType, linkId, base64Image) => {
+    if (stepId === 'empty') {
+      return
+    }
     const { dispatch } = this.props;
     dispatch({
       type: 'caseInfo/queryAddStepIndexDesc',
