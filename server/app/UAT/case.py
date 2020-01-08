@@ -776,7 +776,7 @@ def addStepIndexDesc():
     data = StepIndexDesc(stepId, stepIndex, indexType, linkId, '')
   if indexType == 2:
     elementCapPath = saveBase64ToImage(base64Image)
-    data = StepIndexDesc(stepId, stepIndex, indexType, '', elementCapPath)
+    data = StepIndexDesc(stepId, stepIndex, indexType, 0, elementCapPath)
   db.session.add(data)
   db.session.commit()
   return make_response(jsonify({'code': 0, 'content': {'id': data.id}, 'msg': u'添加成功'}))

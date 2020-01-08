@@ -55,10 +55,11 @@ def getTaskInfo(taskId, taskRootPath):
   projectId = Tree.query.filter_by(id=caseIds[0]).first().project_id
   projectRootData = Tree.query.filter(db.and_(Tree.project_id == projectId,Tree.pid == 0)).first()
   projectConfig = CaseProjectSetting.query.filter_by(pid=projectRootData.id).first()
-  libDatas = CaseLibs.query.filter(db.and_(CaseLibs.id.in_(json.loads(projectConfig.libs)))).all()
   libs = []
-  for lib in libDatas:
-    libs.append(lib.name)
+  if projectConfig:
+    libDatas = CaseLibs.query.filter(db.and_(CaseLibs.id.in_(json.loads(projectConfig.libs)))).all()
+    for lib in libDatas:
+      libs.append(lib.name)
 
   # 查出所有勾选用例的数据
   caseDatas = []
