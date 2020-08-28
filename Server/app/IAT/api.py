@@ -900,9 +900,13 @@ def uploadFile():
       print('开始导入har')
       subprocess.call('python runAutoBuild.py runScript -u %s -p %s -f %s' % (user_id, id, filePath), shell=True)
       os.remove(filePath)
-    if fileType == 'jmx':
+    elif fileType == 'jmx':
       print('开始导入jmx')
       subprocess.call('python runAutoBuildFromJmx.py runScript -u %s -p %s -f %s' % (user_id, id, filePath), shell=True)
+      os.remove(filePath)
+    elif fileType == 'json':
+      print('开始导入json')
+      subprocess.call('python runAutoBuildFromSwagger.py runScript -u %s -p %s -f %s' % (user_id, id, filePath), shell=True)
       os.remove(filePath)
     return make_response(jsonify({'code': 0, 'content':None, 'msg': 'upload sucess'}))
   else:

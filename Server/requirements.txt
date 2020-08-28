@@ -47,17 +47,10 @@ python-dateutil==2.8.0
 python-engineio==3.8.2.post1
 python-socketio==4.2.0
 pytz==2019.1
-pywin32==224
 PyYAML==5.1.2
 rarfile==3.0
 recommonmark==0.5.0
 requests==2.22.0
-robotframework==3.1.2
-robotframework-pabot==0.90
-robotframework-ride==1.7.3.1
-robotframework-seleniumlibrary==3.3.1
-robotframeworklexer==1.1
-robotremoteserver==1.1
 schedule==0.6.0
 selenium==3.141.0
 six==1.12.0
