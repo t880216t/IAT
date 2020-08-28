@@ -406,13 +406,13 @@ export default class ApiCaseInfoPage extends Component {
                 <Radio value={1}>
                   x-www-form-urlencoded
                 </Radio>
-                <Radio value={3}>
-                  form-data
-                </Radio>
                 <Radio value={2}>
                   <Tooltip title="设置该类型参数后，将不支持任务中的全局默认参数设置">
                     <a>json</a>
                   </Tooltip>
+                </Radio>
+                <Radio value={3}>
+                  form-data
                 </Radio>
                 <Radio value={4}>
                   <Tooltip title="设置该类型参数后，将不支持任务中的全局默认参数设置">

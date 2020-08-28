@@ -90,7 +90,7 @@ def getCaseInfo(fileName):
               'assertType': 1,
               'extractType': 0,
             }
-          cases.append(info)
+            cases.append(info)
     return cases
 
 @manager.option('-u','--userId',dest='userId',default='')

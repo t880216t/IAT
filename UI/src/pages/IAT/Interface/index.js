@@ -92,23 +92,26 @@ class Interface extends Component {
     } else {
       this.queryProjectList();
     }
-    document.addEventListener('mouseup', event => this.checkClickElement(event), false);
+    document.addEventListener('mouseup', this.checkClickElement, false);
   }
 
   componentWillUnmount() {
-    document.removeEventListener('mouseup', event => this.checkClickElement(event), false);
+    document.removeEventListener('mouseup', this.checkClickElement, false);
   }
 
   checkClickElement=event => {
     if (this.state.rightClickItem !== null) {
-      try {
-        if (document.getElementById('right_menu')) {
-          if (event.target.compareDocumentPosition(document.getElementById('right_menu')) !== 10) {
-            this.setState({ rightClickItem: null });
+      if (event.button === 0){
+        try {
+          if (document.getElementById('right_menu')) {
+            console.log(event.target.compareDocumentPosition(document.getElementById('right_menu')))
+            if (event.target.compareDocumentPosition(document.getElementById('right_menu')) !== 10) {
+              this.setState({ rightClickItem: null });
+            }
           }
+        } catch (e) {
+          console.log(e);
         }
-      } catch (e) {
-        console.log(e);
       }
     }
   }
@@ -411,7 +414,7 @@ class Interface extends Component {
       const { name, projectId } = this.props.interfaceCase.infoData;
       let { info } = this.state;
       info.name = name;
-      this.setState({ info, infoName: name },()=>{
+      this.setState({ info, infoName: name }, () => {
         if (isRef) {
           this.setState({ project: projectId }, () => {
             this.handleProjectChange(this.state.project);

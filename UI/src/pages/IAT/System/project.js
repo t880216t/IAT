@@ -144,7 +144,7 @@ class Project extends PureComponent {
               )}
               <Divider type="vertical" />
               <Upload {...props}>
-                <Tooltip title="支持.har\.jmx文件导入，生成用例">
+                <Tooltip title="支持.har\.jmx\ swagger.json文件导入，生成用例">
                   <a onClick={() => this.handleUpload(record.id)}>批量导入</a>
                 </Tooltip>
               </Upload>

@@ -223,14 +223,16 @@ export default class Home extends PureComponent {
               title="本月执行概览"
             >
               <div style={{ padding: '0 24px' }}>
-                <TimelineChart
-                  height={400}
-                  data={mounthTask}
-                  titleMap={{
-                    y1: '执行用例数',
-                    y2: '测试通过数',
-                  }}
-                />
+                {(mounthTask && mounthTask.length > 1) && (
+                  <TimelineChart
+                    height={400}
+                    data={mounthTask}
+                    titleMap={{
+                      y1: '执行用例数',
+                      y2: '测试通过数',
+                    }}
+                  />
+                )}
               </div>
             </Card>
           </Col>
