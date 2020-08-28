@@ -355,7 +355,7 @@ export default class ApiCaseInfoPage extends Component {
           <Form.Item label="请求路径" >
             <InputGroup size="small">
               <Row gutter={8}>
-                <Col span={5}>
+                <Col span={6}>
                   {getFieldDecorator('method', {
                     initialValue: caseData.method || 'POST',
                   })(
