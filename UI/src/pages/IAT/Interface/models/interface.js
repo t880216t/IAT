@@ -1,5 +1,5 @@
 import { routerRedux } from 'dva/router';
-import { message } from 'antd'
+import { message } from 'antd';
 import {
   queryTreeList,
   queryAddSubFolder,
