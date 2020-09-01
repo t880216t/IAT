@@ -619,7 +619,7 @@ class Interface extends Component {
                 selectable={false}
                 title={
                   <Input
-                    size="small"
+
                     style={{ width: 100 }}
                     autoFocus
                     onBlur={e => this.submitAddFolder(e.target.value)}
@@ -637,7 +637,7 @@ class Interface extends Component {
                 selectable={false}
                 title={
                   <Input
-                    size="small"
+
                     style={{ width: 100 }}
                     autoFocus
                     onBlur={e => this.submitAddCase(e.target.value)}
@@ -668,7 +668,7 @@ class Interface extends Component {
           <div className={styles.item_content_container}>
             <Input
               placeholder="标题名称"
-              size="small"
+
               value={infoName}
               onChange={e => {
                 this.setState({ infoName: e.target.value });
@@ -694,7 +694,7 @@ class Interface extends Component {
               placeholder="请选择项目"
               value={project || undefined}
               style={{ width: '100%' }}
-              size="small"
+
               onChange={this.handleProjectChange}
             >
               {projectList &&

@@ -62,7 +62,7 @@ export default class FormKeyValuesCell extends React.Component {
     const children = searchKeywords.map(searchItem => <Option key={searchItem.id} value={searchItem.key_name}>{searchItem.key_name}</Option>);
     return (
       <div className={styles.cellContainer}>
-        <Form.Item className={styles.cellMiddle}>
+        <Form.Item className={styles.cellMiddle} style={{ width: '45%' }}>
           {getFieldDecorator('keyName', {
             rules: [
               {
@@ -73,7 +73,7 @@ export default class FormKeyValuesCell extends React.Component {
             initialValue: item.key,
           })(<Input size={size || 'default'} placeholder="参数名称" onBlur={this.handleValueChange}/>)}
         </Form.Item>
-        <Form.Item>
+        <Form.Item style={{ width: '45%' }}>
           {getFieldDecorator('keyValue', {
             rules: [
               {

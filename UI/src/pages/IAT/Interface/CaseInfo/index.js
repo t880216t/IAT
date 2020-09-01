@@ -315,7 +315,7 @@ export default class ApiCaseInfoPage extends Component {
       wrapperCol: {
         xs: { span: 24 },
         sm: { span: 20 },
-        md: { span: 10 },
+        md: { span: 20 },
       },
     };
     return (
@@ -328,7 +328,7 @@ export default class ApiCaseInfoPage extends Component {
             {getFieldDecorator('name', {
               initialValue: caseData.name || undefined,
             })(
-              <Input size="small" onBlur={() => this.handleValueChange()} style={{ width: 300 }} />,
+              <Input  onBlur={() => this.handleValueChange()} style={{ width: '90%' }} />,
             )}
           </Form.Item>
           <Divider dashed orientation="left">
@@ -340,7 +340,6 @@ export default class ApiCaseInfoPage extends Component {
                 initialValue: preShellChecked,
               })(
                 <Switch
-                  size="small"
                   checked={preShellChecked}
                   onChange={value => this.handleCheckShell(1, value)}
                 />,
@@ -372,20 +371,19 @@ export default class ApiCaseInfoPage extends Component {
               initialValue: caseData.domain || '',
             })(
               <Input
-                size="small"
                 placeholder="请求域名. eg: http://www.test.com:5000"
-                style={{ width: 400 }}
+                style={{ width: '90%' }}
               />,
             )}
           </Form.Item>
           <Form.Item label="请求路径">
-            <InputGroup size="small">
+            <InputGroup >
               <Row gutter={8}>
                 <Col span={6}>
                   {getFieldDecorator('method', {
                     initialValue: caseData.method || 'POST',
                   })(
-                    <Select size="small" style={{ width: '100%' }}>
+                    <Select  style={{ width: '100%' }}>
                       <Option title="POST" value="POST">
                         POST
                       </Option>
@@ -395,10 +393,10 @@ export default class ApiCaseInfoPage extends Component {
                     </Select>,
                   )}
                 </Col>
-                <Col span={8}>
+                <Col span={18}>
                   {getFieldDecorator('path', {
                     initialValue: caseData.path || '',
-                  })(<Input style={{ width: 300 }} placeholder="/path" />)}
+                  })(<Input style={{ width: '90%' }} placeholder="/path" />)}
                 </Col>
               </Row>
             </InputGroup>
@@ -411,7 +409,7 @@ export default class ApiCaseInfoPage extends Component {
                     <Button
                       key={item.type}
                       type="dashed"
-                      size="small"
+
                       onClick={() => this.handleAddEmptyValue(1)}
                       style={{ width: '90%' }}
                     >
@@ -421,7 +419,7 @@ export default class ApiCaseInfoPage extends Component {
                 }
                 return (
                   <FormKeyValuesSearchCell
-                    size="small"
+
                     caseId={caseData.id}
                     key={item.id}
                     item={item}
@@ -463,7 +461,7 @@ export default class ApiCaseInfoPage extends Component {
                     <Button
                       key={item.type}
                       type="dashed"
-                      size="small"
+
                       onClick={() => this.handleAddEmptyValue(2)}
                       style={{ width: '90%' }}
                     >
@@ -473,7 +471,7 @@ export default class ApiCaseInfoPage extends Component {
                 }
                 return (
                   <FormKeyValuesSearchCell
-                    size="small"
+
                     caseId={caseData.id}
                     key={item.id}
                     item={item}
@@ -510,7 +508,7 @@ export default class ApiCaseInfoPage extends Component {
                 initialValue: postShellChecked,
               })(
                 <Switch
-                  size="small"
+
                   checked={postShellChecked}
                   onChange={value => this.handleCheckShell(2, value)}
                 />,
@@ -560,7 +558,7 @@ export default class ApiCaseInfoPage extends Component {
                             <Button
                               key={item.type}
                               type="dashed"
-                              size="small"
+
                               onClick={() => this.handleAddEmptyValue(3)}
                               style={{ width: '90%' }}
                             >
@@ -599,7 +597,7 @@ export default class ApiCaseInfoPage extends Component {
                         <Button
                           key={item.type}
                           type="dashed"
-                          size="small"
+
                           onClick={() => this.handleAddEmptyValue(4)}
                           style={{ width: '90%' }}
                         >
@@ -609,7 +607,6 @@ export default class ApiCaseInfoPage extends Component {
                     }
                     return (
                       <FormKeyValuesSearchCell
-                        size="small"
                         caseId={caseData.id}
                         key={item.id}
                         item={item}
@@ -645,7 +642,7 @@ export default class ApiCaseInfoPage extends Component {
                           <Button
                             key={item.type}
                             type="dashed"
-                            size="small"
+
                             onClick={() => this.queryAddEmptyGlobalValue(3)}
                             style={{ width: '90%' }}
                           >
@@ -655,7 +652,7 @@ export default class ApiCaseInfoPage extends Component {
                       }
                       return (
                         <FormKeyValuesCell
-                          size="small"
+
                           caseId={caseData.id}
                           key={item.id}
                           item={item}
