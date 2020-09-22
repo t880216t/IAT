@@ -11,7 +11,7 @@ import RightContent from '@/components/GlobalHeader/RightContent';
 import { connect } from 'dva';
 import { formatMessage } from 'umi-plugin-react/locale';
 import { isAntDesignPro } from '@/utils/utils';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo_b.png';
 
 /**
  * use Authorized check all menu item
@@ -23,10 +23,8 @@ const menuDataRender = menuList =>
   });
 
 const footerRender = (_, defaultDom) => {
-  return (
-    <div />
-  );
-}
+  return <div />;
+};
 
 const BasicLayout = props => {
   const { dispatch, children, settings } = props;

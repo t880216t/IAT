@@ -1,14 +1,14 @@
 export default {
-  navTheme: 'dark',
+  navTheme: 'light',
   primaryColor: '#1890FF',
-  layout: 'sidemenu',
+  layout: 'topmenu',
   contentWidth: 'Fluid',
   fixedHeader: true,
   autoHideHeader: true,
   fixSiderbar: false,
   colorWeak: false,
   menu: {
-    locale: false,
+    locale: true,
   },
   title: 'Interface Auto Test',
   pwa: false,
