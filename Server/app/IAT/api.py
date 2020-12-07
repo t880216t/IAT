@@ -658,7 +658,9 @@ def formatUnixDay(day):
 def formatMounthResult(dayDatas):
   thisYear = datetime.datetime.now().year
   thisMonth = datetime.datetime.now().month
-  thisDays = (datetime.datetime(thisYear, thisMonth + 1, 1) - datetime.datetime(thisYear, thisMonth, 1)).days
+  nextMonth = thisMonth + 1 if thisMonth < 12 else 1
+  nextMonthYear = thisYear if thisMonth < 12 else thisYear + 1
+  thisDays = (datetime.datetime(nextMonthYear, nextMonth, 1) - datetime.datetime(thisYear, thisMonth, 1)).days
   monthResult = []
   for day in range(1,thisDays+1):
     oneDayData = {
