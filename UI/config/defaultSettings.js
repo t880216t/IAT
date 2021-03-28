@@ -8,7 +8,7 @@ export default {
   fixSiderbar: false,
   colorWeak: false,
   menu: {
-    locale: true,
+    locale: false,
   },
   title: 'Interface Auto Test',
   pwa: false,
