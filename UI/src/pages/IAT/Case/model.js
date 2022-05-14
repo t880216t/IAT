@@ -1,18 +1,27 @@
 import {
+  queryProjectListPre,
+  queryProjectTreeData,
 } from './service';
 const Model = {
   namespace: 'iatCase',
   state: {
-    test: 'test'
+    projectList: [],
+    treeData: [],
   },
   effects: {
-    *queryTest({ payload }, { call, put }) {
-      // yield put({ type: 'updateState', payload: { test: "" } });
-      // const response = yield call(queryTest, payload);
-      // if (response && response.code === 0) {
-      //   yield put({ type: 'updateState', payload: { browserList: response.content.list } });
-      // }
-      console.log('====');
+    *queryProjectListPre({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { projectList: "" } });
+      const response = yield call(queryProjectListPre, payload);
+      if (response && response.code === 0) {
+        yield put({ type: 'updateState', payload: { projectList: response.content } });
+      }
+    },
+    *queryProjectTreeData({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { treeData: "" } });
+      const response = yield call(queryProjectTreeData, payload);
+      if (response && response.code === 0) {
+        yield put({ type: 'updateState', payload: { treeData: response.content } });
+      }
     },
   },
   reducers: {

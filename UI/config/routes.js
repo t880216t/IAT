@@ -24,34 +24,40 @@ export default [
     component: './Welcome',
   },
   {
-    path: '/case',
+    path: '/iat/case',
     name: '接口列表',
     icon: 'table',
     routes: [
       {
-        path: '/case',
-        redirect: '/case/root',
+        path: '/iat/case',
+        redirect: '/iat/case/root',
       },
       {
-        path: '/case/root',
+        path: '/iat/case/root',
         name: '接口定义',
         component: './IAT/Case/index',
+      },
+      {
+        path: '/iat/case/detail',
+        name: '接口详情页',
+        hideInMenu: true,
+        component: './IAT/Case/CaseDetail',
       },
     ],
   },
   {
-    path: '/task',
+    path: '/iat/task',
     name: '任务管理',
     icon: 'table',
     routes: [
       {
-        path: '/task/sub-page1',
+        path: '/iat/task/sub-page1',
         name: '即时任务',
         icon: 'smile',
         component: './Welcome',
       },
       {
-        path: '/task/sub-page2',
+        path: '/iat/task/sub-page2',
         name: '定时任务',
         icon: 'smile',
         component: './Welcome',
