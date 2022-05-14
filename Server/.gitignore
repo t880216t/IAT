@@ -1,0 +1,24 @@
+# 编辑器设置
+/.vscode/
+# 引用文档锁
+Pipfile.lock
+# 敏感环境变量
+.env
+.idea
+
+# 忽略生成文件
+*.pyc
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# 忽略数据库文件
+*.db
+
+# 忽略migrations 表记录
+/migrations/
+
+# 忽略日志文件
+*.log

@@ -1,0 +1,46 @@
+[[source]]
+name = "tencent"
+url = "https://mirrors.cloud.tencent.com/pypi/simple"
+verify_ssl = true
+
+[dev-packages]
+autopep8 = "*"
+
+[packages]
+python-dotenv = "*"
+flask-migrate = "*"
+requests = "*"
+click = "*"
+alembic = "*"
+autopep8 = "*"
+cchardet = "*"
+certifi = "*"
+charset-normalizer = "*"
+commonmark = "*"
+filestools = "*"
+idna = "*"
+importlib-metadata = "*"
+itsdangerous = "*"
+logzero = "*"
+mako = "*"
+minio = "*"
+pycodestyle = "*"
+pyperclip = "*"
+rich = "*"
+toml = "*"
+urllib3 = "*"
+zipp = "*"
+Flask = "*"
+Flask-SQLAlchemy = "*"
+Flask-Script = "*"
+Jinja2 = "*"
+MarkupSafe = "*"
+Pillow = "*"
+Pygments = "*"
+SQLAlchemy = "*"
+Werkzeug = "*"
+gunicorn = "*"
+eventlet = "*"
+
+[requires]
+python_version = "3.8"
