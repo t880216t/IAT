@@ -3,7 +3,7 @@ import { Button, Tag, Space } from 'antd';
 import ProList from '@ant-design/pro-list';
 import { EditFilled, CopyFilled, DeleteFilled } from '@ant-design/icons';
 
-
+import ApiCaseDetail from '../ApiCaseDetail'
 import styles from './index.less'
 
 const dataSource = [
@@ -100,8 +100,8 @@ export default () => (
       },
       actions: {
         render: (text, row) => [
-          <Button key="edit" size="small" icon={<EditFilled />} >编辑</Button>,
           <Button key="copy" size="small" icon={<CopyFilled />} >复制</Button>,
+          <ApiCaseDetail />,
           <Button key="del" danger type="primary" size="small" icon={<DeleteFilled />} >删除</Button>,
         ],
       },

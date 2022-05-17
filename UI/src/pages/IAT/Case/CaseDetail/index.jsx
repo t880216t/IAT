@@ -62,7 +62,7 @@ export default class Page extends Component {
           <ProCard bordered title={'响应信息'}>
             <ApiResponseInfo />
           </ProCard>
-          <ProCard bordered title={'测试用例'}>
+          <ProCard bordered title={'测试用例'} extra={<Button type="primary">新建用例</Button>}>
             <ApiCaseList />
           </ProCard>
         </ProCard>
