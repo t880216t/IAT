@@ -28,3 +28,11 @@ class BaseConfig(object):
     MAIL_USERNAME = os.getenv('MAIL_USERNAME')
     MAIL_PASSWORD = os.getenv('MAIL_PASSWORD')
     MAIL_DEFAULT_SENDER = ('GP_EHR', MAIL_USERNAME)
+
+    # Minio文件存储服务器配置
+    MINIO_SECURE = os.getenv('MINIO_SECURE')
+    MINIO_METHOD = os.getenv('MINIO_METHOD')
+    MINIO_SERVER = os.getenv('MINIO_SERVER')
+    MINIO_USER = os.getenv('MINIO_USER')
+    MINIO_PASSWORD = os.getenv('MINIO_PASSWORD')
+    MINIO_BUCKET = os.getenv('MINIO_BUCKET')

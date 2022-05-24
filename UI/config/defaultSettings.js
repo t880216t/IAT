@@ -4,7 +4,7 @@ const Settings = {
   layout: 'top',
   contentWidth: 'Fluid',
   headerHeight: 48,
-  fixedHeader: false,
+  fixedHeader: true,
   fixSiderbar: true,
   colorWeak: false,
   title: 'IAT',

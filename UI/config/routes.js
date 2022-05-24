@@ -51,17 +51,23 @@ export default [
     icon: 'table',
     routes: [
       {
-        path: '/iat/task/sub-page1',
+        path: '/iat/task/immTask',
         name: '即时任务',
         icon: 'smile',
-        component: './Welcome',
+        component: './IAT/Task/immTask',
       },
       {
-        path: '/iat/task/sub-page2',
+        path: '/iat/task/timTask',
         name: '定时任务',
         icon: 'smile',
-        component: './Welcome',
+        component: './IAT/Task/timTask',
       },
+      {
+        path: '/iat/task/detail',
+        name: '任务详情',
+        hideInMenu: true,
+        component: './IAT/Task/TaskDetail',
+      }
     ],
   },
   {

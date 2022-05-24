@@ -64,6 +64,7 @@
     "rc-util": "^5.16.0",
     "re-resizable": "^6.9.9",
     "react": "^17.0.0",
+    "react-beautiful-dnd": "^13.1.0",
     "react-dev-inspector": "^1.7.0",
     "react-dom": "^17.0.0",
     "react-helmet-async": "^1.2.0",
