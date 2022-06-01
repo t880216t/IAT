@@ -1,12 +1,7 @@
 import React, {Component} from 'react';
-import { Row, Col, Menu, Tooltip, Input, Popconfirm, Button } from 'antd';
+import { Row, Col, Menu, Tooltip, Input, Popconfirm, Button, Spin } from 'antd';
 import { CopyOutlined, DeleteOutlined, EditOutlined, PlusOutlined } from '@ant-design/icons';
-import {connect} from 'dva';
 
-@connect(({model, loading}) => ({
-  model,
-  loading: loading.effects['model/queryFunction'],
-}))
 class MenuItem extends Component {
   state = {
     editEnable: false,
@@ -17,13 +12,19 @@ class MenuItem extends Component {
   }
 
   render() {
-    const {item, onUpdate, onCopy, onDel} = this.props;
+    const {item, onUpdate, onCopy, onDel, onClick} = this.props;
     const {editEnable, envName} = this.state;
     return (
       <Row>
-        <Col span={15}>
+        <Col span={15} onClick={onClick}>
           {editEnable?(
-            <Input autoFocus defaultValue={item.env_name} onBlur={()=>this.setState({editEnable: false},()=>onUpdate({envId: item.id, envName: envName}))} onChange={e=>this.setState({envName: e.target.value})} />
+            <Input
+              autoFocus
+              defaultValue={item.env_name}
+              onPressEnter={()=>this.setState({editEnable: false},()=>onUpdate({envId: item.id, envName: envName}))}
+              onBlur={()=>this.setState({editEnable: false},()=>onUpdate({envId: item.id, envName: envName}))}
+              onChange={e=>this.setState({envName: e.target.value})}
+            />
           ):(
             <span>{item.env_name}</span>
           )}
@@ -64,6 +65,7 @@ export default class Page extends Component {
     return (
       <>
         <Menu
+          theme="light"
           mode="inline"
           style={{
             height: '100%',
@@ -71,13 +73,13 @@ export default class Page extends Component {
           defaultSelectedKeys={[envList?.[0].id.toString()]}
         >
           {envList?.map(item=>(
-            <Menu.Item key={item.id} onClick={()=>onClick({envId: item.id})}>
-              <MenuItem item={item} onUpdate={onUpdate} onCopy={onCopy} onDel={onDel}/>
+            <Menu.Item key={item.id}>
+              <MenuItem item={item} onClick={()=>onClick({envId: item.id})} onUpdate={onUpdate} onCopy={onCopy} onDel={onDel}/>
             </Menu.Item>
           ))}
           <Menu.Item>
             {showAdd?(
-              <Input placeholder={"请输入环境名称"} autoFocus onBlur={(e)=>this.setState({showAdd: false},()=>onAdd({envName: e.target.value}))}/>
+              <Input placeholder={"请输入环境名称"} autoFocus onPressEnter={(e)=>this.setState({showAdd: false},()=>onAdd({envName: e.target.value}))} onBlur={(e)=>this.setState({showAdd: false},()=>onAdd({envName: e.target.value}))}/>
             ):(
               <Button size={'small'} block icon={<PlusOutlined />} type="dashed" onClick={()=>this.setState({showAdd: true})}>新建环境配置</Button>
             )}

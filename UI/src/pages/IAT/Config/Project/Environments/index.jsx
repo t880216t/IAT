@@ -19,6 +19,7 @@ import styles from "./index.less"
 
 @connect(({iatConfig, loading}) => ({
   iatConfig,
+  listLoading: loading.effects['iatConfig/queryProjectEnvList'],
   loading: loading.effects['iatConfig/queryEnvRequestConfigWithLoading'],
 }))
 export default class Page extends React.Component {
@@ -372,7 +373,7 @@ export default class Page extends React.Component {
   };
 
   render() {
-    const {buttonType, text, loading} = this.props;
+    const {buttonType, text, loading, listLoading} = this.props;
     const {visible, envList, envHostConfig, envParamsConfig, envReqHeaderConfig, envReqConfig} = this.state;
     const isLinkButton = buttonType === "link"
     return (
@@ -398,10 +399,8 @@ export default class Page extends React.Component {
           maskClosable={false}
           footer={null}
         >
-          <Layout
-            className={styles.layoutBackground}
-          >
-            <Sider width={200}>
+          <Layout className={styles.layoutBackground}>
+            <Sider width={200} className={styles.layoutBackground}>
               <EnvList
                 envList={envList}
                 onAdd={this.handleEnvAdd}
