@@ -43,7 +43,10 @@ export default class Page extends Component {
         header={{
           title: '获取首页banner',
           extra: [
-            <Button key="copy" type="primary" icon={<CaretRightOutlined />}>
+            <Button key="copy" icon={<CaretRightOutlined />}>
+              环境配置
+            </Button>,
+            <Button key="exec" type="primary" icon={<CaretRightOutlined />}>
               开始执行
             </Button>
           ]

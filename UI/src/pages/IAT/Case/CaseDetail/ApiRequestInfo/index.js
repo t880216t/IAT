@@ -48,18 +48,6 @@ export default () => {
       }}
       submitter={false}
     >
-      <ProForm.Group>
-        <ProFormSelect
-          label="请求类型"
-          name="level"
-          valueEnum={{
-            1: 'front end',
-            2: 'back end',
-            3: 'full stack',
-          }}
-        />
-        <ProFormText width="xl" name="company" label="请求路径" placeholder="请输入" />
-      </ProForm.Group>
       <ProCard
         ghost
         size="small"

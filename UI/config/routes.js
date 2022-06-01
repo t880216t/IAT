@@ -25,7 +25,7 @@ export default [
   },
   {
     path: '/iat/case',
-    name: '接口列表',
+    name: '接口数据',
     icon: 'table',
     routes: [
       {
@@ -42,6 +42,16 @@ export default [
         name: '接口详情页',
         hideInMenu: true,
         component: './IAT/Case/CaseDetail',
+      },
+      {
+        path: '/iat/case/data',
+        name: '接口数据池',
+        component: './IAT/Case/index',
+      },
+      {
+        path: '/iat/case/catch',
+        name: '便捷抓包',
+        component: './IAT/Case/index',
       },
     ],
   },
@@ -71,17 +81,16 @@ export default [
     ],
   },
   {
-    path: '/system',
+    path: '/config',
     name: '系统设置',
     icon: 'setting',
     access: 'canAdmin',
-    component: './Admin',
     routes: [
       {
-        path: '/system/sub-page',
+        path: '/config/project',
         name: '项目设置',
         icon: 'smile',
-        component: './Welcome',
+        component: './IAT/Config/Project',
       },
       {
         component: './404',

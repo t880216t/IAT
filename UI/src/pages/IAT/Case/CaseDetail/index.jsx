@@ -2,10 +2,11 @@ import React, {Component} from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
 import { CopyOutlined } from '@ant-design/icons';
-import {Select, Button, Descriptions} from 'antd';
+import {Select, Button, Descriptions, Space} from 'antd';
 import {connect} from 'dva';
 
 import styles from './index.less';
+import ApiEnvInfo from './ApiEnvInfo';
 import ApiCaseList from './ApiCaseList';
 import ApiRequestInfo from './ApiRequestInfo';
 import ApiResponseInfo from './ApiResponseInfo';
@@ -43,6 +44,12 @@ export default class Page extends Component {
           title: '获取首页banner',
           ghost: true,
           extra: [
+            <Button key="history" icon={<CopyOutlined />}>
+              接口变更记录
+            </Button>,
+            <Button key="history" icon={<CopyOutlined />}>
+              操作记录
+            </Button>,
             <Button key="copy" type="primary" icon={<CopyOutlined />}>
               复制接口
             </Button>
@@ -57,12 +64,20 @@ export default class Page extends Component {
       >
         <ProCard direction="column" ghost gutter={[0, 8]}>
           <ProCard bordered title={'请求配置'}>
+            <ApiEnvInfo />
+          </ProCard>
+          <ProCard bordered title={'参数配置'}>
             <ApiRequestInfo />
           </ProCard>
           <ProCard bordered title={'响应信息'}>
             <ApiResponseInfo />
           </ProCard>
-          <ProCard bordered title={'测试用例'} extra={<Button type="primary">新建用例</Button>}>
+          <ProCard bordered title={'测试用例'} extra={
+            <Space>
+              <Button >生成正交用例</Button>
+              <Button type="primary">新建用例</Button>
+            </Space>
+          }>
             <ApiCaseList />
           </ProCard>
         </ProCard>
