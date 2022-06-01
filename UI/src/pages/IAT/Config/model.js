@@ -14,6 +14,10 @@ import {
   queryEnvParamsConfigDel,
   queryEnvParamsConfigUpdate,
   queryEnvParamsConfigAdd,
+  queryEnvHostConfig,
+  queryEnvHostConfigDel,
+  queryEnvHostConfigUpdate,
+  queryEnvHostConfigAdd,
 } from './service';
 import {message} from 'antd'
 
@@ -125,6 +129,32 @@ const Model = {
     },
     *queryEnvParamsConfigUpdate({ payload }, { call, put }) {
       const response = yield call(queryEnvParamsConfigUpdate, payload);
+      if (response && response.code !== 0) {
+        message.error(response.msg)
+      }
+    },
+
+    *queryEnvHostConfig({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { envHostConfig: [] } });
+      const response = yield call(queryEnvHostConfig, payload);
+      if (response && response.code === 0) {
+        yield put({ type: 'updateState', payload: { envHostConfig: response.content } });
+      }
+    },
+    *queryEnvHostConfigAdd({ payload }, { call, put }) {
+      const response = yield call(queryEnvHostConfigAdd, payload);
+      if (response && response.code !== 0) {
+        message.error(response.msg)
+      }
+    },
+    *queryEnvHostConfigDel({ payload }, { call, put }) {
+      const response = yield call(queryEnvHostConfigDel, payload);
+      if (response && response.code !== 0) {
+        message.error(response.msg)
+      }
+    },
+    *queryEnvHostConfigUpdate({ payload }, { call, put }) {
+      const response = yield call(queryEnvHostConfigUpdate, payload);
       if (response && response.code !== 0) {
         message.error(response.msg)
       }

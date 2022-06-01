@@ -1,44 +1,9 @@
-import { EditableProTable, ProCard, ProForm, ProFormDependency, ProFormDigit, } from '@ant-design/pro-components';
-import React, { useRef, useState } from 'react';
-const defaultData = [
-  {
-    id: 624748504,
-    associate: '题库名称一',
-    questionsNum: 10,
-    type: 'text',
-    scoringMethod: 'continuous',
-    fraction: 20,
-  },
-  {
-    id: 624691229,
-    associate: '题库名称二',
-    questionsNum: 10,
-    scoringMethod: 'continuous',
-    type: 'file',
-    fraction: 20,
-  },
-  {
-    id: 624748503,
-    associate: '题库名称三',
-    questionsNum: 10,
-    type: 'judge',
-    scoringMethod: 'continuous',
-    fraction: 20,
-  },
-  {
-    id: 624691220,
-    associate: '题库名称四',
-    questionsNum: 10,
-    scoringMethod: 'continuous',
-    type: 'vacant',
-    fraction: 20,
-  },
-];
-export default () => {
-  const [editableKeys, setEditableRowKeys] = useState(() => defaultData.map((item) => item.id));
-  const formRef = useRef();
-  const actionRef = useRef();
-  const editableFormRef = useRef();
+import { EditableProTable, ProCard } from '@ant-design/pro-components';
+import React, { useState } from 'react';
+
+export default (props) => {
+  const [editableKeys, setEditableRowKeys] = useState(() => props.data?.map((item) => item.id));
+  const [dataSource, setDataSource] = useState(() => props.data);
   const columns = [
     {
       title: 'ip',
@@ -62,26 +27,38 @@ export default () => {
   ];
   return (
     <EditableProTable
+      columns={columns}
       rowKey="id"
+      size={"small"}
       scroll={{
         y: 300,
         x: true,
       }}
-      size="small"
-      headerTitle={"Hosts:"}
-      editableFormRef={editableFormRef}
-      controlled
-      actionRef={actionRef}
-      name="table"
-      columns={columns}
+      value={dataSource}
+      onChange={setDataSource}
       recordCreatorProps={{
-        record: (index) => {
-          return { id: index + 1 };
+        creatorButtonText: "新增变量",
+        record: () => {
+          return { id: new Date().getTime().toString() };
+        },
+        onClick: () => {
+          props.onAdd()
         },
       }}
       editable={{
         type: 'multiple',
         editableKeys,
+        actionRender: (row, config, defaultDoms) => {
+          return [defaultDoms.delete];
+        },
+        onDelete: (key) => {
+          props.onDel({id: key});
+        },
+        onValuesChange: (record, recordList) => {
+          if (record){
+            props.onChange(record);
+          }
+        },
         onChange: setEditableRowKeys,
       }}
     />);

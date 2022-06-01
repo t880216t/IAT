@@ -133,3 +133,31 @@ export async function queryEnvParamsConfigUpdate(params) {
     data: params,
   });
 }
+
+export async function queryEnvHostConfig(params) {
+  return request('/api/api_v3/project/envHostConfig', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function queryEnvHostConfigAdd(params) {
+  return request('/api/api_v3/project/envHostConfigAdd', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function queryEnvHostConfigDel(params) {
+  return request('/api/api_v3/project/envHostConfigDel', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function queryEnvHostConfigUpdate(params) {
+  return request('/api/api_v3/project/envHostConfigUpdate', {
+    method: 'POST',
+    data: params,
+  });
+}

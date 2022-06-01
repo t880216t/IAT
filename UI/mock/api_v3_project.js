@@ -125,6 +125,7 @@ export default {
     content: {},
     msg: '操作成功'
   },
+
   'POST /api/api_v3/project/envParamsConfig': {
     code: 0,
     content: [{
@@ -147,6 +148,31 @@ export default {
     msg: '操作成功'
   },
   'POST /api/api_v3/project/envParamsConfigUpdate': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+
+  'POST /api/api_v3/project/envHostConfig': {
+    code: 0,
+    content: [{
+      id: 1,
+      key: "content-type",
+      value: "application/json",
+    }],
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/project/envHostConfigAdd': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/project/envHostConfigDel': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/project/envHostConfigUpdate': {
     code: 0,
     content: {},
     msg: '操作成功'

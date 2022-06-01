@@ -15,11 +15,6 @@ import HeaderConfig from "./HeaderConfig"
 import ParamsConfig from "./ParamsConfig"
 import HostConfig from "./HostConfig"
 import styles from "./index.less"
-import {
-  queryEnvReqHeaderConfigAdd,
-  queryEnvReqHeaderConfigDel,
-  queryEnvRequestConfigUpdate
-} from "@/pages/IAT/Config/service";
 
 
 @connect(({iatConfig, loading}) => ({
@@ -70,6 +65,7 @@ export default class Page extends React.Component {
       this.queryEnvRequestConfigWithLoading()
       this.queryEnvReqHeaderConfig()
       this.queryEnvParamsConfig()
+      this.queryEnvHostConfig()
     })
   };
 
@@ -89,6 +85,7 @@ export default class Page extends React.Component {
           this.queryEnvRequestConfigWithLoading()
           this.queryEnvReqHeaderConfig()
           this.queryEnvParamsConfig()
+          this.queryEnvHostConfig()
         })
       }
     });
@@ -307,13 +304,76 @@ export default class Page extends React.Component {
     });
   };
 
+  /***
+   * 全局host配置
+   * ***/
+
+  handleHostConfigAdd = () => {
+    this.queryEnvHostConfigAdd()
+  };
+
+  handleHostConfigDel = (e) => {
+    this.queryEnvHostConfigDel(e)
+  };
+
+  handleHostConfigUpdate = (e) => {
+    this.queryEnvHostConfigUpdate(e)
+  };
+
+  queryEnvHostConfig = () => {
+    const {dispatch} = this.props;
+    const {selectEnvId} = this.state;
+    dispatch({
+      type: 'iatConfig/queryEnvHostConfig',
+      payload: {envId: selectEnvId},
+    }).then(() => {
+      const {envHostConfig} = this.props.iatConfig;
+      this.setState({
+        envHostConfig,
+      });
+    });
+  };
+
+  queryEnvHostConfigAdd = () => {
+    const {dispatch} = this.props;
+    const {selectEnvId} = this.state;
+    dispatch({
+      type: 'iatConfig/queryEnvHostConfigAdd',
+      payload: {envId: selectEnvId},
+    }).then(() => {
+      this.queryEnvHostConfig()
+    });
+  };
+
+  queryEnvHostConfigDel = params => {
+    const {dispatch} = this.props;
+    const {selectEnvId} = this.state;
+    dispatch({
+      type: 'iatConfig/queryEnvHostConfigDel',
+      payload: {...params, envId: selectEnvId},
+    }).then(() => {
+      this.queryEnvHostConfig()
+    });
+  };
+
+  queryEnvHostConfigUpdate = params => {
+    const {dispatch} = this.props;
+    const {selectEnvId} = this.state;
+    dispatch({
+      type: 'iatConfig/queryEnvHostConfigUpdate',
+      payload: {...params, envId: selectEnvId},
+    }).then(() => {
+      this.queryEnvHostConfig()
+    });
+  };
+
   setVisible = (visible ) => {
     this.setState({visible})
   };
 
   render() {
     const {buttonType, text, loading} = this.props;
-    const {visible, envList, envParamsConfig, envReqHeaderConfig, envReqConfig} = this.state;
+    const {visible, envList, envHostConfig, envParamsConfig, envReqHeaderConfig, envReqConfig} = this.state;
     const isLinkButton = buttonType === "link"
     return (
       <>
@@ -367,7 +427,7 @@ export default class Page extends React.Component {
                     {envParamsConfig && <ParamsConfig data={envParamsConfig} onAdd={this.handleParamsConfigAdd} onDel={this.handleParamsConfigDel} onChange={this.handleParamsConfigUpdate} />}
                   </TabPane>
                   <TabPane tab="容器配置" key="2">
-                    <HostConfig />
+                    {envHostConfig && <HostConfig data={envHostConfig} onAdd={this.handleHostConfigAdd} onDel={this.handleHostConfigDel} onChange={this.handleHostConfigUpdate} />}
                   </TabPane>
                 </Tabs>
               </Spin>
