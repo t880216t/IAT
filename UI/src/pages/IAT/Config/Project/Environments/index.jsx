@@ -41,6 +41,38 @@ export default class Page extends React.Component {
     }
   }
 
+  /***
+   * 环境配置
+   * ***/
+
+  handleEnvAdd = (e) => {
+    this.queryProjectEnvAdd(e)
+  };
+
+  handleEnvUpdate = (e) => {
+    this.queryProjectEnvUpdate(e)
+  };
+
+  handleEnvCopy = (e) => {
+    this.queryProjectEnvCopy(e)
+  };
+
+  handleEnvDel = (e) => {
+    this.queryProjectEnvDel(e)
+  };
+
+  handleEnvSelect = (e) => {
+    this.setState({
+      selectEnvId: e?.envId,
+      envReqConfig: null,
+      envReqHeaderConfig: null,
+    },()=>{
+      this.queryEnvRequestConfigWithLoading()
+      this.queryEnvReqHeaderConfig()
+      this.queryEnvParamsConfig()
+    })
+  };
+
   queryProjectEnvList = () => {
     const {dispatch} = this.props;
     const {projectId} = this.state;
@@ -56,61 +88,9 @@ export default class Page extends React.Component {
         this.setState({selectEnvId: envList[0].id},()=>{
           this.queryEnvRequestConfigWithLoading()
           this.queryEnvReqHeaderConfig()
+          this.queryEnvParamsConfig()
         })
       }
-    });
-  };
-
-  queryEnvRequestConfig = () => {
-    const {dispatch} = this.props;
-    const {selectEnvId} = this.state;
-    dispatch({
-      type: 'iatConfig/queryEnvRequestConfig',
-      payload: {envId: selectEnvId},
-    }).then(() => {
-      const {envReqConfig} = this.props.iatConfig;
-      this.setState({
-        envReqConfig,
-      });
-    });
-  };
-
-  queryEnvRequestConfigWithLoading = () => {
-    const {dispatch} = this.props;
-    const {selectEnvId} = this.state;
-    dispatch({
-      type: 'iatConfig/queryEnvRequestConfigWithLoading',
-      payload: {envId: selectEnvId},
-    }).then(() => {
-      const {envReqConfig} = this.props.iatConfig;
-      this.setState({
-        envReqConfig,
-      });
-    });
-  };
-
-  queryEnvRequestConfigUpdate = (params) => {
-    const {dispatch} = this.props;
-    const {selectEnvId} = this.state;
-    dispatch({
-      type: 'iatConfig/queryEnvRequestConfigUpdate',
-      payload: {...params, envId: selectEnvId},
-    }).then(() => {
-      this.queryEnvRequestConfig()
-    });
-  };
-
-  queryEnvReqHeaderConfig = () => {
-    const {dispatch} = this.props;
-    const {selectEnvId} = this.state;
-    dispatch({
-      type: 'iatConfig/queryEnvReqHeaderConfig',
-      payload: {envId: selectEnvId},
-    }).then(() => {
-      const {envReqHerderConfig} = this.props.iatConfig;
-      this.setState({
-        envReqHerderConfig,
-      });
     });
   };
 
@@ -154,6 +134,83 @@ export default class Page extends React.Component {
     });
   };
 
+  /***
+   * 请求配置
+   * ***/
+
+  handleEnvRequestConfigUpdate = (e) => {
+    this.queryEnvRequestConfigUpdate(e)
+  };
+
+  queryEnvRequestConfig = () => {
+    const {dispatch} = this.props;
+    const {selectEnvId} = this.state;
+    dispatch({
+      type: 'iatConfig/queryEnvRequestConfig',
+      payload: {envId: selectEnvId},
+    }).then(() => {
+      const {envReqConfig} = this.props.iatConfig;
+      this.setState({
+        envReqConfig,
+      });
+    });
+  };
+
+  queryEnvRequestConfigWithLoading = () => {
+    const {dispatch} = this.props;
+    const {selectEnvId} = this.state;
+    dispatch({
+      type: 'iatConfig/queryEnvRequestConfigWithLoading',
+      payload: {envId: selectEnvId},
+    }).then(() => {
+      const {envReqConfig} = this.props.iatConfig;
+      this.setState({
+        envReqConfig,
+      });
+    });
+  };
+
+  queryEnvRequestConfigUpdate = (params) => {
+    const {dispatch} = this.props;
+    const {selectEnvId} = this.state;
+    dispatch({
+      type: 'iatConfig/queryEnvRequestConfigUpdate',
+      payload: {...params, envId: selectEnvId},
+    }).then(() => {
+      this.queryEnvRequestConfig()
+    });
+  };
+
+  /***
+   * 请求头配置
+   * ***/
+
+  handleAddReqHeader = () => {
+    this.queryEnvReqHeaderConfigAdd()
+  };
+
+  handleDelReqHeader = (e) => {
+    this.queryEnvReqHeaderConfigDel(e)
+  };
+
+  handleEnvReqHeaderConfigUpdate = (e) => {
+    this.queryEnvReqHeaderConfigUpdate(e)
+  };
+
+  queryEnvReqHeaderConfig = () => {
+    const {dispatch} = this.props;
+    const {selectEnvId} = this.state;
+    dispatch({
+      type: 'iatConfig/queryEnvReqHeaderConfig',
+      payload: {envId: selectEnvId},
+    }).then(() => {
+      const {envReqHeaderConfig} = this.props.iatConfig;
+      this.setState({
+        envReqHeaderConfig,
+      });
+    });
+  };
+
   queryEnvReqHeaderConfigAdd = () => {
     const {dispatch} = this.props;
     const {selectEnvId} = this.state;
@@ -187,56 +244,76 @@ export default class Page extends React.Component {
     });
   };
 
+  /***
+   * 全局变量配置
+   * ***/
+
+  handleParamsConfigAdd = () => {
+    this.queryEnvParamsConfigAdd()
+  };
+
+  handleParamsConfigDel = (e) => {
+    this.queryEnvParamsConfigDel(e)
+  };
+
+  handleParamsConfigUpdate = (e) => {
+    this.queryEnvParamsConfigUpdate(e)
+  };
+
+  queryEnvParamsConfig = () => {
+    const {dispatch} = this.props;
+    const {selectEnvId} = this.state;
+    dispatch({
+      type: 'iatConfig/queryEnvParamsConfig',
+      payload: {envId: selectEnvId},
+    }).then(() => {
+      const {envParamsConfig} = this.props.iatConfig;
+      this.setState({
+        envParamsConfig,
+      });
+    });
+  };
+
+  queryEnvParamsConfigAdd = () => {
+    const {dispatch} = this.props;
+    const {selectEnvId} = this.state;
+    dispatch({
+      type: 'iatConfig/queryEnvParamsConfigAdd',
+      payload: {envId: selectEnvId},
+    }).then(() => {
+      this.queryEnvParamsConfig()
+    });
+  };
+
+  queryEnvParamsConfigDel = params => {
+    const {dispatch} = this.props;
+    const {selectEnvId} = this.state;
+    dispatch({
+      type: 'iatConfig/queryEnvParamsConfigDel',
+      payload: {...params, envId: selectEnvId},
+    }).then(() => {
+      this.queryEnvParamsConfig()
+    });
+  };
+
+  queryEnvParamsConfigUpdate = params => {
+    const {dispatch} = this.props;
+    const {selectEnvId} = this.state;
+    dispatch({
+      type: 'iatConfig/queryEnvParamsConfigUpdate',
+      payload: {...params, envId: selectEnvId},
+    }).then(() => {
+      this.queryEnvParamsConfig()
+    });
+  };
+
   setVisible = (visible ) => {
     this.setState({visible})
   };
 
-  handleEnvAdd = (e) => {
-    this.queryProjectEnvAdd(e)
-  };
-
-  handleEnvUpdate = (e) => {
-    this.queryProjectEnvUpdate(e)
-  };
-
-  handleEnvCopy = (e) => {
-    this.queryProjectEnvCopy(e)
-  };
-
-  handleEnvDel = (e) => {
-    this.queryProjectEnvDel(e)
-  };
-
-  handleEnvRequestConfigUpdate = (e) => {
-    this.queryEnvRequestConfigUpdate(e)
-  };
-
-  handleAddReqHeader = () => {
-    this.queryEnvReqHeaderConfigAdd()
-  };
-
-  handleDelReqHeader = (e) => {
-    this.queryEnvReqHeaderConfigDel(e)
-  };
-
-  handleEnvReqHerderConfigUpdate = (e) => {
-    this.queryEnvReqHeaderConfigUpdate(e)
-  };
-
-  handleEnvSelect = (e) => {
-    this.setState({
-      selectEnvId: e?.envId,
-      envReqConfig: null,
-      envReqHerderConfig: null,
-    },()=>{
-      this.queryEnvRequestConfigWithLoading()
-      this.queryEnvReqHeaderConfig()
-    })
-  };
-
   render() {
     const {buttonType, text, loading} = this.props;
-    const {visible, envList, selectEnvId, envReqHerderConfig, envReqConfig} = this.state;
+    const {visible, envList, envParamsConfig, envReqHeaderConfig, envReqConfig} = this.state;
     const isLinkButton = buttonType === "link"
     return (
       <>
@@ -284,10 +361,10 @@ export default class Page extends React.Component {
                 <Tabs defaultActiveKey="1" type="card" size={"small"}>
                   <TabPane tab="请求配置" key="1">
                     {envReqConfig && <RequestConfig data={envReqConfig} onChange={this.handleEnvRequestConfigUpdate} />}
-                    {envReqHerderConfig && <HeaderConfig data={envReqHerderConfig} onAdd={this.handleAddReqHeader} onDel={this.handleDelReqHeader} onChange={this.handleEnvReqHerderConfigUpdate} />}
+                    {envReqHeaderConfig && <HeaderConfig data={envReqHeaderConfig} onAdd={this.handleAddReqHeader} onDel={this.handleDelReqHeader} onChange={this.handleEnvReqHeaderConfigUpdate} />}
                   </TabPane>
                   <TabPane tab="全局变量" key="3">
-                    <ParamsConfig />
+                    {envParamsConfig && <ParamsConfig data={envParamsConfig} onAdd={this.handleParamsConfigAdd} onDel={this.handleParamsConfigDel} onChange={this.handleParamsConfigUpdate} />}
                   </TabPane>
                   <TabPane tab="容器配置" key="2">
                     <HostConfig />

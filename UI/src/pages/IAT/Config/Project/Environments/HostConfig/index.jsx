@@ -61,13 +61,6 @@ export default () => {
     },
   ];
   return (
-    <ProForm
-      formRef={formRef}
-      initialValues={{
-        table: defaultData,
-      }}
-      submitter={false}
-    >
     <EditableProTable
       rowKey="id"
       scroll={{
@@ -91,6 +84,5 @@ export default () => {
         editableKeys,
         onChange: setEditableRowKeys,
       }}
-    />
-  </ProForm>);
+    />);
 };

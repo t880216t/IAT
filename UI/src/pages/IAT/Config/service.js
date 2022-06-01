@@ -99,7 +99,36 @@ export async function queryEnvReqHeaderConfigDel(params) {
 }
 
 export async function queryEnvReqHeaderConfigUpdate(params) {
-  return request('/api/api_v3/project/envReqHerderConfigUpdate', {
+  return request('/api/api_v3/project/envReqHeaderConfigUpdate', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+
+export async function queryEnvParamsConfig(params) {
+  return request('/api/api_v3/project/envParamsConfig', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function queryEnvParamsConfigAdd(params) {
+  return request('/api/api_v3/project/envParamsConfigAdd', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function queryEnvParamsConfigDel(params) {
+  return request('/api/api_v3/project/envParamsConfigDel', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+export async function queryEnvParamsConfigUpdate(params) {
+  return request('/api/api_v3/project/envParamsConfigUpdate', {
     method: 'POST',
     data: params,
   });

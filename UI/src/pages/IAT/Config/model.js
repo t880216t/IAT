@@ -10,6 +10,10 @@ import {
   queryEnvReqHeaderConfigDel,
   queryEnvReqHeaderConfigUpdate,
   queryEnvReqHeaderConfigAdd,
+  queryEnvParamsConfig,
+  queryEnvParamsConfigDel,
+  queryEnvParamsConfigUpdate,
+  queryEnvParamsConfigAdd,
 } from './service';
 import {message} from 'antd'
 
@@ -17,7 +21,8 @@ const Model = {
   namespace: 'iatConfig',
   state: {
     envReqConfig: {},
-    envReqHerderConfig: [],
+    envReqHeaderConfig: [],
+    envParamsConfig: [],
     envList: [],
   },
   effects: {
@@ -40,13 +45,6 @@ const Model = {
       const response = yield call(queryEnvRequestConfig, payload);
       if (response && response.code === 0) {
         yield put({ type: 'updateState', payload: { envReqConfig: response.content } });
-      }
-    },
-    *queryEnvReqHeaderConfig({ payload }, { call, put }) {
-      yield put({ type: 'updateState', payload: { envReqHerderConfig: [] } });
-      const response = yield call(queryEnvReqHeaderConfig, payload);
-      if (response && response.code === 0) {
-        yield put({ type: 'updateState', payload: { envReqHerderConfig: response.content } });
       }
     },
     *queryEnvRequestConfigUpdate({ payload }, { call, put }) {
@@ -79,6 +77,14 @@ const Model = {
         message.error(response.msg)
       }
     },
+
+    *queryEnvReqHeaderConfig({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { envReqHeaderConfig: [] } });
+      const response = yield call(queryEnvReqHeaderConfig, payload);
+      if (response && response.code === 0) {
+        yield put({ type: 'updateState', payload: { envReqHeaderConfig: response.content } });
+      }
+    },
     *queryEnvReqHeaderConfigAdd({ payload }, { call, put }) {
       const response = yield call(queryEnvReqHeaderConfigAdd, payload);
       if (response && response.code !== 0) {
@@ -93,6 +99,32 @@ const Model = {
     },
     *queryEnvReqHeaderConfigUpdate({ payload }, { call, put }) {
       const response = yield call(queryEnvReqHeaderConfigUpdate, payload);
+      if (response && response.code !== 0) {
+        message.error(response.msg)
+      }
+    },
+
+    *queryEnvParamsConfig({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { envParamsConfig: [] } });
+      const response = yield call(queryEnvParamsConfig, payload);
+      if (response && response.code === 0) {
+        yield put({ type: 'updateState', payload: { envParamsConfig: response.content } });
+      }
+    },
+    *queryEnvParamsConfigAdd({ payload }, { call, put }) {
+      const response = yield call(queryEnvParamsConfigAdd, payload);
+      if (response && response.code !== 0) {
+        message.error(response.msg)
+      }
+    },
+    *queryEnvParamsConfigDel({ payload }, { call, put }) {
+      const response = yield call(queryEnvParamsConfigDel, payload);
+      if (response && response.code !== 0) {
+        message.error(response.msg)
+      }
+    },
+    *queryEnvParamsConfigUpdate({ payload }, { call, put }) {
+      const response = yield call(queryEnvParamsConfigUpdate, payload);
       if (response && response.code !== 0) {
         message.error(response.msg)
       }

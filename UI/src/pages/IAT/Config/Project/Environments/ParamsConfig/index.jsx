@@ -4,24 +4,14 @@ import React, { useState } from 'react';
 
 import styles from './index.less'
 
-const defaultData = new Array(20).fill(1).map((_, index) => {
-  return {
-    id: (Date.now() + index).toString(),
-    title: `活动名称${index}`,
-    decs: '这个活动真好玩',
-    state: 'open',
-    created_at: '2020-05-26T09:42:56Z',
-  };
-});
-export default () => {
-  const [editableKeys, setEditableRowKeys] = useState(() => defaultData.map((item) => item.id));
-  const [dataSource, setDataSource] = useState(() => defaultData);
+export default (props) => {
+  const [editableKeys, setEditableRowKeys] = useState(() => props.data?.map((item) => item.id));
+  const [dataSource, setDataSource] = useState(() => props.data);
   const columns = [
     {
       title: '参数名',
       dataIndex: 'key',
       valueType: 'text',
-      width: 200,
     },
     {
       title: '类型',
@@ -42,14 +32,12 @@ export default () => {
     },
     {
       title: '描述',
-      width: 220,
       dataIndex: 'description',
       valueType: "text",
     },
     {
       title: '操作',
       valueType: 'option',
-      width: 150,
       render: () => {
         return null;
       },
@@ -68,10 +56,13 @@ export default () => {
       value={dataSource}
       onChange={setDataSource}
       recordCreatorProps={{
-        newRecordType: 'dataSource',
-        record: () => ({
-          id: Date.now(),
-        }),
+        creatorButtonText: "新增变量",
+        record: () => {
+          return { id: new Date().getTime().toString() };
+        },
+        onClick: () => {
+          props.onAdd()
+        },
       }}
       editable={{
         type: 'multiple',
@@ -79,8 +70,13 @@ export default () => {
         actionRender: (row, config, defaultDoms) => {
           return [defaultDoms.delete];
         },
+        onDelete: (key) => {
+          props.onDel({id: key});
+        },
         onValuesChange: (record, recordList) => {
-          setDataSource(recordList);
+          if (record){
+            props.onChange(record);
+          }
         },
         onChange: setEditableRowKeys,
       }}

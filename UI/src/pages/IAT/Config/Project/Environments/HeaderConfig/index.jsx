@@ -33,12 +33,6 @@ export default (props) => {
     },
   ];
   return (
-    <ProForm
-      initialValues={{
-        table: props.data,
-      }}
-      submitter={false}
-    >
     <EditableProTable
       rowKey="id"
       scroll={{
@@ -61,9 +55,6 @@ export default (props) => {
           props.onAdd()
         },
       }}
-      onChange={e=>{
-        console.log(e);
-      }}
       editable={{
         type: 'multiple',
         editableKeys,
@@ -76,12 +67,9 @@ export default (props) => {
         onValuesChange: (record, recordList) => {
           if (record){
             props.onChange(record);
-          }else {
-            console.log(record);
           }
         },
         onChange: setEditableRowKeys,
       }}
-    />
-  </ProForm>);
+    />);
 };

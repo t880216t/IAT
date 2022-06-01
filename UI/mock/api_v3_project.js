@@ -95,21 +95,6 @@ export default {
     },
     msg: '操作成功'
   },
-  'POST /api/api_v3/project/envReqHeaderConfigAdd': {
-    code: 0,
-    content: {},
-    msg: '操作成功'
-  },
-  'POST /api/api_v3/project/envReqHeaderConfigDel': {
-    code: 0,
-    content: {},
-    msg: '操作成功'
-  },
-  'POST /api/api_v3/project/envReqHerderConfigUpdate': {
-    code: 0,
-    content: {},
-    msg: '操作成功'
-  },
   'POST /api/api_v3/project/envRequestConfigUpdate': {
     code: 0,
     content: {},
@@ -123,6 +108,47 @@ export default {
       value: "application/json",
       description: "请求参数类型"
     }],
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/project/envReqHeaderConfigAdd': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/project/envReqHeaderConfigDel': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/project/envReqHeaderConfigUpdate': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/project/envParamsConfig': {
+    code: 0,
+    content: [{
+      id: 1,
+      key: "content-type",
+      type: "text",
+      value: "application/json",
+      description: "请求参数类型"
+    }],
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/project/envParamsConfigAdd': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/project/envParamsConfigDel': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/project/envParamsConfigUpdate': {
+    code: 0,
+    content: {},
     msg: '操作成功'
   },
 };
