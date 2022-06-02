@@ -38,11 +38,11 @@ export default {
         {
           "id": 405,
           "labels": [
-            "电信点",
-            "联通点",
-            "美国点",
+            "安全",
           ],
           "name": "获取首页banner",
+          "method": "get",
+          "path": "/api/test/add",
           "caseCount": 12,
           "updateTime": "2022-05-13 17:06:54",
           "updateUser": "陈　皮"
@@ -68,6 +68,26 @@ export default {
     msg: '操作成功'
   },
   'POST /api/api_v3/case/moduleUpdate': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/case/caseAdd': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/case/caseCopy': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/case/caseDel': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/case/caseMove': {
     code: 0,
     content: {},
     msg: '操作成功'

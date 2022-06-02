@@ -4,6 +4,10 @@ import {
   queryModuleCopy,
   queryModuleDel,
   queryModuleUpdate,
+  queryCaseAdd,
+  queryCaseCopy,
+  queryCaseDelete,
+  queryCaseMove,
 } from './service';
 import {
   queryProjectListPre,
@@ -51,6 +55,30 @@ const Model = {
     },
     *queryModuleUpdate({ payload }, { call, put }) {
       const response = yield call(queryModuleUpdate, payload);
+      if (response && response.code !== 0) {
+        message.error(response.msg)
+      }
+    },
+    *queryCaseAdd({ payload }, { call, put }) {
+      const response = yield call(queryCaseAdd, payload);
+      if (response && response.code !== 0) {
+        message.error(response.msg)
+      }
+    },
+    *queryCaseCopy({ payload }, { call, put }) {
+      const response = yield call(queryCaseCopy, payload);
+      if (response && response.code !== 0) {
+        message.error(response.msg)
+      }
+    },
+    *queryCaseDelete({ payload }, { call, put }) {
+      const response = yield call(queryCaseDelete, payload);
+      if (response && response.code !== 0) {
+        message.error(response.msg)
+      }
+    },
+    *queryCaseMove({ payload }, { call, put }) {
+      const response = yield call(queryCaseMove, payload);
       if (response && response.code !== 0) {
         message.error(response.msg)
       }

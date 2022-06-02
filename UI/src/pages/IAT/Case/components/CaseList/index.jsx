@@ -1,6 +1,6 @@
 import React, { Component, useRef } from 'react';
 import { PlusOutlined, DownOutlined } from '@ant-design/icons';
-import { Button, Tag, Space, Menu, Dropdown, message, Popconfirm } from 'antd';
+import { Button, Tag, Space, Menu, Dropdown, message, Popconfirm, TreeSelect } from 'antd';
 import ProTable, { TableDropdown } from '@ant-design/pro-table';
 import { connect } from 'dva';
 
@@ -33,6 +33,26 @@ export default class Page extends Component {
     return true;
   }
 
+  /***
+   * 用例列表管理
+   * ***/
+
+  handleSearchCase = (value) => {
+    this.setState({ searchKeyword: value }, () => this.tableRef.current.reload());
+  };
+
+  handleCaseMove = (key, selectRowKeys) => {
+    this.queryCaseMove(key, selectRowKeys);
+  };
+
+  handleCaseCopy = (caseIds) => {
+    this.queryCaseCopy(caseIds);
+  };
+
+  handleCaseDelete = (caseIds) => {
+    this.queryCaseDelete(caseIds);
+  };
+
   handleUpdateCaseList = async (params) => {
     const { selectItem } = this.props;
     const { searchKeyword } = this.state;
@@ -54,64 +74,19 @@ export default class Page extends Component {
     };
   };
 
-  handleCopyCase = (caseIds) => {
-    this.queryCopyCases(caseIds);
+  handleModalOk = (values) => {
+    const { selectItem } = this.props;
+    this.queryCaseAdd(selectItem.id, values.name);
   };
 
-  handleDeleteCase = (caseIds) => {
-    this.queryDeleteCases(caseIds);
+  handleModalCancel = () => {
+    this.setState({ visible: false });
   };
 
-  queryCopyCases = (caseIds) => {
+  queryCaseAdd = (moduleId, caseName) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'iatCase/queryCopyCases',
-      payload: { caseIds },
-    }).then(() => {
-      if (this.tableRef) {
-        this.tableRef.current.reset();
-      }
-    });
-  };
-
-  queryDeleteCases = (caseIds) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'iatCase/queryDeleteCases',
-      payload: { caseIds },
-    }).then(() => {
-      if (this.tableRef) {
-        this.tableRef.current.reset();
-      }
-    });
-  };
-
-  queryModuleList = (projectId) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'iatCase/queryModuleList',
-      payload: { projectId },
-    }).then(() => {
-      const { moduleList } = this.props.iatCase;
-      this.setState({ moduleList });
-    });
-  };
-
-  queryMoveCases = (moduleId, caseIds) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'iatCase/queryMoveCases',
-      payload: { moduleId, caseIds },
-    }).then(() => {
-      this.tableRef.current.reload();
-      this.tableRef.current.clearSelected();
-    });
-  };
-
-  queryAddCase = (moduleId, caseName) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'iatCase/queryAddCase',
+      type: 'iatCase/queryCaseAdd',
       payload: { moduleId, caseName, type: 1 },
     }).then(() => {
       this.handleModalCancel();
@@ -119,37 +94,75 @@ export default class Page extends Component {
     });
   };
 
-  handleMove = (key, selectRowKeys) => {
-    this.queryMoveCases(key, selectRowKeys);
+  queryCaseCopy = (caseIds) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'iatCase/queryCaseCopy',
+      payload: { caseIds },
+    }).then(() => {
+      if (this.tableRef) {
+        this.tableRef.current.reset();
+      }
+    });
   };
 
-  handleSearchCase = (value) => {
-    this.setState({ searchKeyword: value }, () => this.tableRef.current.reload());
+  queryCaseDelete = (caseIds) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'iatCase/queryCaseDelete',
+      payload: { caseIds },
+    }).then(() => {
+      if (this.tableRef) {
+        this.tableRef.current.reset();
+      }
+    });
   };
 
-  handleModalOk = (values) => {
-    const { selectItem } = this.props;
-    this.queryAddCase(selectItem.id, values.name);
+  queryCaseMove = (moduleId, caseIds) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'iatCase/queryCaseMove',
+      payload: { moduleId, caseIds },
+    }).then(() => {
+      this.tableRef.current.reload();
+      this.tableRef.current.clearSelected();
+    });
   };
 
-  handleModalCancel = () => {
-    this.setState({ visible: false });
+  queryModuleTree = (projectId) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'iatCase/queryModuleTree',
+      payload: { projectId },
+    }).then(() => {
+      const { moduleList } = this.props.iatCase;
+      this.setState({ moduleList });
+    });
   };
 
   render() {
     const { visible, confirmLoading } = this.state;
-    const { selectItem, moduleList } = this.props;
+    const { selectItem, moduleList, iatCase: {treeData} } = this.props;
     const columns = [
       {
-        title: '用例标题',
+        title: '接口名称',
         dataIndex: 'name',
         ellipsis: true,
-        width: '25%',
+      },
+      {
+        title: '类型',
+        dataIndex: 'method',
+        ellipsis: true,
+        width: 100,
+      },
+      {
+        title: '接口路径',
+        dataIndex: 'path',
+        ellipsis: true,
       },
       {
         title: '标签',
         dataIndex: 'labels',
-        width: '20%',
         search: false,
         renderFormItem: (_, { defaultRender }) => {
           return defaultRender(_);
@@ -200,7 +213,7 @@ export default class Page extends Component {
             key="copy"
             onClick={(e) => {
               e.preventDefault();
-              this.handleCopyCase([record.id]);
+              this.handleCaseCopy([record.id]);
             }}
           >
             复制
@@ -209,7 +222,7 @@ export default class Page extends Component {
             placement="topRight"
             title="确认删除本条用例吗？"
             onConfirm={() => {
-              this.handleDeleteCase([record.id]);
+              this.handleCaseDelete([record.id]);
             }}
             okText="确认"
             cancelText="取消"
@@ -248,22 +261,29 @@ export default class Page extends Component {
             overflow: 'hidden',
           }}
           dateFormatter="string"
-          // scroll={{ y: 600 }}
           rowSelection={{}}
           tableAlertOptionRender={({ selectedRowKeys }) => {
             return (
               <Space size={16}>
-                <Dropdown overlay={menu(selectedRowKeys)}>
-                  <a className="ant-dropdown-link" onClick={(e) => e.preventDefault()}>
-                    批量移动到模块
-                    <DownOutlined style={{ marginLeft: 3 }} />
-                  </a>
-                </Dropdown>
+                <TreeSelect
+                  style={{
+                    width: 150,
+                  }}
+                  dropdownStyle={{
+                    maxHeight: 400,
+                    overflow: 'auto',
+                  }}
+                  treeData={treeData}
+                  placeholder="请先选择模块"
+                  treeDefaultExpandAll
+                  onChange={(key) => this.handleCaseMove(key, selectedRowKeys)}
+                  fieldNames={{ label: 'text', value: 'id', children: 'items' }}
+                />
                 <Popconfirm
                   placement="topRight"
                   title="确认删除这些用例吗？"
                   onConfirm={() => {
-                    this.handleDeleteCase(selectedRowKeys);
+                    this.handleCaseDelete(selectedRowKeys);
                   }}
                   okText="确认"
                   cancelText="取消"
