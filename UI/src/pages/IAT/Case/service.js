@@ -69,3 +69,10 @@ export async function queryCaseMove(params) {
     data: params,
   });
 }
+
+export async function queryCaseInfo(params) {
+  return request('/api/api_v3/case/caseInfo', {
+    method: 'POST',
+    data: params,
+  });
+}

@@ -72,6 +72,49 @@ export default {
     content: {},
     msg: '操作成功'
   },
+  'POST /api/api_v3/case/caseInfo': {
+    code: 0,
+    content: {
+      id: 12,
+      case_name: '获取首页banner信息',
+      add_user: '陈  酒',
+      add_time: '2022-06-01 12:23:22',
+      update_user: '陈  酒',
+      update_time: '2022-06-01 12:23:22',
+      description: '描述点信息',
+      request_config: {
+        protocol: 'get',
+        host: 'app.test.com',
+        port: 5000,
+        method: 'get',
+        path: '/api/test/12',
+        encoding: 'UTF-8',
+        headers: [{
+          id: 123,
+          key: '',
+          value: '',
+        }],
+        params: [{
+          id: 123,
+          key: '',
+          required: 1,
+          value: '',
+          description: '',
+        }],
+        body: {
+          type: 'json',
+          text: '{"comId": 123}'
+        },
+        file: [{
+          key: 'file_name',
+          required: 1,
+          path: 'https://test.com/file/123.png',
+          description: '',
+        }]
+      }
+    },
+    msg: '操作成功'
+  },
   'POST /api/api_v3/case/caseAdd': {
     code: 0,
     content: {},

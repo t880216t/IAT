@@ -4,6 +4,7 @@ import {
   queryModuleCopy,
   queryModuleDel,
   queryModuleUpdate,
+  queryCaseInfo,
   queryCaseAdd,
   queryCaseCopy,
   queryCaseDelete,
@@ -19,6 +20,7 @@ const Model = {
   state: {
     projectList: [],
     treeData: [],
+    caseInfo: {},
   },
   effects: {
     *queryProjectListPre({ payload }, { call, put }) {
@@ -57,6 +59,13 @@ const Model = {
       const response = yield call(queryModuleUpdate, payload);
       if (response && response.code !== 0) {
         message.error(response.msg)
+      }
+    },
+    *queryCaseInfo({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { caseInfo: {} } });
+      const response = yield call(queryCaseInfo, payload);
+      if (response && response.code === 0) {
+        yield put({ type: 'updateState', payload: { caseInfo: response.content } });
       }
     },
     *queryCaseAdd({ payload }, { call, put }) {

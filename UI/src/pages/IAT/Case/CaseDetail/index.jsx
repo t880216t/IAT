@@ -13,39 +13,44 @@ import ApiResponseInfo from './ApiResponseInfo';
 
 const {Option} = Select;
 
-@connect(({model, loading}) => ({
-  model,
-  loading: loading.effects['model/queryFunction'],
+@connect(({iatCase, loading}) => ({
+  iatCase,
+  loading: loading.effects['iatCase/queryCaseInfo'],
 }))
 export default class Page extends Component {
-  state = {};
+  state = {
+    detailId: null,
+    projectId: null,
+    caseInfo: {},
+  };
 
   componentDidMount() {
     const { detailId, projectId } = this.props.location.query;
-    console.log(detailId, projectId);
-    this.setState({detailId, projectId})
+    this.setState({detailId, projectId}, () => this.queryCaseInfo())
   }
 
-  queryFunction = params => {
+  queryCaseInfo = () => {
     const {dispatch} = this.props;
+    const {detailId} = this.state;
     dispatch({
-      type: 'model/function',
-      payload: {},
+      type: 'iatCase/queryCaseInfo',
+      payload: {caseId: detailId},
     }).then(() => {
-      const {value} = this.props.model;
+      const {caseInfo} = this.props.iatCase;
       this.setState({
-        value,
+        caseInfo,
       });
     });
   };
 
   render() {
-    const {detailId, projectId} = this.state;
-    console.log(detailId, projectId);
+    const {detailId, projectId, caseInfo} = this.state;
+    const {loading} = this.props;
     return (
       <PageContainer
+        loading={loading}
         header={{
-          title: '获取首页banner',
+          title: caseInfo?.case_name,
           ghost: true,
           extra: [
             <Button key="history" icon={<CopyOutlined />}>
@@ -61,8 +66,9 @@ export default class Page extends Component {
         }}
         content={
           <Descriptions column={2}>
-            <Descriptions.Item label="创建信息">丽丽 2017-01-10</Descriptions.Item>
-            <Descriptions.Item label="更新信息">丽丽 2017-01-11</Descriptions.Item>
+            <Descriptions.Item label="创建信息">{`${caseInfo?.add_user} ${caseInfo?.add_time}`}</Descriptions.Item>
+            <Descriptions.Item label="更新信息">{`${caseInfo?.update_user} ${caseInfo?.update_time}`}</Descriptions.Item>
+            <Descriptions.Item span={2} label="描述信息">{caseInfo?.description}</Descriptions.Item>
           </Descriptions>
         }
       >
