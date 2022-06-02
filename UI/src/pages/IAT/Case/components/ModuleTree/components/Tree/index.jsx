@@ -117,7 +117,7 @@ export default class Page extends PureComponent {
         break;
       }
       case 'copy': {
-        this.queryCopyModule({ moduleId: this.state.selectedTreeItem.id });
+        this.queryModuleCopy({ moduleId: this.state.selectedTreeItem.id });
         break;
       }
       case 'addBroModule': {
@@ -143,7 +143,7 @@ export default class Page extends PureComponent {
       okType: 'danger',
       cancelText: '取消',
       onOk() {
-        that.queryDeleteModule(that, { moduleId: itemInfo.id });
+        that.queryModuleDel(that, { moduleId: itemInfo.id });
       },
     });
   };
@@ -162,19 +162,19 @@ export default class Page extends PureComponent {
     }
     if (isAdd) {
       if (isBro){
-        this.queryAddModule({
+        this.queryModuleAdd({
           name: values.name,
           pid: selectedTreeItem.pid,
         });
       }
       if (isSub){
-        this.queryAddModule({
+        this.queryModuleAdd({
           name: values.name,
           pid: selectedTreeItem.id,
         });
       }
     } else {
-      this.queryEditModule({
+      this.queryModuleUpdate({
         name: values.name,
         moduleId: selectedTreeItem.id,
       });

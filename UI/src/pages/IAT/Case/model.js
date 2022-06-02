@@ -33,25 +33,25 @@ const Model = {
     },
     *queryModuleAdd({ payload }, { call, put }) {
       const response = yield call(queryModuleAdd, payload);
-      if (response && response.code === 0) {
+      if (response && response.code !== 0) {
         message.error(response.msg)
       }
     },
     *queryModuleCopy({ payload }, { call, put }) {
       const response = yield call(queryModuleCopy, payload);
-      if (response && response.code === 0) {
+      if (response && response.code !== 0) {
         message.error(response.msg)
       }
     },
     *queryModuleDel({ payload }, { call, put }) {
       const response = yield call(queryModuleDel, payload);
-      if (response && response.code === 0) {
+      if (response && response.code !== 0) {
         message.error(response.msg)
       }
     },
     *queryModuleUpdate({ payload }, { call, put }) {
       const response = yield call(queryModuleUpdate, payload);
-      if (response && response.code === 0) {
+      if (response && response.code !== 0) {
         message.error(response.msg)
       }
     },
