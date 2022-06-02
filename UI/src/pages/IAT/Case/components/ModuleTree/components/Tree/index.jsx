@@ -26,10 +26,8 @@ export default class Page extends PureComponent {
         { id: 'rename', text: '重命名' },
         { id: 'copy', text: '复制' },
         { id: 'delete', text: '删除' },
-        { id: 'expand', text: '展开' },
-        { id: 'collapse', text: '收起' },
-        { id: 'addModule', text: '添加模块' },
-        { id: 'addKeyword', text: '添加关键词' },
+        { id: 'addSubModule', text: '添加子模块' },
+        { id: 'addBroModule', text: '添加同级模块' },
       ],
       selectedTreeItem: undefined,
     };
@@ -38,21 +36,66 @@ export default class Page extends PureComponent {
   componentDidMount() {
   }
 
+  queryModuleAdd = (params) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'iatCase/queryModuleAdd',
+      payload: params,
+    }).then(() => {
+      this.handleModalCancel();
+      if (this.props.refreshTree) {
+        this.props.refreshTree();
+      }
+    });
+  };
+
+  queryModuleCopy = (params) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'iatCase/queryModuleCopy',
+      payload: params,
+    }).then(() => {
+      if (this.props.refreshTree) {
+        this.props.refreshTree();
+      }
+    });
+  };
+
+  queryModuleDel = (that, params) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'iatCase/queryModuleDel',
+      payload: params,
+    }).then(() => {
+      if (that.props.refreshTree) {
+        that.props.refreshTree();
+      }
+    });
+  };
+
+  queryModuleUpdate = (params) => {
+    const { dispatch } = this.props;
+    dispatch({
+      type: 'iatCase/queryModuleUpdate',
+      payload: params,
+    }).then(() => {
+      this.handleModalCancel();
+      if (this.props.refreshTree) {
+        this.props.refreshTree();
+      }
+    });
+  };
+
   treeViewItemContextMenu = (e) => {
     this.setState({
       selectedTreeItem: e.itemData,
     });
-
-    const isProjectRoot = ['project'].indexOf(e.itemData.id) > -1;
-    const isKeyRoot = ['keywords'].indexOf(e.itemData.id) > -1;
-    this.contextMenu.option('items[0].visible', !(isKeyRoot || isProjectRoot));
-    this.contextMenu.option('items[1].visible', !(isKeyRoot || isProjectRoot));
-    this.contextMenu.option('items[2].visible', !(isKeyRoot || isProjectRoot));
-
-    this.contextMenu.option('items[3].visible', (isKeyRoot || isProjectRoot) && !e.node.expanded);
-    this.contextMenu.option('items[4].visible', (isKeyRoot || isProjectRoot) && e.node.expanded);
-    this.contextMenu.option('items[5].visible', !(isKeyRoot || e.itemData.type === 3));
-    this.contextMenu.option('items[6].visible', (isKeyRoot || e.itemData.type === 3));
+    const isDisabled = e.itemData.disabled
+    this.contextMenu.option('items[0].visible', !(isDisabled));
+    this.contextMenu.option('items[1].visible', !(isDisabled));
+    this.contextMenu.option('items[2].visible', !(isDisabled));
+    this.contextMenu.option('items[3].visible', !(isDisabled));
+    this.contextMenu.option('items[4].visible', !(isDisabled));
   };
 
   get treeView() {
@@ -65,24 +108,8 @@ export default class Page extends PureComponent {
 
   contextMenuItemClick = (e) => {
     switch (e.itemData.id) {
-      case 'expand': {
-        this.treeView.expandItem(this.state.selectedTreeItem.id);
-        break;
-      }
-      case 'collapse': {
-        this.treeView.collapseItem(this.state.selectedTreeItem.id);
-        break;
-      }
-      case 'addModule': {
-        this.setState({ visible: true, isAdd: true, caseType: this.state.selectedTreeItem.type });
-        break;
-      }
-      case 'addKeyword': {
-        this.setState({ visible: true, isAdd: true, caseType: this.state.selectedTreeItem.type });
-        break;
-      }
       case 'rename': {
-        this.setState({ visible: true, isAdd: false, caseType: this.state.selectedTreeItem.type });
+        this.setState({ visible: true, isAdd: false });
         break;
       }
       case 'delete': {
@@ -91,6 +118,14 @@ export default class Page extends PureComponent {
       }
       case 'copy': {
         this.queryCopyModule({ moduleId: this.state.selectedTreeItem.id });
+        break;
+      }
+      case 'addBroModule': {
+        this.setState({ visible: true, isAdd: true, isBro: true, isSub: false});
+        break;
+      }
+      case 'addSubModule': {
+        this.setState({ visible: true, isAdd: true, isBro: false, isSub: true });
         break;
       }
       default:
@@ -110,123 +145,48 @@ export default class Page extends PureComponent {
       onOk() {
         that.queryDeleteModule(that, { moduleId: itemInfo.id });
       },
-      onCancel() {
-        console.log('Cancel');
-      },
     });
   };
 
   renderTreeViewItem = (item) => {
-    let itemIcon = '';
-    switch (item.type) {
-      case 1:
-        itemIcon = <BankFilled style={{ color: '#f0932b' }} />;
-        break;
-      case 2:
-        itemIcon = <AppstoreFilled style={{ color: '#3498db' }} />
-        break;
-      case 3:
-        itemIcon = <ApiFilled style={{ color: '#f0932b' }} />;
-        break;
-      default:
-        itemIcon = '';
-    }
+    let itemIcon = <AppstoreFilled style={{ color: '#3498db' }} />;
     return <span className={styles.TreeNode}>{itemIcon}<span style={{ marginLeft: 5 }}>{item.text}</span></span>;
   }
 
-  handleModalOk = (values, isAdd) => {
+  handleModalOk = (values) => {
     const { projectId } = this.props;
-    const { selectedTreeItem } = this.state;
+    const { selectedTreeItem, isAdd, isBro, isSub} = this.state;
     if (!projectId) {
       message.error('项目id异常，请刷新页面重试！');
       return;
     }
-    if ([0, 2].indexOf(selectedTreeItem.type) > -1) {
-      if (isAdd) {
+    if (isAdd) {
+      if (isBro){
         this.queryAddModule({
           name: values.name,
-          projectId: projectId,
-          type: 2,
-        });
-      } else {
-        this.queryEditModule({
-          name: values.name,
-          moduleId: selectedTreeItem.id,
+          pid: selectedTreeItem.pid,
         });
       }
-    }
-    if ([1, 3].indexOf(selectedTreeItem.type) > -1) {
-      if (isAdd) {
+      if (isSub){
         this.queryAddModule({
           name: values.name,
-          projectId: projectId,
-          type: 3,
-        });
-      } else {
-        this.queryEditModule({
-          name: values.name,
-          moduleId: selectedTreeItem.id,
+          pid: selectedTreeItem.id,
         });
       }
+    } else {
+      this.queryEditModule({
+        name: values.name,
+        moduleId: selectedTreeItem.id,
+      });
     }
-  };
-
-  queryAddModule = (params) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'uatCase/queryAddModule',
-      payload: params,
-    }).then(() => {
-      this.handleModalCancel();
-      if (this.props.refreshTree) {
-        this.props.refreshTree();
-      }
-    });
-  };
-
-  queryCopyModule = (params) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'uatCase/queryCopyModule',
-      payload: params,
-    }).then(() => {
-      if (this.props.refreshTree) {
-        this.props.refreshTree();
-      }
-    });
-  };
-
-  queryDeleteModule = (that, params) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'uatCase/queryDeleteModule',
-      payload: params,
-    }).then(() => {
-      if (that.props.refreshTree) {
-        that.props.refreshTree();
-      }
-    });
-  };
-
-  queryEditModule = (params) => {
-    const { dispatch } = this.props;
-    dispatch({
-      type: 'uatCase/queryEditModule',
-      payload: params,
-    }).then(() => {
-      this.handleModalCancel();
-      if (this.props.refreshTree) {
-        this.props.refreshTree();
-      }
-    });
   };
 
   handleModalCancel = () => {
-    this.setState({ visible: false, isAdd: false, caseType: undefined });
+    this.setState({ visible: false, isAdd: false });
   };
 
   render() {
-    const { visible, confirmLoading, menuItems, selectedTreeItem, isAdd, caseType } = this.state;
+    const { visible, confirmLoading, menuItems, selectedTreeItem, isAdd, isBro, isSub } = this.state;
     const { treeData } = this.props;
     return (
       <>
@@ -250,7 +210,8 @@ export default class Page extends PureComponent {
           visible={visible}
           itemInfo={selectedTreeItem}
           isAdd={isAdd}
-          caseType={caseType}
+          isBro={isBro}
+          isSub={isSub}
           confirmLoading={confirmLoading}
           onOk={this.handleModalOk}
           onCancel={this.handleModalCancel}

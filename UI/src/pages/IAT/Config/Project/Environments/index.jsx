@@ -32,6 +32,7 @@ export default class Page extends React.Component {
 
   componentDidMount() {
     const {projectId} = this.props;
+    console.log(projectId);
     if (projectId){
       this.setState({projectId},() => this.queryProjectEnvList())
     }

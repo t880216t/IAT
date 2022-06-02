@@ -6,27 +6,27 @@ export default {
       {
         "id": 305,
         "text": "首页",
-        "type": 2,
+        "pid": 1,
         "items":[{
           "id": 3051,
+          "pid": 305,
           "text": "专区",
-          "type": 2,
         }]
       },
       {
         "id": 306,
+        "pid": 1,
         "text": "搜索",
-        "type": 2
       },
       {
         "id": 307,
+        "pid": 1,
         "text": "活动",
-        "type": 2
       },
       {
         "id": 308,
+        "pid": 1,
         "text": "个人中心",
-        "type": 2
       },
     ],
     "msg": ""
@@ -51,5 +51,25 @@ export default {
       "total": 2
     },
     "msg": "操作成功"
+  },
+  'POST /api/api_v3/case/moduleAdd': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/case/moduleCopy': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/case/moduleDel': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/case/moduleUpdate': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
   },
 };

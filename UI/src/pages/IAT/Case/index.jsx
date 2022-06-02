@@ -30,10 +30,13 @@ export default class Page extends Component {
     const {selectItem, moduleList, projectId} = this.state;
     return (
       <div className={styles.caseContainer}>
-        <ModuleTree onSelect={this.handleTreeSelect} location={this.props.location}
-                    setModuleList={e => this.setModuleList(e)} />
+        <ModuleTree
+          onSelect={(item, projectId) => this.handleTreeSelect(item, projectId)}
+          location={this.props.location}
+          setModuleList={e => this.setModuleList(e)}
+        />
         <ProCard size={'small'} layout={!selectItem ? 'center' : undefined} ghost={!selectItem ? true : false} bordered>
-          {selectItem && [2].indexOf(selectItem.type) > -1 && <CaseList moduleList={moduleList} selectItem={selectItem} projectId={projectId} />}
+          {selectItem && <CaseList moduleList={moduleList} selectItem={selectItem} projectId={projectId} />}
           {!selectItem && <Empty description={'请先选择模块'} />}
         </ProCard>
       </div>

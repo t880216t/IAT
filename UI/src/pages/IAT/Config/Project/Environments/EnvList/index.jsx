@@ -61,6 +61,7 @@ export default class Page extends Component {
 
   render() {
     const {envList, onUpdate, onCopy, onDel, onClick, onAdd} = this.props;
+    const defaultSelectedKey = envList && envList.length > 0 ? [envList[0].id.toString()] : undefined
     const {showAdd} = this.state;
     return (
       <>
@@ -70,7 +71,7 @@ export default class Page extends Component {
           style={{
             height: '100%',
           }}
-          defaultSelectedKeys={[envList?.[0].id.toString()]}
+          defaultSelectedKeys={defaultSelectedKey}
         >
           {envList?.map(item=>(
             <Menu.Item key={item.id}>

@@ -22,33 +22,28 @@ export default class Page extends Component {
 
   onFinish = (values) => {
     if (this.props.onOk) {
-      this.props.onOk(values, this.props.isAdd);
+      this.props.onOk(values);
     }
   };
 
-  renderTitle = (isAdd, caseType) => {
+  renderTitle = (isAdd, isSub, isBro) => {
     if (isAdd) {
-      if ([0, 2].indexOf(caseType) > -1) {
+      if (isSub) {
+        return '新增子模块';
+      }
+      if (isBro){
         return '新增模块';
       }
-      if ([1, 3].indexOf(caseType) > -1) {
-        return '新增关键词';
-      }
     } else {
-      if ([0, 2].indexOf(caseType) > -1) {
-        return '编辑模块';
-      }
-      if ([1, 3].indexOf(caseType) > -1) {
-        return '编辑关键词';
-      }
+      return '编辑模块';
     }
   };
 
   render() {
-    const { visible, confirmLoading, itemInfo, isAdd, caseType } = this.props;
+    const { visible, confirmLoading, itemInfo, isAdd, isSub, isBro } = this.props;
     return (
       <Modal
-        title={this.renderTitle(isAdd, caseType)}
+        title={this.renderTitle(isAdd, isSub, isBro)}
         visible={visible}
         destroyOnClose
         confirmLoading={confirmLoading}
@@ -58,7 +53,7 @@ export default class Page extends Component {
         <Form ref={this.moduleFormRef} preserve={false} onFinish={this.onFinish}>
           <Form.Item name='name' label='名称' rules={[{ required: true }]}
                      initialValue={(!isAdd && itemInfo) ? itemInfo.text : undefined}>
-            <Input />
+            <Input autoFocus placeholder="请输入" />
           </Form.Item>
         </Form>
       </Modal>

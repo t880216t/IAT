@@ -21,6 +21,9 @@ export default class Page extends Component {
   state = {};
 
   componentDidMount() {
+    const { detailId, projectId } = this.props.location.query;
+    console.log(detailId, projectId);
+    this.setState({detailId, projectId})
   }
 
   queryFunction = params => {
@@ -37,7 +40,8 @@ export default class Page extends Component {
   };
 
   render() {
-    const {} = this.state;
+    const {detailId, projectId} = this.state;
+    console.log(detailId, projectId);
     return (
       <PageContainer
         header={{
@@ -78,7 +82,7 @@ export default class Page extends Component {
               <Button type="primary">新建用例</Button>
             </Space>
           }>
-            <ApiCaseList />
+            <ApiCaseList projectId={projectId} />
           </ProCard>
         </ProCard>
       </PageContainer>

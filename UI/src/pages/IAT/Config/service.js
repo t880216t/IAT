@@ -7,6 +7,13 @@ export async function queryProjectList(params) {
   });
 }
 
+export async function queryProjectListPre(params) {
+  return request('/api/api_v3/project/projectListPre', {
+    method: 'POST',
+    data: params,
+  });
+}
+
 export async function queryProjectAdd(params) {
   return request('/api/api_v3/project/projectAdd', {
     method: 'POST',

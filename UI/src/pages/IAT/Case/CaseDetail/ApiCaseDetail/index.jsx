@@ -17,8 +17,9 @@ const waitTime = (time = 100) => {
     }, time);
   });
 };
-export default () => {
+export default (props) => {
   const formRef = useRef();
+  console.log(props.projectId)
   return (
     <DrawerForm
       size="small"
@@ -50,7 +51,7 @@ export default () => {
       <ProCard direction="column" ghost gutter={[0, 8]}>
         <ProCard bordered title={'环境配置'} collapsible defaultCollapsed extra={
           <Space>
-            <Environments text={"默认环境"} />
+            <Environments text={"默认环境"} projectId={props.projectId} />
             <Button type="primary" icon={<CaretRightOutlined />} onClick={(e) => {
               e.stopPropagation();
             }}>

@@ -38,7 +38,7 @@ const dataSource = [
     updateTime: '2022-05-02 12:34:22'
   },
 ];
-export default () => (
+export default (props) => (
   <ProList
     onRow={(record) => {
       return {
@@ -101,7 +101,7 @@ export default () => (
       actions: {
         render: (text, row) => [
           <Button key="copy" size="small" icon={<CopyFilled />} >复制</Button>,
-          <ApiCaseDetail />,
+          <ApiCaseDetail projectId={props.projectId} />,
           <Button key="del" danger type="primary" size="small" icon={<DeleteFilled />} >删除</Button>,
         ],
       },
