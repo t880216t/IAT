@@ -4,8 +4,8 @@ import ProForm, { DrawerForm, ProFormText, ProFormDateRangePicker, ProFormSelect
 import {EditFilled, CaretRightOutlined} from '@ant-design/icons';
 import ProCard from "@ant-design/pro-card";
 
-import ApiEnvInfo from "@/pages/IAT/Case/CaseDetail/ApiEnvInfo";
-import ApiRequestInfo from "@/pages/IAT/Case/CaseDetail/ApiRequestInfo";
+import ApiEnvInfo from "@/pages/IAT/Case/CaseDetail/ApiRequestConfig";
+import ApiRequestParamsConfig from "../ApiRequestParamsConfig";
 import ApiResponseInfo from "@/pages/IAT/Case/CaseDetail/ApiResponseInfo";
 import Environments from "@/pages/IAT/Config/Project/Environments"
 
@@ -62,7 +62,7 @@ export default (props) => {
           <ApiEnvInfo />
         </ProCard>
         <ProCard bordered title={'参数配置'}>
-          <ApiRequestInfo />
+          <ApiRequestParamsConfig isCase={true} />
         </ProCard>
         <ProCard bordered title={'响应信息'}>
           <ApiResponseInfo />

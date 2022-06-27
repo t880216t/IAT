@@ -414,7 +414,7 @@ export default class Page extends React.Component {
             <Content
               style={{
                 padding: '0 20px',
-                minHeight: 280,
+                minHeight: 400,
               }}
             >
               <Spin spinning={loading}>

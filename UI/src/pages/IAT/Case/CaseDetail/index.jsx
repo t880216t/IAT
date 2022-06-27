@@ -2,13 +2,13 @@ import React, {Component} from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
 import { CopyOutlined } from '@ant-design/icons';
-import {Select, Button, Descriptions, Space} from 'antd';
+import {Select, Button, Descriptions, Space, Switch, Form} from 'antd';
 import {connect} from 'dva';
 
 import styles from './index.less';
-import ApiEnvInfo from './ApiEnvInfo';
+import ApiRequestConfig from './ApiRequestConfig';
 import ApiCaseList from './ApiCaseList';
-import ApiRequestInfo from './ApiRequestInfo';
+import ApiRequestParamsConfig from './ApiRequestParamsConfig';
 import ApiResponseInfo from './ApiResponseInfo';
 
 const {Option} = Select;
@@ -46,6 +46,7 @@ export default class Page extends Component {
   render() {
     const {detailId, projectId, caseInfo} = this.state;
     const {loading} = this.props;
+    console.log(caseInfo);
     return (
       <PageContainer
         loading={loading}
@@ -73,11 +74,18 @@ export default class Page extends Component {
         }
       >
         <ProCard direction="column" ghost gutter={[0, 8]}>
-          <ProCard bordered title={'请求配置'}>
-            <ApiEnvInfo />
+          <ProCard
+            bordered title={'请求配置'}
+            extra={
+              <Form.Item label={"自定义域名"}>
+                <Switch checked={caseInfo?.request_config?.isCustomHost} onChange={isCustomHost=>console.log(isCustomHost)} />
+              </Form.Item>
+            }
+          >
+            {caseInfo?.request_config && <ApiRequestConfig data={caseInfo?.request_config} />}
           </ProCard>
           <ProCard bordered title={'参数配置'}>
-            <ApiRequestInfo />
+            {caseInfo?.request_config && <ApiRequestParamsConfig isCase={false} data={caseInfo?.request_config} />}
           </ProCard>
           <ProCard bordered title={'响应信息'}>
             <ApiResponseInfo />

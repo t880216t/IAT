@@ -53,20 +53,13 @@ class IATTask:
             'update_user': 1,
             'share_cookie': True,
             'env_info': {
-                'default_setting': {
-                    'protocol': 'http',
-                    'domain': '192.168.0.101',
-                    'port': 5000,
-                    'headers': [{
-                        'name': 'conssstent-type',
-                        'value': 'xxxxxx',
-                    }],
-                    'params': [{
-                        'name': 'user_id',
-                        'value': 'dsfsdfdsf',
-                        'type': 'text/plain',
-                    }],
-                },
+                'protocol': 'http',
+                'domain': '192.168.0.101',
+                'port': 5000,
+                'headers': [{
+                    'name': 'conssstent-type',
+                    'value': 'xxxxxx',
+                }],
                 'proxy': {
                     'scheme': '',
                     'host': '',
@@ -82,6 +75,7 @@ class IATTask:
                 'global_params': [{
                     'key': 'username',
                     'value': 'xxxxxx',
+                    'type': 'text/plain',
                 }],
             },
             'case_list': [{
@@ -121,25 +115,25 @@ class IATTask:
                 }],
                 'asserts': [],
                 'extracts': [],
-                'asserts': [{
-                    'type': 'ResponseAssertion',
-                    'name': '返回内容校验',
-                    'enabled': True,
-                    'test_field': TestField.RESPONSE_BODY,
-                    'test_type': TestType.EQUALS,
-                    'patterns': ['code'],
-                }, {
-                    'type': 'JSONPathAssertion',
-                    'name': 'json路径断言',
-                    'enabled': True,
-                    'json_path': '$.code',
-                    'expected_value': '0',
-                }, {
-                    'type': 'DurationAssertion',
-                    'name': '断言持续时间',
-                    'enabled': True,
-                    'duration': 123,
-                }, ],
+                # 'asserts': [{
+                #     'type': 'ResponseAssertion',
+                #     'name': '返回内容校验',
+                #     'enabled': True,
+                #     'test_field': TestField.RESPONSE_BODY,
+                #     'test_type': TestType.EQUALS,
+                #     'patterns': ['code'],
+                # }, {
+                #     'type': 'JSONPathAssertion',
+                #     'name': 'json路径断言',
+                #     'enabled': True,
+                #     'json_path': '$.code',
+                #     'expected_value': '0',
+                # }, {
+                #     'type': 'DurationAssertion',
+                #     'name': '断言持续时间',
+                #     'enabled': True,
+                #     'duration': 123,
+                # }, ],
                 # 'extracts': [{
                 #     'type': 'JSONPostProcessor',
                 #     'name': 'JSON提取器',
@@ -170,16 +164,16 @@ class IATTask:
         test_thread_group = CommonThreadGroup(name='TestThreadGroup')
         test_thread_group.append(HTTPCacheManager(clear_each_iteration=True))
         test_thread_group.append(HTTPRequestDefaults(
-            protocol=self.task_info['env_info']['default_setting']['protocol'],
-            domain=self.task_info['env_info']['default_setting']['domain'],
-            port=self.task_info['env_info']['default_setting']['port'],
+            protocol=self.task_info['env_info']['protocol'],
+            domain=self.task_info['env_info']['domain'],
+            port=self.task_info['env_info']['port'],
             implementation=Implementation.HTTP,
             connect_timeout=self.timeout,
             response_timeout=self.timeout,
-            arguments=[Argument(name=item['name'], value=item['value'], content_type=item['type']) for item in self.task_info['env_info']['default_setting']['params']]
+            arguments=[Argument(name=item['name'], value=item['value'], content_type=item['type']) for item in self.task_info['env_info']['global_params']]
         ))
         test_thread_group.append(HTTPHeaderManager(
-            headers=[Header(name=item['name'], value=item['value']) for item in self.task_info['env_info']['default_setting']['headers']]
+            headers=[Header(name=item['name'], value=item['value']) for item in self.task_info['env_info']['headers']]
         ))
         test_thread_group.append(HTTPCookieManager())
         for case in self.task_info['case_list']:

@@ -1,6 +1,7 @@
 import { EditableProTable, ProCard } from '@ant-design/pro-components';
 import React, { useState } from 'react';
 export default (props) => {
+  const {isCase} = props;
   const [editableKeys, setEditableRowKeys] = useState(() => props.data?.map((item) => item.id));
   const [dataSource, setDataSource] = useState(() => props.data);
   const columns = [
@@ -16,12 +17,6 @@ export default (props) => {
       valueType: "text",
       width: 200,
       ellipsis: true,
-    },
-    {
-      title: '描述',
-      width: 220,
-      dataIndex: 'description',
-      valueType: "text",
     },
     {
       title: '操作',
@@ -42,9 +37,6 @@ export default (props) => {
       size="small"
       value={dataSource}
       controlled
-      formItemProps={{
-        label: '默认请求头参数：',
-      }}
       columns={columns}
       recordCreatorProps={{
         creatorButtonText: "新增参数",
