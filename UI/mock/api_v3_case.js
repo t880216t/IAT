@@ -31,7 +31,7 @@ export default {
     ],
     "msg": ""
   },
-  'POST /api/api_v3/case/caseList': {
+  'POST /api/api_v3/case/apiList': {
     "code": 0,
     "content": {
       "data": [
@@ -72,7 +72,7 @@ export default {
     content: {},
     msg: '操作成功'
   },
-  'POST /api/api_v3/case/caseInfo': {
+  'POST /api/api_v3/case/apiInfo': {
     code: 0,
     content: {
       id: 12,
@@ -101,7 +101,11 @@ export default {
           id: 123,
           key: 'sdfd',
           value: '12321',
-        }],
+        },{
+          id: 1213,
+          key: 'Content-Type',
+          value: 'application/json',
+        },],
         params: [{
           id: 123,
           key: 'sdf',
@@ -114,31 +118,117 @@ export default {
           text: '{"comId": 123}'
         },
         file: [{
+          id: 1232,
           key: 'file_name',
+          type: 'text/file',
           required: 1,
           path: 'https://test.com/file/123.png',
-          description: '',
+          description: 'test',
         }]
       }
     },
     msg: '操作成功'
   },
-  'POST /api/api_v3/case/caseAdd': {
+  'POST /api/api_v3/case/apiAdd': {
     code: 0,
     content: {},
     msg: '操作成功'
   },
-  'POST /api/api_v3/case/caseCopy': {
+  'POST /api/api_v3/case/apiCopy': {
     code: 0,
     content: {},
     msg: '操作成功'
   },
-  'POST /api/api_v3/case/caseDel': {
+  'POST /api/api_v3/case/apiDel': {
     code: 0,
     content: {},
     msg: '操作成功'
   },
-  'POST /api/api_v3/case/caseMove': {
+  'POST /api/api_v3/case/apiMove': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+
+  'POST /api/api_v3/case/apiCaseList': {
+    code: 0,
+    content: [
+      {
+        id: 1,
+        level: 0,
+        name: '检查正确账号密码登录成功',
+        desc: '我是一条测试的描述',
+        status: 1,
+        label: ['核心转化', '登录'],
+        updateUser: '陈   皮',
+        updateTime: '2022-05-02 12:34:22'
+      },
+      {
+        id: 2,
+        level: 1,
+        name: '检查错误密码无法登录',
+        desc: '我是一条测试的描述',
+        status: 1,
+        label: ['核心转化', '登录'],
+        updateUser: '陈   皮',
+        updateTime: '2022-05-02 12:34:22'
+      },
+      {
+        id: 3,
+        level: 2,
+        name: '检查密码为空时提示正确',
+        desc: '我是一条测试的描述',
+        status: 1,
+        label: ['核心转化', '登录'],
+        updateUser: '陈   皮',
+        updateTime: '2022-05-02 12:34:22'
+      },
+    ],
+    msg: ''
+  },
+
+  'GET /api/api_v3/case/apiCaseTags': {
+    code: 0,
+    content: [
+      {
+        label: 'item 1',
+        value: 'a',
+      },
+      {
+        label: 'item 2',
+        value: 'b',
+      },
+      {
+        label: 'item 3',
+        value: 'c',
+      },
+    ],
+    msg: '操作成功'
+  },
+
+  'POST /api/api_v3/case/apiCaseAdd': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+
+  'POST /api/api_v3/case/apiCaseInfoUpdate': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+
+  'POST /api/api_v3/case/apiCaseMake': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/case/apiCaseCopy': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+  'POST /api/api_v3/case/apiCaseDel': {
     code: 0,
     content: {},
     msg: '操作成功'

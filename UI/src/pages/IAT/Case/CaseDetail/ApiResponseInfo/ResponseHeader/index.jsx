@@ -9,38 +9,12 @@ import "ace-builds/src-noconflict/ext-language_tools";
 
 export default (props) => {
   const {isCase, data, headers} = props;
-  const contentType = headers?.filter(item => item.key.toLowerCase() === 'content-type')
   return (
-    <ProCard
-      title={
-        <div>
-          <span>Content-Type: {contentType?.length === 1 && contentType[0]?.value}</span>
-        </div>
-      }
-      headerBordered={false}
-      extra={
-        <Select
-          style={{width: 120}}
-          defaultValue={data?.type || 'raw'}
-          options={[{
-            lable: 'JSON',
-            value: 'JSON',
-          },{
-            lable: 'XML',
-            value: 'XML',
-          },{
-            lable: 'RAW',
-            value: 'RAW',
-          },]}
-          placeholder="格式化类型"
-        />
-      }
-    >
+    <ProCard>
       <AceEditor
-        placeholder="Placeholder Text"
-        mode="json"
-        theme="monokai"
-        name="request_body"
+        mode="html"
+        theme="github"
+        name="response_header"
         // onLoad={this.onLoad}
         // onChange={this.onChange}
         fontSize={14}

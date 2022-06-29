@@ -1,13 +1,7 @@
 import { ProForm, ProFormDatePicker, ProFormDateRangePicker, ProFormDigit, ProFormRadio, ProFormSelect, ProFormSwitch, ProFormText, ProFormTextArea, } from '@ant-design/pro-components';
 import { Form, Switch } from 'antd';
 import React, { useState, useRef } from 'react';
-const waitTime = (time = 100) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(true);
-    }, time);
-  });
-};
+
 export default (props) => {
   const formRef = useRef()
   return (

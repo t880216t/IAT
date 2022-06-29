@@ -9,19 +9,19 @@ export default (props) => {
       title: '参数名',
       dataIndex: 'key',
       valueType: 'text',
-      width: 200,
+      width: '30%',
     },
     {
       title: '参数值',
       dataIndex: 'value',
       valueType: "text",
-      width: 200,
+      width: '40%',
       ellipsis: true,
     },
     {
       title: '操作',
       valueType: 'option',
-      width: 150,
+      width: 80,
       render: () => {
         return null;
       },

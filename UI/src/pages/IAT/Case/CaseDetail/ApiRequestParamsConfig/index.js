@@ -6,6 +6,7 @@ import RequestHeaderConfig  from './RequestHeaderConfig'
 import RequestParamsConfig  from './RequestParamsConfig'
 import UrlParamsConfig  from './UrlParamsConfig'
 import RequestBodyConfig  from './RequestBodyConfig'
+import RequestFileConfig  from './RequestFileConfig'
 
 export default (props) => {
   const {isCase} = props
@@ -31,10 +32,10 @@ export default (props) => {
         <RequestParamsConfig isCase={isCase} data={props.data?.params} />
       </ProCard.TabPane>
       <ProCard.TabPane key="body" tab="请求体">
-        <RequestBodyConfig  isCase={isCase} data={props.data?.body} />
+        <RequestBodyConfig  isCase={isCase} data={props.data?.body} headers={props.data?.headers} />
       </ProCard.TabPane>
       <ProCard.TabPane key="file" tab="发送文件">
-        内容二
+        <RequestFileConfig isCase={isCase} data={props.data?.file} />
       </ProCard.TabPane>
     </ProCard>);
 };

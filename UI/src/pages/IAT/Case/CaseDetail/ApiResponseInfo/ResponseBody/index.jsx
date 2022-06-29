@@ -37,10 +37,10 @@ export default (props) => {
       }
     >
       <AceEditor
-        placeholder="Placeholder Text"
+        placeholder="返回信息"
         mode="json"
-        theme="monokai"
-        name="request_body"
+        theme="github"
+        name="response_body"
         // onLoad={this.onLoad}
         // onChange={this.onChange}
         fontSize={14}

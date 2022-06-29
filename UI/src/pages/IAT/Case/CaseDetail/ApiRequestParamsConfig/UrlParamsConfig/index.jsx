@@ -27,7 +27,7 @@ export default (props) => {
     {
       title: '操作',
       valueType: 'option',
-      width: 150,
+      width: 80,
       render: () => {
         return null;
       },

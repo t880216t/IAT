@@ -6,7 +6,7 @@ import { connect } from 'dva';
 
 import AddCaseModal from '../AddCaseModal';
 import styles from './index.less';
-import { queryCaseList } from '../../service';
+import { queryApiList } from '../../service';
 
 @connect(({ iatCase, loading }) => ({
   iatCase,
@@ -42,15 +42,15 @@ export default class Page extends Component {
   };
 
   handleCaseMove = (key, selectRowKeys) => {
-    this.queryCaseMove(key, selectRowKeys);
+    this.queryApiMove(key, selectRowKeys);
   };
 
   handleCaseCopy = (caseIds) => {
-    this.queryCaseCopy(caseIds);
+    this.queryApiCopy(caseIds);
   };
 
   handleCaseDelete = (caseIds) => {
-    this.queryCaseDelete(caseIds);
+    this.queryApiDelete(caseIds);
   };
 
   handleUpdateCaseList = async (params) => {
@@ -60,7 +60,7 @@ export default class Page extends Component {
       message.info('请先选择模块！');
       return;
     }
-    const response = await queryCaseList({
+    const response = await queryApiList({
       type: 1,
       keyword: searchKeyword,
       page: params.current,
@@ -76,17 +76,17 @@ export default class Page extends Component {
 
   handleModalOk = (values) => {
     const { selectItem } = this.props;
-    this.queryCaseAdd(selectItem.id, values.name);
+    this.queryApiAdd(selectItem.id, values.name);
   };
 
   handleModalCancel = () => {
     this.setState({ visible: false });
   };
 
-  queryCaseAdd = (moduleId, caseName) => {
+  queryApiAdd = (moduleId, caseName) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'iatCase/queryCaseAdd',
+      type: 'iatCase/queryApiAdd',
       payload: { moduleId, caseName, type: 1 },
     }).then(() => {
       this.handleModalCancel();
@@ -94,10 +94,10 @@ export default class Page extends Component {
     });
   };
 
-  queryCaseCopy = (caseIds) => {
+  queryApiCopy = (caseIds) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'iatCase/queryCaseCopy',
+      type: 'iatCase/queryApiCopy',
       payload: { caseIds },
     }).then(() => {
       if (this.tableRef) {
@@ -106,10 +106,10 @@ export default class Page extends Component {
     });
   };
 
-  queryCaseDelete = (caseIds) => {
+  queryApiDelete = (caseIds) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'iatCase/queryCaseDelete',
+      type: 'iatCase/queryApiDelete',
       payload: { caseIds },
     }).then(() => {
       if (this.tableRef) {
@@ -118,10 +118,10 @@ export default class Page extends Component {
     });
   };
 
-  queryCaseMove = (moduleId, caseIds) => {
+  queryApiMove = (moduleId, caseIds) => {
     const { dispatch } = this.props;
     dispatch({
-      type: 'iatCase/queryCaseMove',
+      type: 'iatCase/queryApiMove',
       payload: { moduleId, caseIds },
     }).then(() => {
       this.tableRef.current.reload();

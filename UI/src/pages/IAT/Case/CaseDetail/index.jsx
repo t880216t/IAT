@@ -10,48 +10,71 @@ import ApiRequestConfig from './ApiRequestConfig';
 import ApiCaseList from './ApiCaseList';
 import ApiRequestParamsConfig from './ApiRequestParamsConfig';
 import ApiResponseInfo from './ApiResponseInfo';
+import ApiCaseInfoModal from './ApiCaseInfoModal';
+import {queryApiCaseMake} from "@/pages/IAT/Case/service";
 
 const {Option} = Select;
 
 @connect(({iatCase, loading}) => ({
   iatCase,
-  loading: loading.effects['iatCase/queryCaseInfo'],
+  loading: loading.effects['iatCase/queryApiInfo'],
 }))
 export default class Page extends Component {
   state = {
     detailId: null,
     projectId: null,
-    caseInfo: {},
+    apiInfo: {},
   };
 
   componentDidMount() {
     const { detailId, projectId } = this.props.location.query;
-    this.setState({detailId, projectId}, () => this.queryCaseInfo())
+    this.setState({detailId, projectId}, () => this.queryApiInfo())
   }
 
-  queryCaseInfo = () => {
+  queryApiInfo = () => {
     const {dispatch} = this.props;
     const {detailId} = this.state;
     dispatch({
-      type: 'iatCase/queryCaseInfo',
+      type: 'iatCase/queryApiInfo',
       payload: {caseId: detailId},
     }).then(() => {
-      const {caseInfo} = this.props.iatCase;
+      const {apiInfo} = this.props.iatCase;
       this.setState({
-        caseInfo,
+        apiInfo,
       });
     });
   };
 
+  queryApiCaseAdd = (params) => {
+    const {dispatch} = this.props;
+    const {detailId} = this.state;
+    dispatch({
+      type: 'iatCase/queryApiCaseAdd',
+      payload: {apiId: detailId, ...params},
+    }).then(() => {
+      this.queryApiInfo()
+    });
+  };
+
+  queryApiCaseMake = () => {
+    const {dispatch} = this.props;
+    const {detailId} = this.state;
+    dispatch({
+      type: 'iatCase/queryApiCaseMake',
+      payload: {apiId: detailId},
+    }).then(() => {
+      this.queryApiInfo()
+    });
+  };
+
   render() {
-    const {detailId, projectId, caseInfo} = this.state;
+    const {detailId, projectId, apiInfo} = this.state;
     const {loading} = this.props;
-    console.log(caseInfo);
     return (
       <PageContainer
         loading={loading}
         header={{
-          title: caseInfo?.case_name,
+          title: apiInfo?.case_name,
           ghost: true,
           extra: [
             <Button key="history" icon={<CopyOutlined />}>
@@ -67,9 +90,9 @@ export default class Page extends Component {
         }}
         content={
           <Descriptions column={2}>
-            <Descriptions.Item label="创建信息">{`${caseInfo?.add_user} ${caseInfo?.add_time}`}</Descriptions.Item>
-            <Descriptions.Item label="更新信息">{`${caseInfo?.update_user} ${caseInfo?.update_time}`}</Descriptions.Item>
-            <Descriptions.Item span={2} label="描述信息">{caseInfo?.description}</Descriptions.Item>
+            <Descriptions.Item label="创建信息">{`${apiInfo?.add_user} ${apiInfo?.add_time}`}</Descriptions.Item>
+            <Descriptions.Item label="更新信息">{`${apiInfo?.update_user} ${apiInfo?.update_time}`}</Descriptions.Item>
+            <Descriptions.Item span={2} label="描述信息">{apiInfo?.description}</Descriptions.Item>
           </Descriptions>
         }
       >
@@ -78,25 +101,30 @@ export default class Page extends Component {
             bordered title={'请求配置'}
             extra={
               <Form.Item label={"自定义域名"}>
-                <Switch checked={caseInfo?.request_config?.isCustomHost} onChange={isCustomHost=>console.log(isCustomHost)} />
+                <Switch checked={apiInfo?.request_config?.isCustomHost} onChange={isCustomHost=>console.log(isCustomHost)} />
               </Form.Item>
             }
           >
-            {caseInfo?.request_config && <ApiRequestConfig data={caseInfo?.request_config} />}
+            {apiInfo?.request_config && <ApiRequestConfig data={apiInfo?.request_config} />}
           </ProCard>
           <ProCard bordered title={'参数配置'}>
-            {caseInfo?.request_config && <ApiRequestParamsConfig isCase={false} data={caseInfo?.request_config} />}
+            {apiInfo?.request_config && <ApiRequestParamsConfig isCase={false} data={apiInfo?.request_config} />}
           </ProCard>
           <ProCard bordered title={'响应信息'}>
             <ApiResponseInfo />
           </ProCard>
-          <ProCard bordered title={'测试用例'} extra={
-            <Space>
-              <Button >生成正交用例</Button>
-              <Button type="primary">新建用例</Button>
-            </Space>
-          }>
-            <ApiCaseList projectId={projectId} />
+          <ProCard
+            bordered
+            title={'测试用例'}
+            bodyStyle={{padding: 0}}
+            extra={
+              <Space>
+                <Button onClick={()=>this.queryApiCaseMake()} >生成正交用例</Button>
+                <ApiCaseInfoModal projectId={projectId} apiId={detailId} onAdd={this.queryApiCaseAdd} />
+              </Space>
+            }
+          >
+            <ApiCaseList projectId={projectId} detailId={detailId} />
           </ProCard>
         </ProCard>
       </PageContainer>

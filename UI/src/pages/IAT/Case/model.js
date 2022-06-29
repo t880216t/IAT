@@ -4,11 +4,17 @@ import {
   queryModuleCopy,
   queryModuleDel,
   queryModuleUpdate,
-  queryCaseInfo,
-  queryCaseAdd,
-  queryCaseCopy,
-  queryCaseDelete,
-  queryCaseMove,
+  queryApiInfo,
+  queryApiAdd,
+  queryApiCopy,
+  queryApiDelete,
+  queryApiMove,
+  queryApiCaseList,
+  queryApiCaseAdd,
+  queryApiCaseInfoUpdate,
+  queryApiCaseMake,
+  queryApiCaseCopy,
+  queryApiCaseDelete,
 } from './service';
 import {
   queryProjectListPre,
@@ -20,7 +26,7 @@ const Model = {
   state: {
     projectList: [],
     treeData: [],
-    caseInfo: {},
+    apiInfo: {},
   },
   effects: {
     *queryProjectListPre({ payload }, { call, put }) {
@@ -61,33 +67,70 @@ const Model = {
         message.error(response.msg)
       }
     },
-    *queryCaseInfo({ payload }, { call, put }) {
-      yield put({ type: 'updateState', payload: { caseInfo: {} } });
-      const response = yield call(queryCaseInfo, payload);
+    *queryApiInfo({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { apiInfo: {} } });
+      const response = yield call(queryApiInfo, payload);
       if (response && response.code === 0) {
-        yield put({ type: 'updateState', payload: { caseInfo: response.content } });
+        yield put({ type: 'updateState', payload: { apiInfo: response.content } });
       }
     },
-    *queryCaseAdd({ payload }, { call, put }) {
-      const response = yield call(queryCaseAdd, payload);
+    *queryApiAdd({ payload }, { call, put }) {
+      const response = yield call(queryApiAdd, payload);
       if (response && response.code !== 0) {
         message.error(response.msg)
       }
     },
-    *queryCaseCopy({ payload }, { call, put }) {
-      const response = yield call(queryCaseCopy, payload);
+    *queryApiCopy({ payload }, { call, put }) {
+      const response = yield call(queryApiCopy, payload);
       if (response && response.code !== 0) {
         message.error(response.msg)
       }
     },
-    *queryCaseDelete({ payload }, { call, put }) {
-      const response = yield call(queryCaseDelete, payload);
+    *queryApiDelete({ payload }, { call, put }) {
+      const response = yield call(queryApiDelete, payload);
       if (response && response.code !== 0) {
         message.error(response.msg)
       }
     },
-    *queryCaseMove({ payload }, { call, put }) {
-      const response = yield call(queryCaseMove, payload);
+    *queryApiMove({ payload }, { call, put }) {
+      const response = yield call(queryApiMove, payload);
+      if (response && response.code !== 0) {
+        message.error(response.msg)
+      }
+    },
+    *queryApiCaseList({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { caseList: {} } });
+      const response = yield call(queryApiCaseList, payload);
+      if (response && response.code === 0) {
+        yield put({ type: 'updateState', payload: { caseList: response.content } });
+      }
+    },
+    *queryApiCaseAdd({ payload }, { call, put }) {
+      const response = yield call(queryApiCaseAdd, payload);
+      if (response && response.code !== 0) {
+        message.error(response.msg)
+      }
+    },
+    *queryApiCaseMake({ payload }, { call, put }) {
+      const response = yield call(queryApiCaseMake, payload);
+      if (response && response.code !== 0) {
+        message.error(response.msg)
+      }
+    },
+    *queryApiCaseInfoUpdate({ payload }, { call, put }) {
+      const response = yield call(queryApiCaseInfoUpdate, payload);
+      if (response && response.code !== 0) {
+        message.error(response.msg)
+      }
+    },
+    *queryApiCaseCopy({ payload }, { call, put }) {
+      const response = yield call(queryApiCaseCopy, payload);
+      if (response && response.code !== 0) {
+        message.error(response.msg)
+      }
+    },
+    *queryApiCaseDelete({ payload }, { call, put }) {
+      const response = yield call(queryApiCaseDelete, payload);
       if (response && response.code !== 0) {
         message.error(response.msg)
       }

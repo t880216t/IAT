@@ -1,67 +1,90 @@
-import React from 'react';
-import { Button, Tag, Space } from 'antd';
+import React, {Component} from 'react';
+import {Button, Select, Space, Tag, Popconfirm} from 'antd';
+import {connect} from 'dva';
+
 import ProList from '@ant-design/pro-list';
 import { EditFilled, CopyFilled, DeleteFilled } from '@ant-design/icons';
 
 import ApiCaseDetail from '../ApiCaseDetail'
+import ApiCaseInfoModal from '../ApiCaseInfoModal'
 import styles from './index.less'
+import {queryApiCaseCopy, queryApiCaseDelete} from "@/pages/IAT/Case/service";
 
-const dataSource = [
-  {
-    id: 1,
-    level: 0,
-    name: '检查正确账号密码登录成功',
-    desc: '我是一条测试的描述',
-    status: 1,
-    label: ['核心转化', '登录'],
-    updateUser: '陈   皮',
-    updateTime: '2022-05-02 12:34:22'
-  },
-  {
-    id: 2,
-    level: 1,
-    name: '检查错误密码无法登录',
-    desc: '我是一条测试的描述',
-    status: 1,
-    label: ['核心转化', '登录'],
-    updateUser: '陈   皮',
-    updateTime: '2022-05-02 12:34:22'
-  },
-  {
-    id: 3,
-    level: 2,
-    name: '检查密码为空时提示正确',
-    desc: '我是一条测试的描述',
-    status: 1,
-    label: ['核心转化', '登录'],
-    updateUser: '陈   皮',
-    updateTime: '2022-05-02 12:34:22'
-  },
-];
-export default (props) => (
-  <ProList
-    onRow={(record) => {
-      return {
-        onMouseEnter: () => {
-          console.log(record);
-        },
-        onClick: () => {
-          console.log(record);
-        },
-      };
-    }}
-    rowKey="id"
-    dataSource={dataSource}
-    pagination={{
-      size: 'small',
-      defaultPageSize: 5,
-      // showSizeChanger: true,
-    }}
-    // showActions="hover"
-    // showExtra="hover"
-    metas={{
+const {Option} = Select;
+
+@connect(({iatCase, loading}) => ({
+  iatCase,
+  loading: loading.effects['model/queryFunction'],
+}))
+export default class Page extends Component {
+  state = {
+    caseList: [],
+  };
+
+  componentDidMount() {
+    const {detailId} = this.props;
+    this.setState({detailId},()=>{
+      this.queryApiCaseList({detailId})
+    })
+  }
+
+  queryApiCaseList = params => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'iatCase/queryApiCaseList',
+      payload: {...params},
+    }).then(() => {
+      const {caseList} = this.props.iatCase;
+      this.setState({
+        caseList,
+      });
+    });
+  };
+
+  queryApiCaseInfoUpdate = params => {
+    const {dispatch} = this.props;
+    const {detailId} = this.state;
+    dispatch({
+      type: 'iatCase/queryApiCaseInfoUpdate',
+      payload: {...params},
+    }).then(() => {
+      this.queryApiCaseList({detailId})
+    });
+  };
+
+  queryApiCaseCopy = caseId => {
+    const {dispatch} = this.props;
+    const {detailId} = this.state;
+    dispatch({
+      type: 'iatCase/queryApiCaseCopy',
+      payload: {caseId},
+    }).then(() => {
+      this.queryApiCaseList({detailId})
+    });
+  };
+
+  queryApiCaseDelete = caseId => {
+    const {dispatch} = this.props;
+    const {detailId} = this.state;
+    dispatch({
+      type: 'iatCase/queryApiCaseDelete',
+      payload: {caseId},
+    }).then(() => {
+      this.queryApiCaseList({detailId})
+    });
+  };
+
+  render() {
+    const {projectId} = this.props;
+    const {caseList} = this.state;
+    const column = {
       title: {
         dataIndex: 'name',
+        render: (text, record) => (
+          <div className={styles.caseName}>
+            <ApiCaseInfoModal text={text} data={record} onUpdate={this.queryApiCaseInfoUpdate}/>
+          </div>
+        )
       },
       avatar:{
         render: (_, record) => {
@@ -71,7 +94,7 @@ export default (props) => (
               {record.level === 1&&(<Tag color="#2db7f5">P{record.level}</Tag>)}
               {record.level === 2&&(<Tag color="#f6b93b">P{record.level}</Tag>)}
             </>
-        );
+          );
         },
       },
       description: {
@@ -99,11 +122,38 @@ export default (props) => (
         }
       },
       actions: {
-        render: (text, row) => [
-          <Button key="copy" size="small" icon={<CopyFilled />} >复制</Button>,
-          <ApiCaseDetail projectId={props.projectId} />,
-          <Button key="del" danger type="primary" size="small" icon={<DeleteFilled />} >删除</Button>,
+        render: (text, record) => [
+          <Button key="copy" size="small" icon={<CopyFilled />} onClick={()=>this.queryApiCaseCopy(record.id)} >复制</Button>,
+          <ApiCaseDetail projectId={projectId} caseId={record.id} />,
+          <Popconfirm title="确认删除这条用例吗？" okText="确认" cancelText="取消" onConfirm={()=>this.queryApiCaseDelete(record.id)}>
+            <Button key="del" danger type="primary" size="small" icon={<DeleteFilled />} >删除</Button>
+          </Popconfirm>,
         ],
       },
-    }}
-  />);
+    }
+    return (
+      <ProList
+        onRow={(record) => {
+          return {
+            onMouseEnter: () => {
+              console.log(record);
+            },
+            onClick: () => {
+              console.log(record);
+            },
+          };
+        }}
+        rowKey="id"
+        dataSource={caseList}
+        pagination={{
+          size: 'small',
+          defaultPageSize: 5,
+          // showSizeChanger: true,
+        }}
+        // showActions="hover"
+        // showExtra="hover"
+        metas={column}
+      />
+    );
+  }
+}
