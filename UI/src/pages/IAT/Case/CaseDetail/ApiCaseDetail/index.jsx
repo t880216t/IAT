@@ -1,81 +1,117 @@
-import React, { useRef } from 'react';
+import React, { Component } from 'react';
 import {Button, message, Space} from 'antd';
 import ProForm, { DrawerForm, ProFormText, ProFormDateRangePicker, ProFormSelect, } from '@ant-design/pro-form';
-import {EditFilled, CaretRightOutlined} from '@ant-design/icons';
+import {EditFilled, CaretRightOutlined, PlusOutlined} from '@ant-design/icons';
 import ProCard from "@ant-design/pro-card";
+import {connect} from 'dva';
 
-import ApiEnvInfo from "@/pages/IAT/Case/CaseDetail/ApiRequestConfig";
+import ApiRequestConfig from "../ApiRequestConfig";
 import ApiRequestParamsConfig from "../ApiRequestParamsConfig";
-import ApiResponseInfo from "@/pages/IAT/Case/CaseDetail/ApiResponseInfo";
+import ApiResponseInfo from "../ApiResponseInfo";
+import CaseDependent from "./CaseDependent";
+import CaseScripts from "./CaseScripts";
+import CaseAssertion from "./CaseAssertion";
+import CaseValueExtract from "./CaseValueExtract";
+import ScriptModal from "./CaseScripts/ScriptModal";
 import Environments from "@/pages/IAT/Config/Project/Environments"
 
+import styles from './index.less';
 
-const waitTime = (time = 100) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(true);
-    }, time);
-  });
-};
-export default (props) => {
-  const {caseId, projectId} = props
-  const formRef = useRef();
-  return (
-    <DrawerForm
-      size="small"
-      title="用例详情"
-      formRef={formRef}
-      width={"80vw"}
-      trigger={
-        <Button type="primary" size="small" icon={<EditFilled />}>
-          编辑
-        </Button>
-      }
-      autoFocusFirstInput
-      submitter={false}
-      drawerProps={{
-        placement: "left",
-        destroyOnClose: true,
-        bodyStyle: {
-          background: '#f1f2f6'
+
+@connect(({iatCase, loading}) => ({
+  iatCase,
+  loading: loading.effects['iatCase/queryApiCaseInfo'],
+}))
+export default class Page extends Component {
+  constructor() {
+    super();
+    this.state = {
+      caseInfo: {}
+    }
+    this.formRef = React.createRef();
+  }
+
+  componentDidMount() {
+  }
+
+  queryApiCaseInfo = caseId => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'iatCase/queryApiCaseInfo',
+      payload: {caseId},
+    }).then(() => {
+      const {caseInfo} = this.props.iatCase;
+      this.setState({
+        caseInfo,
+      });
+    });
+  };
+
+  render() {
+    const {caseInfo} = this.state;
+    const {caseId, projectId, loading} = this.props
+
+    return (
+      <DrawerForm
+        size="small"
+        title={caseInfo?.case_name}
+        formRef={this.formRef}
+        width={"80vw"}
+        trigger={
+          <Button type="primary" size="small" icon={<EditFilled />} onClick={() => this.queryApiCaseInfo(caseId)}>
+            编辑
+          </Button>
         }
-      }}
-      onFinish={async (values) => {
-        await waitTime(2000);
-        console.log(values.name);
-        message.success('提交成功');
-        // 不返回不会关闭弹框
-        return true;
-      }}
-    >
-      <ProCard direction="column" ghost gutter={[0, 8]}>
-        <ProCard bordered title={'环境配置'} collapsible defaultCollapsed extra={
-          <Space>
-            <Environments text={"默认环境"} projectId={projectId} />
-            <Button type="primary" icon={<CaretRightOutlined />} onClick={(e) => {
-              e.stopPropagation();
-            }}>
-              调试
-            </Button>
-          </Space>
-        }>
-          <ApiEnvInfo />
+        autoFocusFirstInput
+        submitter={false}
+        drawerProps={{
+          placement: "left",
+          destroyOnClose: true,
+          bodyStyle: {
+            background: '#f1f2f6'
+          },
+          extra: (
+            <Space>
+              <Environments size={'normal'} text={"默认环境"} projectId={projectId} />
+              <Button type="primary" icon={<CaretRightOutlined />} onClick={(e) => {
+                e.stopPropagation();
+              }}>
+                调试
+              </Button>
+            </Space>
+          )
+        }}
+        onFinish={async (values) => {
+          await waitTime(2000);
+          console.log(values.name);
+          message.success('提交成功');
+          return true;
+        }}
+      >
+        <ProCard direction="column" ghost gutter={[0, 8]} loading={loading}>
+          <ProCard bordered title={'请求配置'} collapsible defaultCollapsed>
+            {caseInfo?.request_config && <ApiRequestConfig isCase={true} data={caseInfo?.request_config} />}
+          </ProCard>
+          <ProCard bordered title={'参数配置'}>
+            {caseInfo?.request_config && <ApiRequestParamsConfig isCase={true} data={caseInfo?.request_config} />}
+          </ProCard>
+          <ProCard bordered title={'响应信息'} collapsible defaultCollapsed>
+            <ApiResponseInfo />
+          </ProCard>
+          <ProCard bodyStyle={{padding: 5}} bordered title={'接口依赖'} extra={<Button icon={<PlusOutlined/>} type="primary">添加</Button>}>
+            <CaseDependent />
+          </ProCard>
+          <ProCard bordered title={'处理脚本'} extra={<ScriptModal />}>
+            <CaseScripts />
+          </ProCard>
+          <ProCard bordered title={'返回值断言'} extra={<Button icon={<PlusOutlined/>} type="primary">添加</Button>}>
+            <CaseAssertion />
+          </ProCard>
+          <ProCard bordered title={'参数化提取'} extra={<Button icon={<PlusOutlined/>} type="primary">添加</Button>}>
+            <CaseValueExtract />
+          </ProCard>
         </ProCard>
-        <ProCard bordered title={'参数配置'}>
-          <ApiRequestParamsConfig isCase={true} />
-        </ProCard>
-        <ProCard bordered title={'响应信息'}>
-          <ApiResponseInfo />
-        </ProCard>
-        <ProCard bordered title={'接口依赖'}>
-
-        </ProCard>
-        <ProCard bordered title={'处理脚本'}>
-
-        </ProCard>
-        <ProCard bordered title={'用例断言'}>
-
-        </ProCard>
-      </ProCard>
-  </DrawerForm>);
-};
+      </DrawerForm>
+    );
+  }
+}

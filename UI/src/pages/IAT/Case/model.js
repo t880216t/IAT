@@ -10,6 +10,7 @@ import {
   queryApiDelete,
   queryApiMove,
   queryApiCaseList,
+  queryApiCaseInfo,
   queryApiCaseAdd,
   queryApiCaseInfoUpdate,
   queryApiCaseMake,
@@ -103,6 +104,13 @@ const Model = {
       const response = yield call(queryApiCaseList, payload);
       if (response && response.code === 0) {
         yield put({ type: 'updateState', payload: { caseList: response.content } });
+      }
+    },
+    *queryApiCaseInfo({ payload }, { call, put }) {
+      yield put({ type: 'updateState', payload: { caseInfo: {} } });
+      const response = yield call(queryApiCaseInfo, payload);
+      if (response && response.code === 0) {
+        yield put({ type: 'updateState', payload: { caseInfo: response.content } });
       }
     },
     *queryApiCaseAdd({ payload }, { call, put }) {

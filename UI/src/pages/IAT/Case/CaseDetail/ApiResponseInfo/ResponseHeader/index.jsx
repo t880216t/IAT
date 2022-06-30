@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react';
 import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-xml";
 import "ace-builds/src-noconflict/mode-json";
-import "ace-builds/src-noconflict/theme-monokai";
+import "ace-builds/src-noconflict/theme-github";
 import "ace-builds/src-noconflict/ext-language_tools";
 
 export default (props) => {
@@ -12,7 +12,7 @@ export default (props) => {
   return (
     <ProCard>
       <AceEditor
-        mode="html"
+        mode="json"
         theme="github"
         name="response_header"
         // onLoad={this.onLoad}

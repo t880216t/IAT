@@ -32,7 +32,6 @@ export default class Page extends React.Component {
 
   componentDidMount() {
     const {projectId} = this.props;
-    console.log(projectId);
     if (projectId){
       this.setState({projectId},() => this.queryProjectEnvList())
     }
@@ -374,17 +373,17 @@ export default class Page extends React.Component {
   };
 
   render() {
-    const {buttonType, text, loading, listLoading} = this.props;
+    const {buttonType, text, loading, listLoading, size} = this.props;
     const {visible, envList, envHostConfig, envParamsConfig, envReqHeaderConfig, envReqConfig} = this.state;
     const isLinkButton = buttonType === "link"
     return (
       <>
         {isLinkButton?(
-          <Button type="link" size="small" onClick={() => this.setVisible(true)}>
+          <Button type="link" size={size || 'small'} onClick={() => this.setVisible(true)}>
             {text || 0}
           </Button>
         ):(
-          <Button type="primary" size="small" onClick={(e) => {
+          <Button type="primary" size={size || 'small'} onClick={(e) => {
             this.setVisible(true)
           }}>
             <DeploymentUnitOutlined />

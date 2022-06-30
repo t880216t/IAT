@@ -14,7 +14,7 @@ export default (props) => {
   const {onAdd, onUpdate, projectId, apiId} = props
   return (
     <ModalForm
-      title="新建表单"
+      title={props.text?'编辑用例基本信息':'新建用例'}
       trigger={
         props.text?(
           <span>
@@ -23,7 +23,7 @@ export default (props) => {
         ):(
           <Button type="primary">
             <PlusOutlined/>
-            新建表单
+            新建用例
           </Button>
         )
       }

@@ -134,14 +134,14 @@ export default class Page extends Component {
     return (
       <ProList
         onRow={(record) => {
-          return {
-            onMouseEnter: () => {
-              console.log(record);
-            },
-            onClick: () => {
-              console.log(record);
-            },
-          };
+          // return {
+          //   onMouseEnter: () => {
+          //     console.log(record);
+          //   },
+          //   onClick: () => {
+          //     console.log(record);
+          //   },
+          // };
         }}
         rowKey="id"
         dataSource={caseList}

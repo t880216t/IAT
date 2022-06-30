@@ -316,8 +316,8 @@ export default class Page extends Component {
           }}
         />
         <AddCaseModal
-          title={'新建用例'}
-          label={'用例名称'}
+          title={'添加接口'}
+          label={'接口名称'}
           visible={visible}
           width={640}
           confirmLoading={confirmLoading}

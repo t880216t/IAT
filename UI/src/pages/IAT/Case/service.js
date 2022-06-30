@@ -77,6 +77,13 @@ export async function queryApiInfo(params) {
   });
 }
 
+export async function queryApiCaseInfo(params) {
+  return request('/api/api_v3/case/apiCaseInfo', {
+    method: 'POST',
+    data: params,
+  });
+}
+
 export async function queryApiCaseList(params) {
   return request('/api/api_v3/case/apiCaseList', {
     method: 'POST',

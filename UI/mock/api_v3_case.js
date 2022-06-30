@@ -76,7 +76,7 @@ export default {
     code: 0,
     content: {
       id: 12,
-      case_name: '获取首页banner信息',
+      api_name: '获取首页banner信息',
       add_user: '陈  酒',
       add_time: '2022-06-01 12:23:22',
       update_user: '陈  酒',
@@ -203,6 +203,64 @@ export default {
         value: 'c',
       },
     ],
+    msg: '操作成功'
+  },
+
+  'POST /api/api_v3/case/apiCaseInfo': {
+    code: 0,
+    content: {
+      id: 12,
+      case_name: '获取首页banner信息',
+      add_user: '陈  酒',
+      add_time: '2022-06-01 12:23:22',
+      update_user: '陈  酒',
+      update_time: '2022-06-01 12:23:22',
+      description: '描述点信息',
+      request_config: {
+        isCustomHost: 1,
+        protocol: 'HTTP',
+        host: 'app.test.com',
+        port: 5000,
+        method: 'GET',
+        path: '/api/test/{com_id}',
+        encoding: 'UTF-8',
+        url_params: [{
+          id: 123,
+          key: 'com_id',
+          required: 1,
+          value: '12312412312',
+          description: '',
+        }],
+        headers: [{
+          id: 123,
+          key: 'sdfd',
+          value: '12321',
+        },{
+          id: 1213,
+          key: 'Content-Type',
+          value: 'application/json',
+        },],
+        params: [{
+          id: 123,
+          key: 'sdf',
+          required: 1,
+          value: 'rwqe',
+          description: 'eqweqwe',
+        }],
+        body: {
+          type: 'json',
+          text: '{"comId": 123}'
+        },
+        file: [{
+          id: 1232,
+          key: 'file_name',
+          type: 'text/file',
+          required: 1,
+          path: 'https://test.com/file/123.png',
+          description: 'test',
+        }]
+      }
+    },
     msg: '操作成功'
   },
 

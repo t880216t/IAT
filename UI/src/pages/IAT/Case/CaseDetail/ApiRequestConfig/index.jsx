@@ -20,6 +20,7 @@ export default (props) => {
         {(props.data?.isCustomHost === 1) && (
           <ProForm.Group>
             <ProFormSelect
+              disabled={props.isCase || undefined}
               width="sm"
               label="协议"
               name="protocol"
@@ -28,14 +29,15 @@ export default (props) => {
                 HTTPS: 'HTTPS',
               }}
             />
-            <ProFormText width="xl" name="host" label="域名" placeholder="请输入名称"/>
-            <ProFormDigit width="sm" label="端口" name="port" />
+            <ProFormText disabled={props.isCase || undefined} width="xl" name="host" label="域名" placeholder="请输入名称"/>
+            <ProFormDigit disabled={props.isCase || undefined} width="sm" label="端口" name="port" />
           </ProForm.Group>
         )}
       </Form.Item>
       <ProForm.Group>
         <ProFormSelect
           label="模式"
+          disabled={props.isCase || undefined}
           name="method"
           width="sm"
           valueEnum={{
@@ -46,8 +48,8 @@ export default (props) => {
             OPTION: 'OPTION',
           }}
         />
-        <ProFormText width="xl" name="path" label="路径" placeholder="请输入" />
-        <ProFormText width="sm" name="encoding" label="编码" placeholder="请输入" />
+        <ProFormText disabled={props.isCase || undefined} width="lg" name="path" label="路径" placeholder="请输入" />
+        <ProFormText disabled={props.isCase || undefined} width="sm" name="encoding" label="编码" placeholder="请输入" />
       </ProForm.Group>
     </ProForm>
   );

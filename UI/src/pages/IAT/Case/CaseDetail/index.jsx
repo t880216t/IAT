@@ -74,7 +74,7 @@ export default class Page extends Component {
       <PageContainer
         loading={loading}
         header={{
-          title: apiInfo?.case_name,
+          title: apiInfo?.api_name,
           ghost: true,
           extra: [
             <Button key="history" icon={<CopyOutlined />}>
@@ -110,7 +110,7 @@ export default class Page extends Component {
           <ProCard bordered title={'参数配置'}>
             {apiInfo?.request_config && <ApiRequestParamsConfig isCase={false} data={apiInfo?.request_config} />}
           </ProCard>
-          <ProCard bordered title={'响应信息'}>
+          <ProCard bordered title={'响应信息'} collapsible defaultCollapsed>
             <ApiResponseInfo />
           </ProCard>
           <ProCard
