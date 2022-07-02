@@ -24,5 +24,62 @@ export default {
       "total": 9
     },
     "msg": "操作成功"
-  }
+  },
+  'POST /api/api_v3/task/taskInfo': {
+    "code": 0,
+    "content": {
+      'id': 123,
+      'name': 'xxx版本接口测试任务',
+      'project': 1,
+      'task_type': 2,
+      'cron': '8 2 3 * * *',
+      'proxy': 'http://127.0.0.1:8888',
+      'description': 'this is mock',
+      'env_id': 1,
+      'addInfo': '测试  2011-11-11 11:11:11',
+      'updateInfo': '1测试  2011-11-11 11:11:12',
+    },
+    "msg": "操作成功"
+  },
+  'POST /api/api_v3/task/taskCaseList': {
+    "code": 0,
+    "content": [{
+      'case_id': '123',
+      'case_name': 'xxx版s接口测试任务',
+      'level': 0,
+      'api_id': 12,
+      'api_name': '那啥',
+      'module_id': 1,
+      'module_name': '首页',
+      'index': 1
+    },{
+      'case_id': '1123',
+      'case_name': 'xxx版本接口s务',
+      'level': 1,
+      'api_id': 12,
+      'api_name': '那啥',
+      'module_id': 1,
+      'module_name': '首页',
+      'index': 2
+    },{
+      'case_id': '1223',
+      'case_name': 'xxx版本接口测ff试任务',
+      'level': 2,
+      'api_id': 12,
+      'api_name': '那啥',
+      'module_id': 1,
+      'module_name': '首页',
+      'index': 3
+    },{
+      'case_id': '1243',
+      'case_name': 'xxx版本sdfdsfs接口测试任务',
+      'level': 1,
+      'api_id': 12,
+      'api_name': '那啥',
+      'module_id': 1,
+      'module_name': '首页',
+      'index': 4
+    },],
+    "msg": "操作成功"
+  },
 };

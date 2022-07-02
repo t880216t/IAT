@@ -70,6 +70,7 @@
     "react-beautiful-dnd": "^13.1.0",
     "react-dev-inspector": "^1.7.0",
     "react-dom": "^17.0.0",
+    "react-editext": "^4.2.1",
     "react-helmet-async": "^1.2.0",
     "swagger-ui-react": "^4.11.1",
     "umi": "^3.5.0"

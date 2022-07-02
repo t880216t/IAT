@@ -2,7 +2,7 @@ import { DeploymentUnitOutlined } from '@ant-design/icons';
 import {
   ProCard,
 } from '@ant-design/pro-components';
-import { Button, Modal, Layout, Spin, Tabs } from 'antd';
+import { Button, Modal, Layout, Spin, Tabs, message } from 'antd';
 import React from 'react';
 import {connect} from 'dva';
 
@@ -34,6 +34,8 @@ export default class Page extends React.Component {
     const {projectId} = this.props;
     if (projectId){
       this.setState({projectId},() => this.queryProjectEnvList())
+    }else {
+      message.warning("项目不可为空")
     }
   }
 

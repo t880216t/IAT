@@ -1,16 +1,11 @@
-import React, { Component, useEffect, useState } from "react";
-import ReactDOM from "react-dom";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import React, {Component} from "react";
+import {DragDropContext, Draggable, Droppable} from "react-beautiful-dnd";
 import PropTypes from 'prop-types';
+import {Tag} from 'antd';
 
-// fake data generator
-const getItems = (count) =>
-  Array.from({ length: count }, (v, k) => k).map((k) => ({
-    id: `item-${k}`,
-    content: `item ${k}`,
-  }));
+import styles from './index.less'
+import {connect} from "dva";
 
-// a little function to help us with reordering the result
 const reorder = (list, startIndex, endIndex) => {
   const result = Array.from(list);
   const [removed] = result.splice(startIndex, 1);
@@ -19,30 +14,25 @@ const reorder = (list, startIndex, endIndex) => {
   return result;
 };
 
-const grid = 8;
-
-const getItemStyle = (isDragging, draggableStyle) => ({
-  // some basic styles to make the items look a bit nicer
+const getItemStyle = (isDragging, draggableStyle, isSelect) => ({
   userSelect: 'none',
-  padding: grid * 2,
-  margin: `0 0 ${grid}px 0`,
-  // height: 30,
-
-  // change background colour if dragging
-  background: isDragging ? 'lightgreen' : 'grey',
-
-  // styles we need to apply on draggables
+  margin: `4px`,
+  background: isDragging ? '#67e6dc' : isSelect? '#13c2c2': '#fff',
+  border: isSelect? 'none': '1px solid rgba(0,0,0,.06)',
   ...draggableStyle,
 });
 
 const getListStyle = (isDraggingOver, overflow) => ({
-  background: isDraggingOver ? 'lightblue' : 'lightgrey',
-  padding: grid,
   width: '100%',
-  maxHeight: '100vh',
+  maxHeight: '80vh',
   overflow,
 });
 
+@connect(({iatTask, iatConfig, loading}) => ({
+  iatTask,
+  iatConfig,
+  loading: loading.effects['iatTask/queryTaskCaseList'],
+}))
 export default class App extends Component {
   static propTypes = {
     overflow: PropTypes.string,
@@ -54,31 +44,57 @@ export default class App extends Component {
   constructor(props, context) {
     super(props, context);
     this.state = {
-      items: getItems(60),
+      taskCaseList: [],
+      taskId: null,
+      selectedId: null,
     };
     this.onDragEnd = this.onDragEnd.bind(this);
   }
 
+  componentDidMount() {
+    const {taskId} = this.props;
+    if (taskId){
+      this.setState({taskId}, ()=> {
+        this.queryTaskCaseList(taskId)
+      })
+    }
+  }
+
+  queryTaskCaseList = taskId => {
+    const {dispatch} = this.props;
+    dispatch({
+      type: 'iatTask/queryTaskCaseList',
+      payload: {taskId},
+    }).then(() => {
+      const {taskCaseList} = this.props.iatTask;
+      this.setState({
+        taskCaseList,
+      });
+    });
+  };
+
   onDragEnd(result) {
-    // dropped outside the list
     if (!result.destination) {
       return;
     }
-
     const items = reorder(
-      this.state.items,
+      this.state.taskCaseList,
       result.source.index,
       result.destination.index,
     );
 
     this.setState({
-      items,
+      taskCaseList: items,
     });
   }
 
-  // Normally you would want to split things out into separate components.
-  // But in this example everything is just done in one place for simplicity
+  handleCaseSelect = (case_id) => {
+    console.log(case_id);
+    this.setState({selectedId: case_id})
+  };
+
   render() {
+    const {taskCaseList, selectedId} = this.state
     return (
       <DragDropContext onDragEnd={this.onDragEnd}>
         <Droppable droppableId="droppable">
@@ -94,8 +110,8 @@ export default class App extends Component {
                 console.log('current scrollTop', e.currentTarget.scrollTop)
               }
             >
-              {this.state.items.map((item, index) => (
-                <Draggable key={item.id} draggableId={item.id} index={index}>
+              {taskCaseList?.map((item, index) => (
+                <Draggable key={item.case_id} draggableId={item.case_id} index={index}>
                   {(draggableProvided, draggableSnapshot) => (
                     <div
                       ref={draggableProvided.innerRef}
@@ -104,9 +120,17 @@ export default class App extends Component {
                       style={getItemStyle(
                         draggableSnapshot.isDragging,
                         draggableProvided.draggableProps.style,
+                        item.case_id === selectedId
                       )}
+                      className={styles.itemCard}
+                      onClick={() => this.handleCaseSelect(item.case_id)}
                     >
-                      {item.content}
+                      <div className={styles.caseName}>
+                        {item.level === 0 && <Tag color="#f50">P0</Tag>}
+                        {item.level === 1 && <Tag color="#ff9f1a">P1</Tag>}
+                        {item.level === 2 && <Tag color="#54a0ff">P2</Tag>}
+                        <span>{item.case_name}</span>
+                      </div>
                     </div>
                   )}
                 </Draggable>

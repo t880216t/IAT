@@ -64,13 +64,13 @@ export default [
         path: '/iat/task/immTask',
         name: '即时任务',
         icon: 'smile',
-        component: './IAT/Task/immTask',
+        component: './IAT/Task/ImmTask',
       },
       {
         path: '/iat/task/timTask',
         name: '定时任务',
         icon: 'smile',
-        component: './IAT/Task/timTask',
+        component: './IAT/Task/TimTask',
       },
       {
         path: '/iat/task/detail',
