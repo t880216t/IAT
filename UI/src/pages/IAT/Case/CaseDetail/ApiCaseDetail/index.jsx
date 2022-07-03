@@ -8,6 +8,7 @@ import {connect} from 'dva';
 import ApiRequestConfig from "../ApiRequestConfig";
 import ApiRequestParamsConfig from "../ApiRequestParamsConfig";
 import ApiResponseInfo from "../ApiResponseInfo";
+import CaseRequestConfigInfo from "@/pages/IAT/Task/TaskDetail/CaseItemDetail/CaseRequestConfigInfo";
 import CaseDependent from "./CaseDependent";
 import CaseScripts from "./CaseScripts";
 import CaseAssertion from "./CaseAssertion";
@@ -90,12 +91,12 @@ export default class Page extends Component {
       >
         <ProCard direction="column" ghost gutter={[0, 8]} loading={loading}>
           <ProCard bordered title={'请求配置'} collapsible defaultCollapsed>
-            {caseInfo?.request_config && <ApiRequestConfig isCase={true} data={caseInfo?.request_config} />}
+            {caseInfo?.request_config && <CaseRequestConfigInfo isCase={true} data={caseInfo?.request_config} />}
           </ProCard>
-          <ProCard bordered title={'参数配置'}>
+          <ProCard bordered title={'参数配置'} bodyStyle={{padding: 0}}>
             {caseInfo?.request_config && <ApiRequestParamsConfig isCase={true} data={caseInfo?.request_config} />}
           </ProCard>
-          <ProCard bordered title={'响应信息'} collapsible defaultCollapsed>
+          <ProCard bordered title={'响应信息'} collapsible defaultCollapsed bodyStyle={{padding: 0}}>
             <ApiResponseInfo />
           </ProCard>
           <ProCard bodyStyle={{padding: 5}} bordered title={'接口依赖'} extra={<Button icon={<PlusOutlined/>} type="primary">添加</Button>}>
@@ -104,10 +105,10 @@ export default class Page extends Component {
           <ProCard bordered title={'处理脚本'} extra={<ScriptModal />}>
             <CaseScripts />
           </ProCard>
-          <ProCard bordered title={'返回值断言'} extra={<Button icon={<PlusOutlined/>} type="primary">添加</Button>}>
+          <ProCard bordered title={'返回值断言'} bodyStyle={{padding: 0}} extra={<Button icon={<PlusOutlined/>} type="primary">添加</Button>}>
             <CaseAssertion />
           </ProCard>
-          <ProCard bordered title={'参数化提取'} extra={<Button icon={<PlusOutlined/>} type="primary">添加</Button>}>
+          <ProCard bordered title={'参数化提取'} bodyStyle={{padding: 0}} extra={<Button icon={<PlusOutlined/>} type="primary">添加</Button>}>
             <CaseValueExtract />
           </ProCard>
         </ProCard>

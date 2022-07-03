@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {Button, Input, Select, Space, Divider} from 'antd';
+import {Button, Checkbox, Select, Space, Divider, Empty} from 'antd';
 import { PageContainer } from '@ant-design/pro-layout';
 import {connect} from 'dva';
 import ProCard from '@ant-design/pro-card';
@@ -26,6 +26,7 @@ export default class Page extends Component {
     projectId: null,
     taskId: null,
     envList: null,
+    selectedId: null,
   };
 
   componentDidMount() {
@@ -67,8 +68,12 @@ export default class Page extends Component {
     console.log(value);
   };
 
+  handleCaseSelect = (selectedId) => {
+    this.setState({selectedId})
+  };
+
   render() {
-    const {taskInfo, projectId, envList, taskId} = this.state;
+    const {taskInfo, projectId, envList, taskId, selectedId} = this.state;
     const {loading} = this.props;
 
     return (
@@ -138,11 +143,22 @@ export default class Page extends Component {
       >
         <ProCard direction="column" ghost gutter={[0, 16]}>
           <ProCard gutter={6} ghost>
-            <ProCard colSpan={6} bodyStyle={{padding: 4}} title={"用例列表"} extra={<CaseSelectList size={'small'} projectId={projectId} />} >
-              <CaseDragList taskId={taskId} />
+            <ProCard
+              colSpan={6}
+              bodyStyle={{padding: 4}}
+              title={"用例列表"}
+              extra={
+                <Space>
+                  <Checkbox onChange={(e) => console.log(e)}>共享Cookie</Checkbox>
+                  <CaseSelectList size={'normal'} projectId={projectId} />
+                </Space>
+              }
+            >
+              <CaseDragList taskId={taskId} onSelect={this.handleCaseSelect} />
             </ProCard>
-            <ProCard ghost colSpan={18}>
-              <CaseItemDetail />
+            <ProCard ghost={selectedId} colSpan={18}>
+              {selectedId && (<CaseItemDetail caseId={selectedId} />)}
+              {!selectedId && <Empty style={{height: '50vh', display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}} description={'请先选择用例'} />}
             </ProCard>
           </ProCard>
         </ProCard>

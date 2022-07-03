@@ -17,14 +17,16 @@ const reorder = (list, startIndex, endIndex) => {
 const getItemStyle = (isDragging, draggableStyle, isSelect) => ({
   userSelect: 'none',
   margin: `4px`,
-  background: isDragging ? '#67e6dc' : isSelect? '#13c2c2': '#fff',
+  background: isDragging ? '#67e6dc' : isSelect? 'rgb(19, 194, 194)': '#fff',
   border: isSelect? 'none': '1px solid rgba(0,0,0,.06)',
+  color: isSelect? '#fff': '#000',
   ...draggableStyle,
 });
 
 const getListStyle = (isDraggingOver, overflow) => ({
   width: '100%',
   maxHeight: '80vh',
+  minHeight: '50vh',
   overflow,
 });
 
@@ -89,8 +91,11 @@ export default class App extends Component {
   }
 
   handleCaseSelect = (case_id) => {
-    console.log(case_id);
-    this.setState({selectedId: case_id})
+    this.setState({selectedId: case_id}, () => {
+      if (this.props.onSelect){
+        this.props.onSelect(case_id)
+      }
+    })
   };
 
   render() {

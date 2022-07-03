@@ -23,7 +23,7 @@ export default () => {
         }}
         pagination={false}
         showActions="hover"
-        grid={{gutter: 16, column: 1}}
+        grid={{gutter: 16, column: 2}}
         onItem={(record) => {
           return {
             onMouseEnter: () => {

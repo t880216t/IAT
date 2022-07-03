@@ -1,0 +1,39 @@
+@import '~antd/lib/style/themes/default.less';
+
+.pre {
+  margin: 12px 0;
+  padding: 12px 20px;
+  background: @input-bg;
+  box-shadow: @card-shadow;
+}
+
+.checkCardCus{
+  :global{
+    .ant-pro-checkcard-detail{
+      width: 100%;
+    }
+  }
+}
+
+.headerTitle{
+  width: 50vw;
+}
+
+.name{
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  word-break: keep-all;
+  width: 200px;
+}
+
+.path{
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  word-break: keep-all;
+  width: 320px;
+  margin-left: 10px;
+  font-size: 14px;
+  color: grey;
+}

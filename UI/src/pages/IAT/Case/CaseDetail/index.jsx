@@ -107,7 +107,7 @@ export default class Page extends Component {
           >
             {apiInfo?.request_config && <ApiRequestConfig data={apiInfo?.request_config} />}
           </ProCard>
-          <ProCard bordered title={'参数配置'}>
+          <ProCard bordered title={'参数配置'} bodyStyle={{padding: 0}}>
             {apiInfo?.request_config && <ApiRequestParamsConfig isCase={false} data={apiInfo?.request_config} />}
           </ProCard>
           <ProCard bordered title={'响应信息'} collapsible defaultCollapsed>

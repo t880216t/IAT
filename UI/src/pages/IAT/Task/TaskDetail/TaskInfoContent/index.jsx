@@ -107,6 +107,6 @@ export default (props) => {
         label="更新信息"
         readonly
       />
-      <ProFormTextArea colProps={{span: 18}} name="description" label="任务描述"/>
+      <ProFormTextArea colProps={{span: 12}} fieldProps={{rows:1}} name="description" label="任务描述"/>
     </ProForm>);
 }

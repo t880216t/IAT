@@ -58,10 +58,7 @@ const DetailList = (props) => {
     <ProTable
       columns={columns}
       dataSource={tableListDataSource}
-      pagination={{
-        pageSize: 10,
-        showSizeChanger: false,
-      }}
+      pagination={false}
       className={styles.caseList}
       rowSelection={{}}
       tableAlertOptionRender={() => {
@@ -72,7 +69,7 @@ const DetailList = (props) => {
         );
       }}
       scroll={{
-        y: 360,
+        y: 400,
       }}
       size={'small'}
       rowKey="key"
