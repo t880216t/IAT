@@ -6,14 +6,14 @@ import {
 } from '@/pages/IAT/Config/service'
 
 export default (props) => {
-  const {onAdd, projectId, apiId} = props
+  const { onAdd } = props
   return (
     <ModalForm
       title="新建任务"
       trigger={
         <Button type="primary">
           <PlusOutlined/>
-          新建用例
+          新建任务
         </Button>
       }
       autoFocusFirstInput
@@ -25,7 +25,6 @@ export default (props) => {
         if (onAdd){
           onAdd(values);
         }
-        message.success('提交成功');
         return true;
       }}
     >

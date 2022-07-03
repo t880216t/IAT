@@ -8,6 +8,8 @@ export default {
         "addUser": "西　东",
         "id": 513,
         "isTop": false,
+        "project_id": 1,
+        "project_name": '测试项目',
         "lastLog": {
           "fail": 0,
           "success": 6,
@@ -19,8 +21,61 @@ export default {
         "taskType": 3,
         "updateTime": "2022-05-18 06:02:59",
         "updateUser": "西　东"
-      }
-      ],
+      },{
+        "addTime": "2022-05-11 18:16:11",
+        "addUser": "西　东",
+        "id": 5113,
+        "isTop": false,
+        "project_id": 1,
+        "project_name": '测试项目',
+        "lastLog": {
+          "fail": 0,
+          "success": 6,
+          "total": 6
+        },
+        "name": "定时巡检的用例",
+        "nextTime": "2022-05-19 06:00:00",
+        "status": 1,
+        "taskType": 3,
+        "updateTime": "2022-05-18 06:02:59",
+        "updateUser": "西　东"
+      },{
+        "addTime": "2022-05-11 18:16:11",
+        "addUser": "西　东",
+        "id": 5123,
+        "isTop": false,
+        "project_id": 1,
+        "project_name": '测试项目',
+        "lastLog": {
+          "fail": 0,
+          "success": 6,
+          "total": 6
+        },
+        "name": "定时巡检的用例",
+        "nextTime": "2022-05-19 06:00:00",
+        "status": 0,
+        "taskType": 3,
+        "updateTime": "2022-05-18 06:02:59",
+        "updateUser": "西　东"
+      },{
+        "addTime": "2022-05-11 18:16:11",
+        "addUser": "西　东",
+        "id": 51213,
+        "isTop": false,
+        "project_id": 1,
+        "project_name": '测试项目',
+        "lastLog": {
+          "fail": 0,
+          "success": 6,
+          "total": 6
+        },
+        "name": "定时巡检的用例",
+        "nextTime": "2022-05-19 06:00:00",
+        "status": 4,
+        "taskType": 3,
+        "updateTime": "2022-05-18 06:02:59",
+        "updateUser": "西　东"
+      },],
       "total": 9
     },
     "msg": "操作成功"
@@ -82,4 +137,35 @@ export default {
     },],
     "msg": "操作成功"
   },
+
+  'POST /api/api_v3/task/taskAdd': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+
+  'POST /api/api_v3/task/taskDel': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+
+  'POST /api/api_v3/task/taskUpdate': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+
+  'POST /api/api_v3/task/taskExec': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+
+  'POST /api/api_v3/task/taskCopy': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+
 };
