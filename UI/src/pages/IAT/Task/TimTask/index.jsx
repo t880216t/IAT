@@ -1,12 +1,15 @@
 import React, { Component } from 'react';
 import { PageContainer } from '@ant-design/pro-layout';
 import ProCard from '@ant-design/pro-card';
-import { Button, Descriptions, Dropdown, Menu, Modal, Select, Badge } from 'antd';
+import {Button, Descriptions, Dropdown, Menu, Modal, Select, Badge, message} from 'antd';
+import { DownOutlined, PlusOutlined } from '@ant-design/icons';
+
 import { connect } from 'dva';
 
 import styles from './index.less';
-import { DownOutlined, PlusOutlined } from '_@ant-design_icons@4.7.0@@ant-design/icons';
-import { history } from 'umi';
+
+import TaskAddModal from '../TaskAddModal'
+import {queryTaskAdd} from "@/pages/IAT/Task/service";
 
 const { Option } = Select;
 
@@ -19,7 +22,7 @@ export default class Page extends Component {
     super();
     this.state = {
       taskList: [],
-      taskType: 3,
+      taskType: 2,
     };
     this.timer = null;
   }
@@ -58,10 +61,10 @@ export default class Page extends Component {
         this.handleEditTask(item.id);
         break;
       case 'stop':
-        this.queryStopTimingTask({ taskId: item.id });
+        this.queryTaskStop({ taskId: item.id });
         break;
       case 'restart':
-        this.queryExecTask({ taskId: item.id, taskType: item.taskType });
+        this.queryTaskExec({ taskId: item.id, taskType: item.taskType });
         break;
       case 'delete':
         Modal.confirm({
@@ -75,10 +78,10 @@ export default class Page extends Component {
     }
   };
 
-  queryStopTimingTask = (params) => {
+  queryTaskStop = (params) => {
     this.props
       .dispatch({
-        type: 'iatTask/queryStopTimingTask',
+        type: 'iatTask/queryTaskStop',
         payload: { ...params },
       })
       .then(() => {
@@ -86,10 +89,10 @@ export default class Page extends Component {
       });
   };
 
-  queryExecTask = (params) => {
+  queryTaskExec = (params) => {
     this.props
       .dispatch({
-        type: 'iatTask/queryExecTask',
+        type: 'iatTask/queryTaskExec',
         payload: { ...params },
       })
       .then(() => {
@@ -100,7 +103,7 @@ export default class Page extends Component {
   queryDelTask = (params) => {
     this.props
       .dispatch({
-        type: 'iatTask/queryDelTask',
+        type: 'iatTask/queryTaskDel',
         payload: { ...params },
       })
       .then(() => {
@@ -136,7 +139,7 @@ export default class Page extends Component {
             key="start"
             onClick={(e) => {
               e.preventDefault();
-              this.queryExecTask({ taskId: item.id, taskType: item.taskType });
+              this.queryTaskExec({ taskId: item.id });
             }}
           >
             再次执行
@@ -148,7 +151,7 @@ export default class Page extends Component {
             key="start"
             onClick={(e) => {
               e.preventDefault();
-              this.queryExecTask({ taskId: item.id, taskType: item.taskType });
+              this.queryTaskExec({ taskId: item.id });
             }}
           >
             开始任务
@@ -158,7 +161,7 @@ export default class Page extends Component {
     }
     if (item.status > 0 && item.lastLog.total) {
       actons.push(
-        <a key="report" href={`/iat/task/report?taskId=${item.id}`} target="_blank" rel="noreferrer">
+        <a key="report" href={`/iat/task/report?taskId=${item.id}&execId=${item.exec_id}`} target="_blank" rel="noreferrer">
           查看报告
         </a>,
       );
@@ -167,15 +170,20 @@ export default class Page extends Component {
     return actons;
   };
 
-  handleAddTask = () => {
-    const path = '/iat/task/detail';
-    window.open(`${window.routerBase}${path.replace(/^\//g, '')}`);
-  };
-
   handleEditTask = (taskId) => {
     const path = `/iat/task/detail?taskId=${taskId}`;
     window.open(`${window.routerBase}${path.replace(/^\//g, '')}`);
   };
+
+  handleCreateTask = async (params) => {
+    const response = await queryTaskAdd(params)
+    if (response && response.code === 0){
+      message.success("提交成功")
+      this.queryTaskList();
+    }else {
+      message.error(response?.msg)
+    }
+  }
 
   render() {
     const { taskList } = this.state;
@@ -239,9 +247,7 @@ export default class Page extends Component {
             layout="center"
             bordered={false}
           >
-            <Button type="dashed" className={styles.newButton} onClick={() => this.handleAddTask()}>
-              <PlusOutlined /> 新增任务
-            </Button>
+            <TaskAddModal type="dashed" className={styles.newButton}  onAdd={(values) => this.handleCreateTask(values)} />
           </ProCard>
         </ProCard>
       </PageContainer>

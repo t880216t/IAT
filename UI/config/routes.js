@@ -77,7 +77,13 @@ export default [
         name: '任务详情',
         hideInMenu: true,
         component: './IAT/Task/TaskDetail',
-      }
+      },
+      {
+        path: '/iat/task/report',
+        name: '任务报告',
+        hideInMenu: true,
+        component: './IAT/Task/TaskReport',
+      },
     ],
   },
   {

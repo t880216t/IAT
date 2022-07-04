@@ -162,6 +162,13 @@ export default {
     msg: '操作成功'
   },
 
+
+  'POST /api/api_v3/task/taskStop': {
+    code: 0,
+    content: {},
+    msg: '操作成功'
+  },
+
   'POST /api/api_v3/task/taskCopy': {
     code: 0,
     content: {},

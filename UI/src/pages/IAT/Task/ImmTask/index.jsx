@@ -3,13 +3,13 @@ import {FileDoneOutlined, EditOutlined, CopyOutlined, DeleteOutlined, LinkOutlin
 import { Tag, message, Space, Button } from 'antd';
 import ProTable from '@ant-design/pro-table';
 import { history, Link } from 'umi';
-import {queryTaskList, queryTasktAdd, queryTaskDel, queryTaskCopy} from '../service'
+import {queryTaskList, queryTaskAdd, queryTaskDel, queryTaskCopy} from '../service'
 
 import TaskAddModal from '../TaskAddModal'
 
 
 const handleCreateTask = async (params, actionRef) => {
-  const response = await queryTasktAdd(params)
+  const response = await queryTaskAdd(params)
   if (response && response.code === 0){
     message.success("提交成功")
     actionRef?.current.reload()
@@ -116,7 +116,7 @@ export default () => {
       render: (_, record) => (
         <div>
           {record.status === 3 && (
-            <Link title={"查看报告"} style={{marginRight: 10,marginBottom: 10}} key="report" to={`/iat/task/detail?taskId=${record.id}`} target="_blank">
+            <Link title={"查看报告"} style={{marginRight: 10,marginBottom: 10}} key="report" to={`/iat/task/report?taskId=${record.id}&execId=${record.execId}`} target="_blank">
               <FileDoneOutlined />
             </Link>
           )}
@@ -142,7 +142,7 @@ export default () => {
       dateFormatter="string"
       headerTitle="任务列表"
       toolBarRender={() => [
-        <TaskAddModal onAdd={(values) => handleCreateTask(values, actionRef)} />
+        <TaskAddModal type="primary" onAdd={(values) => handleCreateTask(values, actionRef)} />
       ]}
       pagination={{
         pageSize: 20,

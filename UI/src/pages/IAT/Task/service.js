@@ -14,7 +14,7 @@ export async function queryTaskInfo(params) {
   });
 }
 
-export async function queryTasktAdd(params) {
+export async function queryTaskAdd(params) {
   return request('/api/api_v3/task/taskAdd', {
     method: 'POST',
     data: params,
@@ -44,6 +44,14 @@ export async function queryTaskUpdate(params) {
 
 export async function queryTaskExec(params) {
   return request('/api/api_v3/task/taskExec', {
+    method: 'POST',
+    data: params,
+  });
+}
+
+
+export async function queryTaskStop(params) {
+  return request('/api/api_v3/task/taskStop', {
     method: 'POST',
     data: params,
   });

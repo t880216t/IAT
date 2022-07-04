@@ -11,7 +11,7 @@ export default (props) => {
     <ModalForm
       title="新建任务"
       trigger={
-        <Button type="primary">
+        <Button type={props?.type} className={props?.className}>
           <PlusOutlined/>
           新建任务
         </Button>
